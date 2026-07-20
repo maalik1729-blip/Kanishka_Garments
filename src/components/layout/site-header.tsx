@@ -17,12 +17,6 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 bg-white font-favorit">
-      {/* Announcement Bar */}
-      <div className="bg-black py-[5px] px-4 text-center">
-        <p className="text-[9px] font-normal tracking-[0.025em] text-white uppercase">
-          FREE Standard Delivery on orders over €125 • Direct Tirupur Mill Wholesale & Custom Apparel
-        </p>
-      </div>
 
       {/* Main Header Bar */}
       <div className="border-b border-black bg-white px-4 md:px-8 py-[6px]">
