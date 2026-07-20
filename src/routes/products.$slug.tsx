@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { getAllProducts, getProduct } from "@/lib/products";
 import { formatINR } from "@/lib/cart";
+import { addQuoteRequest } from "@/lib/quotes";
 import { ProductCard } from "@/components/product-card";
 import { toast } from "sonner";
 
@@ -242,13 +243,27 @@ function ProductDetail() {
     printWindow.document.close();
   };
 
+  const [rfqRefCode, setRfqRefCode] = useState("");
+
   const handleRfqSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const saved = addQuoteRequest({
+      productSlug: product.slug,
+      productName: product.name,
+      quantity: rfqForm.quantity,
+      destination: rfqForm.destination,
+      deliveryDate: rfqForm.deliveryDate,
+      email: rfqForm.email,
+      phone: rfqForm.phone,
+      notes: rfqForm.notes,
+      fileName: rfqForm.fileName,
+    });
+    setRfqRefCode(saved.refCode);
     setRfqSubmitted(true);
     setTimeout(() => {
       setShowRfqModal(false);
       setRfqSubmitted(false);
-    }, 2500);
+    }, 3000);
   };
 
   return (
@@ -947,7 +962,7 @@ function ProductDetail() {
                 <CheckCircle2 className="w-12 h-12 text-black mx-auto stroke-[2]" />
                 <h4 className="text-[16px] font-bold uppercase text-black">RFQ SUBMITTED SUCCESSFULLY!</h4>
                 <p className="text-[12px] text-neutral-600 leading-relaxed max-w-md mx-auto">
-                  Quote Reference <strong className="text-black">#KG-RFQ-2026-{Math.floor(1000 + Math.random() * 9000)}</strong> generated. Our export procurement manager will email you official pricing within 24 hours.
+                  Quote Reference <strong className="text-black">#{rfqRefCode || "KG-RFQ-2026-8800"}</strong> generated and saved to admin portal. Our export procurement manager will email you official pricing within 24 hours.
                 </p>
               </div>
             ) : (

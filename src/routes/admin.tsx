@@ -1,8 +1,10 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   LogOut, Plus, Trash2, Package, Eye, EyeOff, LayoutDashboard,
-  ShoppingBag, Users, TrendingUp, Save, X, Edit2, ChevronDown, ChevronUp, ArrowLeft, Menu
+  ShoppingBag, Save, Edit2, ChevronDown, ChevronUp, ArrowLeft, Menu,
+  Shield, Lock, Key, Search, Sparkles, Layers,
+  FileText, CheckCircle2, AlertTriangle, Filter, RotateCcw, X, MessageSquare
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,22 +12,73 @@ import {
 } from "@/lib/products";
 import type { Product } from "@/lib/products";
 import { formatINR } from "@/lib/cart";
+import {
+  getQuoteRequests, updateQuoteStatus, deleteQuoteRequest
+} from "@/lib/quotes";
+import type { QuoteRequest } from "@/lib/quotes";
 
 const ADMIN_AUTH_KEY = "KANISHKA_admin_auth";
 const ADMIN_USER = "admin";
-const ADMIN_PASS = "admin";
+
+// ── SECURITY & RATE LIMITING UTILITIES ──────────────────────────────────
+const ADMIN_PASS_HASH_KEY = "KANISHKA_admin_pass_hash";
+const DEFAULT_PASS_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"; // SHA-256 of "admin"
+
+const RATE_LIMIT_SETTINGS_KEY = "KANISHKA_rate_limit_settings";
+const RATE_LIMIT_LOCKOUT_KEY = "KANISHKA_rate_limit_lockout";
+const RATE_LIMIT_ATTEMPTS_KEY = "KANISHKA_rate_limit_attempts";
+
+export async function sha256(message: string): Promise<string> {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+export type RateLimitSettings = {
+  maxAttempts: number;
+  lockoutDurationMinutes: number;
+  idleTimeoutMinutes: number;
+};
+
+export function getRateLimitSettings(): RateLimitSettings {
+  if (typeof window === "undefined") return { maxAttempts: 5, lockoutDurationMinutes: 15, idleTimeoutMinutes: 30 };
+  try {
+    const raw = localStorage.getItem(RATE_LIMIT_SETTINGS_KEY);
+    return raw ? { idleTimeoutMinutes: 30, ...JSON.parse(raw) } : { maxAttempts: 5, lockoutDurationMinutes: 15, idleTimeoutMinutes: 30 };
+  } catch {
+    return { maxAttempts: 5, lockoutDurationMinutes: 15, idleTimeoutMinutes: 30 };
+  }
+}
+
+export function saveRateLimitSettings(settings: RateLimitSettings) {
+  try {
+    localStorage.setItem(RATE_LIMIT_SETTINGS_KEY, JSON.stringify(settings));
+  } catch {}
+}
+
+export function getStoredPasswordHash(): string {
+  if (typeof window === "undefined") return DEFAULT_PASS_HASH;
+  return localStorage.getItem(ADMIN_PASS_HASH_KEY) || DEFAULT_PASS_HASH;
+}
+
+export function saveStoredPasswordHash(hash: string) {
+  try {
+    localStorage.setItem(ADMIN_PASS_HASH_KEY, hash);
+  } catch {}
+}
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
-      { title: "Admin — KANISHKA GARMENTS" },
+      { title: "Admin Portal — KANISHKA GARMENTS" },
       { robots: "noindex, nofollow" },
     ],
   }),
   component: AdminPage,
 });
 
-// ── TYPES ──────────────────────────────────────────────────────────────────
+// ── FORM TYPES & INITIAL STATE ─────────────────────────────────────────────
 type NewProductForm = {
   name: string;
   category: Product["category"];
@@ -92,7 +145,7 @@ const categoryOptions: { value: Product["category"]; label: string }[] = [
   { value: "elders",        label: "Elders" },
 ];
 
-// ── MAIN COMPONENT ─────────────────────────────────────────────────────────
+// ── MAIN WRAPPER COMPONENT ─────────────────────────────────────────────────
 function AdminPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
@@ -106,6 +159,7 @@ function AdminPage() {
     sessionStorage.setItem(ADMIN_AUTH_KEY, "true");
     setIsLoggedIn(true);
   };
+
   const handleLogout = () => {
     sessionStorage.removeItem(ADMIN_AUTH_KEY);
     setIsLoggedIn(false);
@@ -124,49 +178,117 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Rate limit & lockout state
+  const [lockoutUntil, setLockoutUntil] = useState<number>(() => {
+    if (typeof window === "undefined") return 0;
+    const raw = localStorage.getItem(RATE_LIMIT_LOCKOUT_KEY);
+    return raw ? Number(raw) : 0;
+  });
+  const [remainingLockoutSec, setRemainingLockoutSec] = useState<number>(0);
+  const [failedAttempts, setFailedAttempts] = useState<number>(() => {
+    if (typeof window === "undefined") return 0;
+    const raw = localStorage.getItem(RATE_LIMIT_ATTEMPTS_KEY);
+    return raw ? Number(raw) : 0;
+  });
+
+  // Countdown timer for active lockout
+  useEffect(() => {
+    if (lockoutUntil > Date.now()) {
+      const updateTimer = () => {
+        const remaining = Math.max(0, Math.ceil((lockoutUntil - Date.now()) / 1000));
+        setRemainingLockoutSec(remaining);
+        if (remaining <= 0) {
+          setLockoutUntil(0);
+          localStorage.removeItem(RATE_LIMIT_LOCKOUT_KEY);
+          setFailedAttempts(0);
+          localStorage.setItem(RATE_LIMIT_ATTEMPTS_KEY, "0");
+        }
+      };
+      updateTimer();
+      const interval = setInterval(updateTimer, 1000);
+      return () => clearInterval(interval);
+    } else {
+      setRemainingLockoutSec(0);
+    }
+  }, [lockoutUntil]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
+
+    if (lockoutUntil > Date.now()) return;
+
+    setLoading(true);
+    const settings = getRateLimitSettings();
+    const storedHash = getStoredPasswordHash();
+    const enteredHash = await sha256(password);
+
     setTimeout(() => {
-      if (username === ADMIN_USER && password === ADMIN_PASS) {
+      if (username === ADMIN_USER && enteredHash === storedHash) {
+        localStorage.setItem(RATE_LIMIT_ATTEMPTS_KEY, "0");
+        localStorage.removeItem(RATE_LIMIT_LOCKOUT_KEY);
         onLogin();
       } else {
-        setError("Invalid username or password.");
+        const newAttempts = failedAttempts + 1;
+        setFailedAttempts(newAttempts);
+        localStorage.setItem(RATE_LIMIT_ATTEMPTS_KEY, String(newAttempts));
+
+        if (newAttempts >= settings.maxAttempts) {
+          const lockTime = Date.now() + settings.lockoutDurationMinutes * 60 * 1000;
+          setLockoutUntil(lockTime);
+          localStorage.setItem(RATE_LIMIT_LOCKOUT_KEY, String(lockTime));
+          setError(`Too many failed login attempts (${newAttempts}/${settings.maxAttempts}). Account locked for ${settings.lockoutDurationMinutes}m.`);
+        } else {
+          const remainingAttempts = settings.maxAttempts - newAttempts;
+          setError(`Invalid username or password. (${remainingAttempts} attempt${remainingAttempts > 1 ? "s" : ""} remaining)`);
+        }
         setLoading(false);
       }
     }, 600);
   };
 
+  const isLockedOut = lockoutUntil > Date.now();
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center p-4"
-      style={{ background: "linear-gradient(135deg, #0f1b3d 0%, #1e3a5f 60%, #3b6fa0 100%)" }}
-    >
-      {/* Blobs */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-40 -left-40 h-96 w-96 rounded-full opacity-20 blur-3xl"
-          style={{ background: "radial-gradient(circle, #3b6fa0, transparent)" }} />
-        <div className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full opacity-20 blur-3xl"
-          style={{ background: "radial-gradient(circle, #1e3a5f, transparent)" }} />
+    <div className="relative flex min-h-screen items-center justify-center p-4 bg-slate-950 overflow-hidden font-sans text-slate-100">
+      {/* Background Soft Glow */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute top-1/3 left-1/3 h-96 w-96 rounded-full bg-slate-800/40 blur-3xl" />
       </div>
 
       <div className="relative z-10 w-full max-w-md">
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
-          {/* Logo */}
-          <div className="mb-8 flex flex-col items-center gap-3">
-            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white text-ink font-display font-bold text-sm shadow-lg">
-              KG
-            </div>
-            <div className="text-center">
-              <div className="font-display text-xl font-bold text-white">KANISHKA GARMENTS</div>
-              <div className="text-xs uppercase tracking-widest text-white/50 mt-0.5">Admin Portal</div>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-8 shadow-2xl backdrop-blur-xl">
+          {/* Logo & Header */}
+          <div className="mb-8 text-center space-y-3">
+            <img
+              src="/favicon.svg"
+              alt="KANISHKA GARMENTS Logo"
+              className="mx-auto h-14 w-14 rounded-2xl shadow-lg border border-slate-700 bg-black"
+            />
+            <div>
+              <h1 className="font-display text-xl font-bold tracking-wider text-white uppercase">KANISHKA GARMENTS</h1>
+              <p className="text-xs uppercase tracking-widest text-slate-400 mt-1">Management Portal</p>
             </div>
           </div>
 
+          {/* Active Lockout Alert */}
+          {isLockedOut && (
+            <div className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-xs text-amber-300 space-y-1">
+              <div className="font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                <Shield className="h-4 w-4" /> Account Temporarily Locked
+              </div>
+              <p className="text-amber-200/90 leading-relaxed">
+                Too many failed attempts. Try again in{" "}
+                <span className="font-mono font-bold text-white text-sm">
+                  {Math.floor(remainingLockoutSec / 60)}m {remainingLockoutSec % 60}s
+                </span>
+              </p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/60">
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400">
                 Username
               </label>
               <input
@@ -174,14 +296,16 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter username"
+                placeholder="Enter admin username"
                 autoComplete="username"
-                className="w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white placeholder-white/30 outline-none transition focus:border-white/60 focus:bg-white/15"
+                disabled={isLockedOut}
+                className="w-full rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-3 text-sm text-white placeholder-slate-500 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-400/20 disabled:opacity-50"
                 required
               />
             </div>
+
             <div>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/60">
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400">
                 Password
               </label>
               <div className="relative">
@@ -192,37 +316,43 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter password"
                   autoComplete="current-password"
-                  className="w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 pr-12 text-white placeholder-white/30 outline-none transition focus:border-white/60 focus:bg-white/15"
+                  disabled={isLockedOut}
+                  className="w-full rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-3 pr-12 text-sm text-white placeholder-slate-500 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-400/20 disabled:opacity-50"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPass(!showPass)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70"
+                  disabled={isLockedOut}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 disabled:opacity-50"
                 >
                   {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
 
-            {error && (
-              <div className="rounded-lg bg-red-500/20 border border-red-500/30 px-4 py-2.5 text-sm text-red-300">
-                {error}
+            {error && !isLockedOut && (
+              <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3.5 text-xs text-rose-300 flex items-start gap-2">
+                <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                <span>{error}</span>
               </div>
             )}
 
             <button
               type="submit"
-              disabled={loading}
-              className="mt-2 w-full rounded-lg bg-white py-3 text-sm font-bold text-ink transition hover:bg-white/90 disabled:opacity-60 cursor-pointer"
+              disabled={loading || isLockedOut}
+              className="mt-2 w-full rounded-xl bg-white py-3 text-sm font-bold text-slate-950 shadow-md transition hover:bg-slate-100 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
             >
-              {loading ? "Signing in…" : "Sign In"}
+              {loading ? "Verifying SHA-256 Hash…" : isLockedOut ? "Account Locked" : "Sign In to Dashboard"}
             </button>
           </form>
 
-          <p className="mt-6 text-center text-xs text-white/30">
-            KANISHKA GARMENTS Admin · Tirupur, India
-          </p>
+          <div className="mt-8 flex items-center justify-between border-t border-slate-800 pt-4 text-[11px] text-slate-500">
+            <span>SHA-256 Auth Active</span>
+            <span className="flex items-center gap-1 text-slate-300 font-medium">
+              <Shield className="h-3.5 w-3.5 text-slate-400" /> Rate Limited
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -232,7 +362,8 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
 // ── ADMIN DASHBOARD ────────────────────────────────────────────────────────
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [adminProducts, setAdminProducts] = useState<Product[]>([]);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "add" | "manage">("dashboard");
+  const [quotes, setQuotes] = useState<QuoteRequest[]>([]);
+  const [activeTab, setActiveTab] = useState<"dashboard" | "add" | "manage" | "quotes" | "settings">("dashboard");
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [form, setForm] = useState<NewProductForm>(EMPTY_FORM);
   const [formError, setFormError] = useState("");
@@ -240,19 +371,119 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
   const [expandedSlug, setExpandedSlug] = useState<string | null>(null);
 
+  // Search & Filter state for Manage Products & Quotes
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterCategory, setFilterCategory] = useState<string>("all");
+  const [quoteSearchTerm, setQuoteSearchTerm] = useState("");
+  const [quoteFilterStatus, setQuoteFilterStatus] = useState<string>("all");
+
+  // Exit & Logout protection state
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [exitTarget, setExitTarget] = useState<"logout" | "store" | null>(null);
+
+  const navigate = useNavigate();
+
+  const isFormDirty = Boolean(form.name.trim() || form.wholesalePrice || form.shortDescription.trim());
+
+  // Protect tab closing/refreshing when form is dirty
+  useEffect(() => {
+    if (!isFormDirty) return;
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isFormDirty]);
+
+  // Session idle timeout protection
+  useEffect(() => {
+    const settings = getRateLimitSettings();
+    if (!settings.idleTimeoutMinutes || settings.idleTimeoutMinutes <= 0) return;
+
+    let timeoutId: any;
+    const resetTimer = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        onLogout();
+      }, settings.idleTimeoutMinutes * 60 * 1000);
+    };
+
+    const events = ["mousedown", "mousemove", "keydown", "scroll", "touchstart"];
+    events.forEach((ev) => window.addEventListener(ev, resetTimer));
+    resetTimer();
+
+    return () => {
+      clearTimeout(timeoutId);
+      events.forEach((ev) => window.removeEventListener(ev, resetTimer));
+    };
+  }, [onLogout]);
+
   useEffect(() => {
     setAdminProducts(getAdminProducts());
+    setQuotes(getQuoteRequests());
   }, []);
 
-  const allProducts = [...staticProducts, ...adminProducts];
+  const triggerExit = (target: "logout" | "store") => {
+    setExitTarget(target);
+    setConfirmModalOpen(true);
+  };
+
+  const handleConfirmLogout = () => {
+    setConfirmModalOpen(false);
+    onLogout();
+  };
+
+  const handleConfirmNavigateStore = () => {
+    setConfirmModalOpen(false);
+    navigate({ to: "/" });
+  };
+
+  const allProducts = useMemo(() => [...staticProducts, ...adminProducts], [adminProducts]);
   const totalProducts = allProducts.length;
-  const totalCategories = new Set(allProducts.map((p) => p.category)).size;
+  const totalCategories = useMemo(() => new Set(allProducts.map((p) => p.category)).size, [allProducts]);
+  const readymadeCount = useMemo(() => allProducts.filter((p) => p.isReadymade !== false).length, [allProducts]);
+  const fabricCount = useMemo(() => allProducts.filter((p) => p.isReadymade === false).length, [allProducts]);
+  const pendingQuotesCount = useMemo(() => quotes.filter((q) => q.status === "Pending").length, [quotes]);
+
+  // Filtered Products for Manage tab
+  const filteredProducts = useMemo(() => {
+    return adminProducts.filter((p) => {
+      const matchesSearch =
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.categoryLabel.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.composition.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCat = filterCategory === "all" || p.category === filterCategory;
+      return matchesSearch && matchesCat;
+    });
+  }, [adminProducts, searchTerm, filterCategory]);
+
+  // Filtered Quotes for Quotes tab
+  const filteredQuotes = useMemo(() => {
+    return quotes.filter((q) => {
+      const matchesSearch =
+        q.productName.toLowerCase().includes(quoteSearchTerm.toLowerCase()) ||
+        q.email.toLowerCase().includes(quoteSearchTerm.toLowerCase()) ||
+        q.refCode.toLowerCase().includes(quoteSearchTerm.toLowerCase());
+      const matchesStatus = quoteFilterStatus === "all" || q.status === quoteFilterStatus;
+      return matchesSearch && matchesStatus;
+    });
+  }, [quotes, quoteSearchTerm, quoteFilterStatus]);
+
+  const handleStatusChange = (id: string, status: QuoteRequest["status"]) => {
+    const updated = updateQuoteStatus(id, status);
+    setQuotes(updated);
+  };
+
+  const handleDeleteQuote = (id: string) => {
+    const updated = deleteQuoteRequest(id);
+    setQuotes(updated);
+  };
 
   // ── FORM HANDLERS ────────────────────────────────────────────────────────
   const updateForm = (field: keyof NewProductForm, value: string) => {
     setForm((prev) => {
       const updated = { ...prev, [field]: value };
-      // Auto-set categoryLabel when category changes
       if (field === "category") {
         const found = categoryOptions.find((c) => c.value === value);
         updated.categoryLabel = found?.label ?? value;
@@ -281,7 +512,6 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     const slug = editingSlug ?? form.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") + "-" + Date.now();
     const colorsArr = form.colors.split(",").map((c) => c.trim()).filter(Boolean);
     const sizesArr = form.sizes ? form.sizes.split(",").map((s) => s.trim()).filter(Boolean) : undefined;
-
     const isReadymade = form.isReadymade === "readymade";
 
     const newProduct: Product = {
@@ -317,13 +547,16 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       setSuccessMsg(`✅ Product "${newProduct.name}" updated successfully!`);
     } else {
       updated = [...adminProducts, newProduct];
-      setSuccessMsg(`✅ Product "${newProduct.name}" added! It is now visible in the catalog.`);
+      setSuccessMsg(`✅ Product "${newProduct.name}" added to live catalog!`);
     }
 
     saveAdminProducts(updated);
     setAdminProducts(updated);
-    resetForm();
-    setActiveTab("manage");
+
+    setTimeout(() => {
+      resetForm();
+      setActiveTab("manage");
+    }, 1200);
   };
 
   const handleEditProduct = (product: Product) => {
@@ -362,353 +595,563 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Mobile Backdrop Overlay */}
+    <div className="flex min-h-screen bg-slate-100 font-sans text-slate-900">
+      {/* Mobile Overlay */}
       {mobileSidebarOpen && (
         <div
           onClick={() => setMobileSidebarOpen(false)}
-          className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm lg:hidden transition-opacity"
+          className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm lg:hidden transition-opacity"
         />
       )}
 
       {/* ── SIDEBAR ──────────────────────────────────────────────────────── */}
       <aside
-        className={`fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r border-border bg-ink text-brand-foreground shadow-xl transition-transform duration-300 ${
+        className={`fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-slate-800 bg-slate-950 text-slate-100 shadow-xl transition-transform duration-300 ${
           mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
-        {/* Logo */}
-        <Link
-          to="/"
-          onClick={() => setMobileSidebarOpen(false)}
-          className="flex items-center gap-3 border-b border-white/10 px-5 py-4 hover:bg-white/5 transition-colors group"
+        {/* Logo Header */}
+        <button
+          onClick={() => { triggerExit("store"); setMobileSidebarOpen(false); }}
+          className="flex items-center gap-3 border-b border-slate-800/80 px-5 py-4 hover:bg-slate-900/60 transition-colors group text-left cursor-pointer"
           title="Return to User / Store Page"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white text-ink font-display font-bold text-[11px]">KG</div>
+          <img
+            src="/favicon.svg"
+            alt="KANISHKA Logo"
+            className="h-9 w-9 rounded-xl shadow-md shrink-0 border border-slate-700 bg-black"
+          />
           <div>
-            <div className="font-display text-sm font-bold text-white group-hover:text-white">KANISHKA GARMENTS</div>
-            <div className="text-[10px] uppercase tracking-widest text-white/40 group-hover:text-white/70 flex items-center gap-1">
-              <ArrowLeft className="h-3 w-3" /> Back to User Page
+            <div className="font-display text-sm font-bold tracking-wide text-white uppercase group-hover:text-slate-200 transition-colors">
+              KANISHKA GARMENTS
+            </div>
+            <div className="text-[10px] uppercase tracking-widest text-slate-400 group-hover:text-slate-200 flex items-center gap-1 mt-0.5">
+              <ArrowLeft className="h-3 w-3" /> Back to Store
             </div>
           </div>
-        </Link>
+        </button>
 
-        {/* Nav */}
-        <nav className="flex-1 space-y-1 p-3 pt-4">
+        {/* Nav Items */}
+        <nav className="flex-1 space-y-1.5 p-3 pt-4">
           {[
             { id: "dashboard" as const, label: "Dashboard", icon: LayoutDashboard },
             { id: "add" as const, label: editingSlug ? "Edit Product" : "Add Product", icon: Plus },
-            { id: "manage" as const, label: "Manage Products", icon: Package },
-          ].map((item) => (
-            <button
-              key={item.id}
-              onClick={() => {
-                setActiveTab(item.id);
-                if (item.id !== "add") resetForm();
-                setMobileSidebarOpen(false);
-              }}
-              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors cursor-pointer ${
-                activeTab === item.id
-                  ? "bg-white/15 text-white"
-                  : "text-white/60 hover:bg-white/10 hover:text-white"
-              }`}
-            >
-              <item.icon className="h-4 w-4" />
-              {item.label}
-              {item.id === "manage" && adminProducts.length > 0 && (
-                <span className="ml-auto rounded-full bg-brand px-2 py-0.5 text-[10px] font-bold text-white">
-                  {adminProducts.length}
-                </span>
-              )}
-            </button>
-          ))}
+            { id: "manage" as const, label: "Manage Products", icon: Package, badgeCount: adminProducts.length },
+            { id: "quotes" as const, label: "Quote Requests (RFQ)", icon: MessageSquare, badgeCount: pendingQuotesCount, highlightBadge: true },
+            { id: "settings" as const, label: "Security & Access", icon: Shield },
+          ].map((item) => {
+            const isActive = activeTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setActiveTab(item.id);
+                  if (item.id !== "add") resetForm();
+                  setMobileSidebarOpen(false);
+                }}
+                className={`relative flex w-full items-center gap-3 rounded-xl px-3.5 py-3 text-xs font-semibold transition-all cursor-pointer ${
+                  isActive
+                    ? "bg-slate-800 text-white shadow-sm border-l-4 border-slate-400"
+                    : "text-slate-400 hover:bg-slate-900/60 hover:text-slate-200"
+                }`}
+              >
+                <item.icon className={`h-4 w-4 ${isActive ? "text-white" : "text-slate-400"}`} />
+                <span>{item.label}</span>
+                {Boolean(item.badgeCount && item.badgeCount > 0) && (
+                  <span className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                    item.highlightBadge
+                      ? "bg-amber-400 text-slate-950"
+                      : "bg-slate-800 border border-slate-700 text-slate-300"
+                  }`}>
+                    {item.badgeCount}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </nav>
 
-        {/* View site link */}
-        <div className="border-t border-white/10 p-3 space-y-2">
+        {/* View Site & Logout Footer */}
+        <div className="border-t border-slate-800/80 p-3 space-y-1.5">
           <a
             href="/products"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-white/50 hover:bg-white/10 hover:text-white transition-colors"
+            className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-slate-100 transition-colors"
           >
-            <Eye className="h-3.5 w-3.5" /> View Live Site
+            <Eye className="h-3.5 w-3.5" /> View Live Catalog
           </a>
           <button
-            onClick={onLogout}
-            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-white/50 hover:bg-red-500/20 hover:text-red-400 transition-colors cursor-pointer"
+            onClick={() => triggerExit("logout")}
+            className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-medium text-slate-400 hover:bg-rose-500/10 hover:text-rose-400 transition-colors cursor-pointer"
           >
             <LogOut className="h-3.5 w-3.5" /> Sign Out
           </button>
         </div>
       </aside>
 
-      {/* ── MAIN CONTENT ─────────────────────────────────────────────────── */}
-      <main className="flex-1 lg:ml-64 overflow-auto min-w-0">
-        {/* Topbar */}
-        <div className="sticky top-0 z-20 border-b border-border bg-white/90 backdrop-blur">
-          <div className="flex h-14 items-center justify-between px-4 sm:px-6">
-            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-              {/* Mobile Hamburger Menu Toggle */}
+      {/* ── MAIN CONTENT AREA ────────────────────────────────────────────── */}
+      <main className="flex-1 lg:ml-64 overflow-auto min-w-0 flex flex-col">
+        {/* Sticky Topbar */}
+        <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur-md">
+          <div className="flex h-16 items-center justify-between px-4 sm:px-6">
+            <div className="flex items-center gap-3 min-w-0">
               <button
                 onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-                className="inline-flex items-center justify-center rounded-lg border border-border p-1.5 text-ink hover:bg-gray-100 lg:hidden cursor-pointer"
+                className="inline-flex items-center justify-center rounded-xl border border-slate-200 p-2 text-slate-700 hover:bg-slate-100 lg:hidden cursor-pointer"
                 aria-label="Toggle navigation"
               >
                 <Menu className="h-4 w-4" />
               </button>
 
-              <Link
-                to="/"
-                className="inline-flex items-center gap-1 sm:gap-1.5 rounded-lg border border-border bg-gray-100 px-2.5 py-1.5 text-xs font-medium text-ink transition hover:bg-gray-200 shrink-0"
+              <button
+                onClick={() => triggerExit("store")}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 shrink-0 cursor-pointer"
                 title="Return to Storefront"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Back to Store</span>
-              </Link>
-              <h1 className="font-display text-base sm:text-lg font-bold text-ink capitalize truncate">
-                {activeTab === "add" ? (editingSlug ? "Edit Product" : "Add New Product") : activeTab}
+              </button>
+
+              <div className="h-4 w-px bg-slate-200 hidden sm:block" />
+
+              <h1 className="font-display text-sm sm:text-base font-bold text-slate-900 capitalize truncate">
+                {activeTab === "add"
+                  ? editingSlug ? "Edit Product" : "Add New Product"
+                  : activeTab === "settings"
+                    ? "Security & Rate Limit Controls"
+                    : activeTab === "manage"
+                      ? "Manage Added Products"
+                      : activeTab === "quotes"
+                        ? "Bulk Quote Requests (RFQ)"
+                        : "Overview & Analytics"}
               </h1>
             </div>
-            <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-              <div className="text-xs text-muted-foreground hidden sm:block">
-                Signed in as <span className="font-semibold text-ink">admin</span>
+
+            <div className="flex items-center gap-3 shrink-0">
+              <span className="hidden md:inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">
+                <Sparkles className="h-3.5 w-3.5 text-slate-500" /> Catalog: {totalProducts} items
+              </span>
+
+              <div className="text-xs text-slate-500 hidden sm:block">
+                Signed in as <span className="font-bold text-slate-800">admin</span>
               </div>
+
               <button
-                onClick={onLogout}
-                className="inline-flex items-center gap-1 sm:gap-1.5 rounded-lg border border-red-200 bg-red-50 px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-100 hover:text-red-700 cursor-pointer"
+                onClick={() => triggerExit("logout")}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-600 transition hover:bg-rose-100 cursor-pointer"
               >
                 <LogOut className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Sign Out</span>
               </button>
             </div>
           </div>
-        </div>
+        </header>
 
-        <div className="p-4 sm:p-6">
+        {/* Modal Alert */}
+        <ConfirmExitModal
+          isOpen={confirmModalOpen}
+          isFormDirty={isFormDirty}
+          target={exitTarget}
+          onCancel={() => setConfirmModalOpen(false)}
+          onConfirmLogout={handleConfirmLogout}
+          onConfirmNavigateStore={handleConfirmNavigateStore}
+        />
+
+        {/* Page Content */}
+        <div className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6">
           {/* ── DASHBOARD TAB ────────────────────────────────────────────── */}
           {activeTab === "dashboard" && (
             <div className="space-y-6">
-              {/* Stat cards */}
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {[
-                  { label: "Total Products", value: totalProducts, icon: ShoppingBag, color: "#3b6fa0" },
-                  { label: "Admin Added", value: adminProducts.length, icon: Plus, color: "#10b981" },
-                  { label: "Static Products", value: staticProducts.length, icon: Package, color: "#f59e0b" },
-                  { label: "Categories", value: totalCategories, icon: Users, color: "#8b5cf6" },
-                ].map((stat) => (
-                  <div key={stat.label} className="rounded-xl border border-border bg-white p-5 shadow-sm">
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm font-medium text-muted-foreground">{stat.label}</div>
-                      <div className="rounded-lg p-2" style={{ backgroundColor: stat.color + "18" }}>
-                        <stat.icon className="h-4 w-4" style={{ color: stat.color }} />
-                      </div>
-                    </div>
-                    <div className="mt-2 font-display text-3xl font-bold text-ink">{stat.value}</div>
-                  </div>
-                ))}
+              {/* Header Banner */}
+              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 sm:p-8 text-white shadow-md space-y-2">
+                <div className="inline-flex items-center gap-2 rounded-full bg-slate-800 border border-slate-700 px-3 py-1 text-xs font-semibold text-slate-300">
+                  <Sparkles className="h-3.5 w-3.5 text-slate-400" /> KANISHKA GARMENTS Admin Portal
+                </div>
+                <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-white">
+                  Welcome to Catalog Operations
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-400 max-w-2xl leading-relaxed">
+                  Manage products, monitor bulk quote inquiries, configure security rate limiting, and update inventory details in real time.
+                </p>
               </div>
 
-              {/* Quick actions */}
-              <div className="rounded-xl border border-border bg-white p-6 shadow-sm">
-                <h2 className="font-display text-base font-bold text-ink mb-4">Quick Actions</h2>
-                <div className="flex flex-wrap gap-3">
-                  <Button onClick={() => setActiveTab("add")} className="gap-2">
-                    <Plus className="h-4 w-4" /> Add New Product
-                  </Button>
-                  <Button onClick={() => setActiveTab("manage")} variant="outline" className="gap-2">
-                    <Package className="h-4 w-4" /> Manage Products ({adminProducts.length})
-                  </Button>
-                  <Button asChild variant="outline" className="gap-2">
-                    <a href="/products" target="_blank" rel="noopener noreferrer">
-                      <Eye className="h-4 w-4" /> View Catalog
-                    </a>
+              {/* KPI Cards */}
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <StatCard
+                  title="Total Products"
+                  value={totalProducts}
+                  badge={`${adminProducts.length} added by admin`}
+                  icon={Package}
+                />
+                <StatCard
+                  title="Active Categories"
+                  value={totalCategories}
+                  badge="Gents, Ladies, Fabric..."
+                  icon={Layers}
+                />
+                <StatCard
+                  title="Readymade Apparel"
+                  value={readymadeCount}
+                  badge="Garments & Wear"
+                  icon={ShoppingBag}
+                />
+                <StatCard
+                  title="Bulk Quote Requests"
+                  value={quotes.length}
+                  badge={`${pendingQuotesCount} pending responses`}
+                  icon={MessageSquare}
+                  highlight={pendingQuotesCount > 0}
+                />
+              </div>
+
+              {/* Quick Actions Grid */}
+              <div className="grid gap-4 sm:grid-cols-3">
+                <button
+                  onClick={() => { resetForm(); setActiveTab("add"); }}
+                  className="rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm hover:shadow-md hover:border-slate-400 transition-all group cursor-pointer"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-800 group-hover:bg-slate-900 group-hover:text-white transition-colors mb-3">
+                    <Plus className="h-5 w-5" />
+                  </div>
+                  <div className="font-display text-sm font-bold text-slate-900">Add New Product</div>
+                  <p className="text-xs text-slate-500 mt-1">Publish new readymade garments or raw knitted fabrics to the catalog.</p>
+                </button>
+
+                <button
+                  onClick={() => setActiveTab("quotes")}
+                  className="rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm hover:shadow-md hover:border-slate-400 transition-all group cursor-pointer"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-800 group-hover:bg-slate-900 group-hover:text-white transition-colors mb-3">
+                    <MessageSquare className="h-5 w-5" />
+                  </div>
+                  <div className="font-display text-sm font-bold text-slate-900">Bulk Quote Inquiries ({quotes.length})</div>
+                  <p className="text-xs text-slate-500 mt-1">View and respond to RFQs submitted by buyers on product pages.</p>
+                </button>
+
+                <button
+                  onClick={() => setActiveTab("settings")}
+                  className="rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm hover:shadow-md hover:border-slate-400 transition-all group cursor-pointer"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-800 group-hover:bg-slate-900 group-hover:text-white transition-colors mb-3">
+                    <Shield className="h-5 w-5" />
+                  </div>
+                  <div className="font-display text-sm font-bold text-slate-900">Security Controls</div>
+                  <p className="text-xs text-slate-500 mt-1">Set rate limit thresholds, lockout timers, and update SHA-256 password.</p>
+                </button>
+              </div>
+
+              {/* Recent Added Products Preview */}
+              <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                <div className="border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+                  <div>
+                    <h3 className="font-display text-sm font-bold text-slate-900">Admin Added Products</h3>
+                    <p className="text-xs text-slate-500">Products created by admin and live in catalog</p>
+                  </div>
+                  <Button onClick={() => setActiveTab("manage")} variant="outline" size="sm" className="text-xs">
+                    View All
                   </Button>
                 </div>
-              </div>
 
-              {/* Recent admin products */}
-              {adminProducts.length > 0 && (
-                <div className="rounded-xl border border-border bg-white shadow-sm">
-                  <div className="border-b border-border px-6 py-4">
-                    <h2 className="font-display text-base font-bold text-ink">Recently Added by Admin</h2>
+                {adminProducts.length === 0 ? (
+                  <div className="p-12 text-center text-slate-400">
+                    <Package className="mx-auto h-10 w-10 text-slate-300 mb-2" />
+                    <p className="text-xs font-medium text-slate-600">No admin-added products yet</p>
+                    <p className="text-xs text-slate-400 mt-1">Click "Add New Product" to publish your first item.</p>
                   </div>
-                  <div className="divide-y divide-border">
-                    {adminProducts.slice(-5).reverse().map((p) => (
-                      <div key={p.slug} className="flex items-center justify-between px-6 py-3">
-                        <div>
-                          <div className="text-sm font-semibold text-ink">{p.name}</div>
-                          <div className="text-xs text-muted-foreground">{p.categoryLabel} · MOQ {p.moq} {p.unit}s</div>
+                ) : (
+                  <div className="divide-y divide-slate-100">
+                    {adminProducts.slice(0, 5).map((p) => (
+                      <div key={p.slug} className="flex items-center justify-between px-6 py-3.5 hover:bg-slate-50/80 transition-colors">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <img
+                            src={p.image.startsWith("http") ? p.image : "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=80&q=60"}
+                            alt=""
+                            className="h-10 w-10 rounded-lg object-cover border border-slate-200 shrink-0"
+                            onError={(e) => (e.currentTarget.src = "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=80&q=60")}
+                          />
+                          <div className="min-w-0">
+                            <div className="truncate font-semibold text-slate-900 text-xs sm:text-sm">{p.name}</div>
+                            <div className="text-[11px] text-slate-500">{p.categoryLabel}</div>
+                          </div>
                         </div>
-                        <div className="font-display text-sm font-bold text-ink">{formatINR(p.wholesalePrice)}/{p.unit}</div>
+                        <div className="text-right">
+                          <div className="text-xs font-bold text-slate-900">{formatINR(p.wholesalePrice)}/{p.unit}</div>
+                          <div className="text-[11px] text-slate-400">MOQ: {p.moq}</div>
+                        </div>
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
-
-              {adminProducts.length === 0 && (
-                <div className="rounded-xl border border-dashed border-border bg-white p-12 text-center">
-                  <TrendingUp className="mx-auto h-10 w-10 text-muted-foreground/40 mb-3" />
-                  <p className="font-semibold text-ink">No products added yet</p>
-                  <p className="text-sm text-muted-foreground mt-1">Use "Add Product" to add your first product — it'll appear live on the site immediately.</p>
-                  <Button className="mt-4" onClick={() => setActiveTab("add")}>
-                    <Plus className="mr-2 h-4 w-4" /> Add First Product
-                  </Button>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           )}
 
           {/* ── ADD / EDIT PRODUCT TAB ────────────────────────────────────── */}
           {activeTab === "add" && (
-            <div className="max-w-2xl space-y-6">
-              {successMsg && (
-                <div className="rounded-xl border border-green-200 bg-green-50 px-5 py-3 text-sm font-medium text-green-800 flex items-center justify-between">
-                  {successMsg}
-                  <button onClick={() => setSuccessMsg("")}><X className="h-4 w-4" /></button>
+            <div className="space-y-6 pb-20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="font-display text-xl font-bold text-slate-900">
+                    {editingSlug ? `Editing Product: ${form.name}` : "Publish New Product"}
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Fill in details matching the storefront catalog layout.
+                  </p>
                 </div>
-              )}
+                {editingSlug && (
+                  <Button onClick={resetForm} variant="outline" size="sm" className="gap-1 text-xs">
+                    <RotateCcw className="h-3.5 w-3.5" /> Cancel Edit Mode
+                  </Button>
+                )}
+              </div>
+
               {formError && (
-                <div className="rounded-xl border border-red-200 bg-red-50 px-5 py-3 text-sm font-medium text-red-800 flex items-center justify-between">
-                  {formError}
-                  <button onClick={() => setFormError("")}><X className="h-4 w-4" /></button>
+                <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs font-medium text-rose-700 flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 shrink-0" />
+                  <span>{formError}</span>
                 </div>
               )}
 
-              <div className="rounded-xl border border-border bg-white p-6 shadow-sm space-y-5">
-                <h2 className="font-display font-bold text-ink text-base">1. Classification & Catalog Filters (Matches /products page)</h2>
+              {successMsg && (
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-xs font-semibold text-emerald-800 flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 shrink-0" />
+                  <span>{successMsg}</span>
+                </div>
+              )}
 
-                <FormField label="Product Name *">
-                  <input id="prod-name" value={form.name} onChange={(e) => updateForm("name", e.target.value)} placeholder="e.g. Basic Round-Neck T-Shirt" className={inputCls} required />
-                </FormField>
-
+              {/* Form Section 1 */}
+              <FormSection step="1" title="Basic Product Identity">
                 <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField label="Product Name *">
+                    <input
+                      id="prod-name"
+                      value={form.name}
+                      onChange={(e) => updateForm("name", e.target.value)}
+                      placeholder="e.g. Premium Bio-Washed Heavyweight Oversized Tee"
+                      className={inputCls}
+                      required
+                    />
+                  </FormField>
+
                   <FormField label="Category *">
-                    <select id="prod-category" value={form.category} onChange={(e) => updateForm("category", e.target.value)} className={inputCls}>
+                    <select
+                      id="prod-category"
+                      value={form.category}
+                      onChange={(e) => updateForm("category", e.target.value as Product["category"])}
+                      className={inputCls}
+                    >
                       {categoryOptions.map((c) => (
                         <option key={c.value} value={c.value}>{c.label}</option>
                       ))}
                     </select>
                   </FormField>
+                </div>
 
-                  <FormField label="Garment Type *">
-                    <select id="prod-isreadymade" value={form.isReadymade} onChange={(e) => updateForm("isReadymade", e.target.value)} className={inputCls}>
-                      <option value="readymade">Readymade Apparel</option>
-                      <option value="fabric">Raw Fabrics & Knits</option>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField label="Sub-type / Garment Style (optional)">
+                    <input
+                      id="prod-subtype"
+                      value={form.subType}
+                      onChange={(e) => updateForm("subType", e.target.value)}
+                      placeholder="e.g. t-shirt, hoodie, trackpants, single-jersey"
+                      className={inputCls}
+                    />
+                  </FormField>
+
+                  <FormField label="Product Type *">
+                    <select
+                      id="prod-readymade"
+                      value={form.isReadymade}
+                      onChange={(e) => updateForm("isReadymade", e.target.value)}
+                      className={inputCls}
+                    >
+                      <option value="readymade">Readymade Apparel / Garment</option>
+                      <option value="fabric">Raw Knitted Fabric Roll</option>
                     </select>
                   </FormField>
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <FormField label="Sub-Category / Style (optional)">
-                    <input id="prod-subtype" value={form.subType} onChange={(e) => updateForm("subType", e.target.value)} placeholder="e.g. t-shirt, polo, hoodie, jogger, leggings" className={inputCls} />
-                  </FormField>
-
-                  <FormField label="Badge (optional)">
-                    <input id="prod-badge" value={form.badge} onChange={(e) => updateForm("badge", e.target.value)} placeholder="e.g. BESTSELLER, TRENDING, HIGH DEMAND" className={inputCls} />
-                  </FormField>
-                </div>
-              </div>
-
-              <div className="rounded-xl border border-border bg-white p-6 shadow-sm space-y-5">
-                <h2 className="font-display font-bold text-ink text-base">2. Product Media & Description</h2>
-
-                <FormField label="Product Image URL">
-                  <input id="prod-image" type="url" value={form.imageUrl} onChange={(e) => updateForm("imageUrl", e.target.value)} placeholder="https://example.com/image.jpg (leave blank for default placeholder)" className={inputCls} />
-                  {form.imageUrl && (
-                    <img src={form.imageUrl} alt="Preview" className="mt-2 h-24 w-24 rounded-lg object-cover border border-border" onError={(e) => (e.currentTarget.style.display = "none")} />
-                  )}
+                <FormField label="Short Description *">
+                  <input
+                    id="prod-shortdesc"
+                    value={form.shortDescription}
+                    onChange={(e) => updateForm("shortDescription", e.target.value)}
+                    placeholder="e.g. Heavyweight 240 GSM combed cotton oversized fit with drop shoulders."
+                    className={inputCls}
+                    required
+                  />
                 </FormField>
 
-                <FormField label="Short Summary / Card Description *">
-                  <input id="prod-short-desc" value={form.shortDescription} onChange={(e) => updateForm("shortDescription", e.target.value)} placeholder="One-line summary for product cards & lookbook grid" className={inputCls} />
+                <FormField label="Full Editorial Description (optional)">
+                  <textarea
+                    id="prod-description"
+                    rows={3}
+                    value={form.description}
+                    onChange={(e) => updateForm("description", e.target.value)}
+                    placeholder="Detailed specifications, styling notes, packaging details..."
+                    className={inputCls}
+                  />
                 </FormField>
 
-                <FormField label="Full Product Description">
-                  <textarea id="prod-desc" value={form.description} onChange={(e) => updateForm("description", e.target.value)} placeholder="Detailed product description for buyer spec sheet" rows={3} className={inputCls} />
+                <FormField label="Image URL (Unsplash or Image Link)">
+                  <input
+                    id="prod-image"
+                    value={form.imageUrl}
+                    onChange={(e) => updateForm("imageUrl", e.target.value)}
+                    placeholder="https://images.unsplash.com/photo-..."
+                    className={inputCls}
+                  />
                 </FormField>
-              </div>
+              </FormSection>
 
-              <div className="rounded-xl border border-border bg-white p-6 shadow-sm space-y-5">
-                <h2 className="font-display font-bold text-ink text-base">3. Wholesale Pricing & MOQ</h2>
-
+              {/* Form Section 2 */}
+              <FormSection step="2" title="Commercial Wholesale Pricing & MOQ">
                 <div className="grid gap-4 sm:grid-cols-3">
                   <FormField label="Wholesale Price (₹) *">
-                    <input id="prod-price" type="number" min="0" value={form.wholesalePrice} onChange={(e) => updateForm("wholesalePrice", e.target.value)} placeholder="e.g. 130" className={inputCls} />
+                    <input
+                      id="prod-price"
+                      type="number"
+                      value={form.wholesalePrice}
+                      onChange={(e) => updateForm("wholesalePrice", e.target.value)}
+                      placeholder="e.g. 280"
+                      className={inputCls}
+                      required
+                    />
                   </FormField>
-                  <FormField label="Unit *">
-                    <select id="prod-unit" value={form.unit} onChange={(e) => updateForm("unit", e.target.value)} className={inputCls}>
-                      {["piece", "set", "kg", "meter", "dozen"].map((u) => (
-                        <option key={u} value={u}>{u}</option>
-                      ))}
+
+                  <FormField label="Price Unit *">
+                    <select
+                      id="prod-unit"
+                      value={form.unit}
+                      onChange={(e) => updateForm("unit", e.target.value)}
+                      className={inputCls}
+                    >
+                      <option value="piece">piece</option>
+                      <option value="kg">kg</option>
+                      <option value="meter">meter</option>
+                      <option value="set">set</option>
+                      <option value="pair">pair</option>
                     </select>
                   </FormField>
-                  <FormField label="MOQ *">
-                    <input id="prod-moq" type="number" min="1" value={form.moq} onChange={(e) => updateForm("moq", e.target.value)} placeholder="e.g. 100" className={inputCls} />
+
+                  <FormField label="Minimum Order Quantity (MOQ) *">
+                    <input
+                      id="prod-moq"
+                      type="number"
+                      value={form.moq}
+                      onChange={(e) => updateForm("moq", e.target.value)}
+                      placeholder="e.g. 100"
+                      className={inputCls}
+                      required
+                    />
                   </FormField>
                 </div>
-              </div>
+              </FormSection>
 
-              <div className="rounded-xl border border-border bg-white p-6 shadow-sm space-y-5">
-                <h2 className="font-display font-bold text-ink text-base">4. Fabric Specifications & Technical Details</h2>
-
+              {/* Form Section 3 */}
+              <FormSection step="3" title="Textile & Quality Specifications">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <FormField label="Composition *">
-                    <input id="prod-comp" value={form.composition} onChange={(e) => updateForm("composition", e.target.value)} placeholder="e.g. 100% Combed Cotton" className={inputCls} />
+                    <input
+                      id="prod-composition"
+                      value={form.composition}
+                      onChange={(e) => updateForm("composition", e.target.value)}
+                      placeholder="e.g. 100% Super Combed Cotton"
+                      className={inputCls}
+                      required
+                    />
                   </FormField>
-                  <FormField label="GSM (optional)">
-                    <input id="prod-gsm" value={form.gsm} onChange={(e) => updateForm("gsm", e.target.value)} placeholder="e.g. 180 GSM" className={inputCls} />
+
+                  <FormField label="GSM / Fabric Weight (optional)">
+                    <input
+                      id="prod-gsm"
+                      value={form.gsm}
+                      onChange={(e) => updateForm("gsm", e.target.value)}
+                      placeholder="e.g. 240 GSM"
+                      className={inputCls}
+                    />
                   </FormField>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <FormField label="Yarn Count (optional)">
-                    <input id="prod-yarn" value={form.yarnCount} onChange={(e) => updateForm("yarnCount", e.target.value)} placeholder="e.g. 30s Super Combed Yarn" className={inputCls} />
+                    <input
+                      id="prod-yarn"
+                      value={form.yarnCount}
+                      onChange={(e) => updateForm("yarnCount", e.target.value)}
+                      placeholder="e.g. 24s Combed Compact"
+                      className={inputCls}
+                    />
                   </FormField>
+
                   <FormField label="Dyeing & Finishing (optional)">
-                    <input id="prod-dyeing" value={form.dyeingFinishing} onChange={(e) => updateForm("dyeingFinishing", e.target.value)} placeholder="e.g. Bio-washed, Silicon-washed" className={inputCls} />
+                    <input
+                      id="prod-dyeing"
+                      value={form.dyeingFinishing}
+                      onChange={(e) => updateForm("dyeingFinishing", e.target.value)}
+                      placeholder="e.g. Bio-washed, Silicon-softened"
+                      className={inputCls}
+                    />
                   </FormField>
                 </div>
+              </FormSection>
 
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <FormField label="Printing Compatibility (optional)">
-                    <input id="prod-printing" value={form.printingCompatibility} onChange={(e) => updateForm("printingCompatibility", e.target.value)} placeholder="e.g. Screen Print, DTG, Puff Print, Embroidery" className={inputCls} />
-                  </FormField>
-                  <FormField label="Quality Standard (optional)">
-                    <input id="prod-quality" value={form.qualityParameters} onChange={(e) => updateForm("qualityParameters", e.target.value)} placeholder="e.g. Pre-shrunk (Under 3%), ISO Grade 4+" className={inputCls} />
-                  </FormField>
-                </div>
-              </div>
-
-              <div className="rounded-xl border border-border bg-white p-6 shadow-sm space-y-5">
-                <h2 className="font-display font-bold text-ink text-base">5. Variants, Commercials & Vendors</h2>
-
+              {/* Form Section 4 */}
+              <FormSection step="4" title="Variants, Mill Vendors & Badges">
                 <FormField label="Colors (comma-separated)">
-                  <input id="prod-colors" value={form.colors} onChange={(e) => updateForm("colors", e.target.value)} placeholder="e.g. Black, White, Navy Blue, Olive Green" className={inputCls} />
+                  <input
+                    id="prod-colors"
+                    value={form.colors}
+                    onChange={(e) => updateForm("colors", e.target.value)}
+                    placeholder="e.g. Black, White, Charcoal, Sage Green"
+                    className={inputCls}
+                  />
                 </FormField>
 
                 <FormField label="Sizes (comma-separated, optional)">
-                  <input id="prod-sizes" value={form.sizes} onChange={(e) => updateForm("sizes", e.target.value)} placeholder="e.g. S, M, L, XL, 2XL" className={inputCls} />
+                  <input
+                    id="prod-sizes"
+                    value={form.sizes}
+                    onChange={(e) => updateForm("sizes", e.target.value)}
+                    placeholder="e.g. S, M, L, XL, 2XL"
+                    className={inputCls}
+                  />
                 </FormField>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <FormField label="Production Lead Time">
-                    <input id="prod-lead" value={form.leadTime} onChange={(e) => updateForm("leadTime", e.target.value)} placeholder="e.g. Sampling: 3–5 days | Bulk: 12–15 days" className={inputCls} />
+                    <input
+                      id="prod-lead"
+                      value={form.leadTime}
+                      onChange={(e) => updateForm("leadTime", e.target.value)}
+                      placeholder="e.g. 7–14 days"
+                      className={inputCls}
+                    />
                   </FormField>
-                  <FormField label="Primary Mill Vendors (optional)">
-                    <input id="prod-vendors" value={form.vendors} onChange={(e) => updateForm("vendors", e.target.value)} placeholder="e.g. Tirupur Knitwears Exports" className={inputCls} />
+
+                  <FormField label="Badge Label (optional)">
+                    <input
+                      id="prod-badge"
+                      value={form.badge}
+                      onChange={(e) => updateForm("badge", e.target.value)}
+                      placeholder="e.g. Best Seller, Private Label Ready"
+                      className={inputCls}
+                    />
                   </FormField>
                 </div>
-              </div>
+              </FormSection>
 
-              <div className="flex gap-3">
-                <Button onClick={handleSaveProduct} className="flex-1 gap-2" size="lg">
-                  <Save className="h-4 w-4" />
-                  {editingSlug ? "Update Product" : "Add Product to Catalog"}
-                </Button>
-                <Button onClick={resetForm} variant="outline" size="lg">
-                  Cancel
-                </Button>
+              {/* Sticky Bottom Action Bar */}
+              <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-slate-200 bg-white/90 backdrop-blur-md p-4 lg:pl-72 shadow-lg">
+                <div className="max-w-4xl mx-auto flex items-center justify-end gap-3">
+                  <Button onClick={resetForm} variant="outline" size="lg" className="text-xs">
+                    Cancel
+                  </Button>
+                  <Button onClick={handleSaveProduct} size="lg" className="gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs">
+                    <Save className="h-4 w-4" />
+                    {editingSlug ? "Save Product Changes" : "Publish Product to Catalog"}
+                  </Button>
+                </div>
               </div>
             </div>
           )}
@@ -716,68 +1159,102 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
           {/* ── MANAGE PRODUCTS TAB ──────────────────────────────────────── */}
           {activeTab === "manage" && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">
-                  {adminProducts.length === 0
-                    ? "No products added yet via admin."
-                    : `${adminProducts.length} product${adminProducts.length > 1 ? "s" : ""} added by admin. All are live in the catalog.`}
-                </p>
-                <Button onClick={() => { resetForm(); setActiveTab("add"); }} size="sm" className="gap-1">
-                  <Plus className="h-3.5 w-3.5" /> Add Product
-                </Button>
+              {/* Search & Category Filter Header */}
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between gap-4">
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search added products by name or composition..."
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-2.5 text-xs text-slate-900 outline-none transition focus:border-slate-500 focus:bg-white"
+                  />
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                    <Filter className="h-3.5 w-3.5" />
+                    <span>Category:</span>
+                  </div>
+                  <select
+                    value={filterCategory}
+                    onChange={(e) => setFilterCategory(e.target.value)}
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 outline-none focus:border-slate-500"
+                  >
+                    <option value="all">All Categories</option>
+                    {categoryOptions.map((c) => (
+                      <option key={c.value} value={c.value}>{c.label}</option>
+                    ))}
+                  </select>
+
+                  <Button onClick={() => { resetForm(); setActiveTab("add"); }} size="sm" className="gap-1 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shrink-0">
+                    <Plus className="h-3.5 w-3.5" /> Add Product
+                  </Button>
+                </div>
               </div>
 
-              {adminProducts.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-border bg-white p-16 text-center">
-                  <Package className="mx-auto h-10 w-10 text-muted-foreground/40 mb-3" />
-                  <p className="font-semibold text-ink">No admin products yet</p>
-                  <p className="text-sm text-muted-foreground mt-1">Products you add will appear here and instantly on the live site.</p>
+              {/* Product Table */}
+              {filteredProducts.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-16 text-center">
+                  <Package className="mx-auto h-10 w-10 text-slate-300 mb-3" />
+                  <p className="font-semibold text-slate-800 text-sm">No products found</p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {adminProducts.length === 0
+                      ? "No products added yet via admin."
+                      : "Try adjusting your search query or category filter."}
+                  </p>
                 </div>
               ) : (
-                <div className="rounded-xl border border-border bg-white shadow-sm overflow-hidden">
-                  <div className="hidden sm:grid sm:grid-cols-[1fr_auto_auto_auto] gap-3 border-b border-border bg-gray-50 px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                    <div>Product</div>
-                    <div>Price</div>
+                <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                  <div className="hidden sm:grid sm:grid-cols-[1fr_auto_auto_auto] gap-4 border-b border-slate-100 bg-slate-50/80 px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    <div>Product Name & Details</div>
+                    <div>Wholesale Price</div>
                     <div>MOQ</div>
                     <div>Actions</div>
                   </div>
-                  <div className="divide-y divide-border">
-                    {adminProducts.map((p) => (
+
+                  <div className="divide-y divide-slate-100">
+                    {filteredProducts.map((p) => (
                       <div key={p.slug}>
-                        <div className="flex flex-col sm:grid sm:grid-cols-[1fr_auto_auto_auto] sm:items-center gap-3 px-4 sm:px-5 py-4">
+                        <div className="flex flex-col sm:grid sm:grid-cols-[1fr_auto_auto_auto] sm:items-center gap-4 px-4 sm:px-6 py-4 hover:bg-slate-50/60 transition-colors">
                           <div className="flex items-center gap-3 min-w-0">
                             <img
                               src={p.image.startsWith("http") ? p.image : "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=80&q=60"}
                               alt=""
-                              className="h-10 w-10 flex-shrink-0 rounded-lg object-cover border border-border"
+                              className="h-11 w-11 shrink-0 rounded-xl object-cover border border-slate-200"
                               onError={(e) => (e.currentTarget.src = "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=80&q=60")}
                             />
                             <div className="min-w-0">
-                              <div className="truncate font-semibold text-ink text-sm">{p.name}</div>
-                              <div className="text-[11px] text-muted-foreground">{p.categoryLabel}{p.badge ? ` · ${p.badge}` : ""}</div>
+                              <div className="truncate font-semibold text-slate-900 text-xs sm:text-sm">{p.name}</div>
+                              <div className="text-[11px] text-slate-500 flex items-center gap-1.5 mt-0.5">
+                                <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-700">{p.categoryLabel}</span>
+                                {p.badge && <span className="text-slate-700 font-semibold">· {p.badge}</span>}
+                              </div>
                             </div>
                           </div>
-                          <div className="flex items-center justify-between sm:justify-end gap-3 text-xs sm:text-sm">
-                            <div className="font-bold text-ink sm:whitespace-nowrap">{formatINR(p.wholesalePrice)}/{p.unit}</div>
-                            <div className="text-muted-foreground sm:whitespace-nowrap">MOQ {p.moq} {p.unit}s</div>
+
+                          <div className="flex items-center justify-between sm:justify-end gap-4 text-xs sm:text-sm">
+                            <div className="font-bold text-slate-900 sm:whitespace-nowrap">{formatINR(p.wholesalePrice)}/{p.unit}</div>
+                            <div className="text-slate-500 sm:whitespace-nowrap">MOQ {p.moq} {p.unit}s</div>
                             <div className="flex items-center gap-1">
                               <button
                                 onClick={() => setExpandedSlug(expandedSlug === p.slug ? null : p.slug)}
-                                className="rounded-md p-1.5 text-muted-foreground hover:bg-gray-100 hover:text-ink transition-colors cursor-pointer"
+                                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors cursor-pointer"
                                 title="Details"
                               >
                                 {expandedSlug === p.slug ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                               </button>
                               <button
                                 onClick={() => handleEditProduct(p)}
-                                className="rounded-md p-1.5 text-blue-500 hover:bg-blue-50 transition-colors cursor-pointer"
+                                className="rounded-lg p-1.5 text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
                                 title="Edit"
                               >
                                 <Edit2 className="h-4 w-4" />
                               </button>
                               <button
                                 onClick={() => handleDeleteProduct(p.slug)}
-                                className="rounded-md p-1.5 text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
+                                className="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50 transition-colors cursor-pointer"
                                 title="Delete"
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -786,21 +1263,20 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                           </div>
                         </div>
 
-                        {/* Expanded row */}
                         {expandedSlug === p.slug && (
-                          <div className="border-t border-border bg-gray-50 px-4 sm:px-5 py-4 text-xs sm:text-sm text-muted-foreground space-y-1">
-                            <p><span className="font-medium text-ink">Description:</span> {p.shortDescription}</p>
-                            <p><span className="font-medium text-ink">Colors:</span> {p.colors.join(", ")}</p>
-                            {p.sizes && <p><span className="font-medium text-ink">Sizes:</span> {p.sizes.join(", ")}</p>}
-                            <p><span className="font-medium text-ink">Composition:</span> {p.composition}</p>
-                            <p><span className="font-medium text-ink">Lead Time:</span> {p.leadTime}</p>
+                          <div className="border-t border-slate-100 bg-slate-50/80 px-4 sm:px-6 py-4 text-xs text-slate-600 space-y-1.5">
+                            <p><span className="font-semibold text-slate-900">Short Description:</span> {p.shortDescription}</p>
+                            <p><span className="font-semibold text-slate-900">Composition:</span> {p.composition}</p>
+                            <p><span className="font-semibold text-slate-900">Colors:</span> {p.colors.join(", ")}</p>
+                            {p.sizes && <p><span className="font-semibold text-slate-900">Sizes:</span> {p.sizes.join(", ")}</p>}
+                            <p><span className="font-semibold text-slate-900">Lead Time:</span> {p.leadTime}</p>
                             <a
                               href={`/products/${p.slug}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 mt-2 text-brand hover:underline"
+                              className="inline-flex items-center gap-1 mt-2 text-slate-800 font-semibold hover:underline"
                             >
-                              <Eye className="h-3.5 w-3.5" /> View on site
+                              <Eye className="h-3.5 w-3.5" /> View live detail page
                             </a>
                           </div>
                         )}
@@ -809,44 +1285,466 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                   </div>
                 </div>
               )}
+            </div>
+          )}
 
-              {/* Also show static products (read-only) */}
-              <div className="rounded-xl border border-border bg-white shadow-sm overflow-hidden mt-6">
-                <div className="border-b border-border px-5 py-3 flex items-center justify-between">
-                  <h3 className="font-display text-sm font-bold text-ink">Static (Built-in) Products</h3>
-                  <span className="text-xs text-muted-foreground">{staticProducts.length} products · read-only</span>
+          {/* ── BULK QUOTES (RFQ) TAB ────────────────────────────────────────── */}
+          {activeTab === "quotes" && (
+            <div className="space-y-4">
+              {/* Filter Header */}
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between gap-4">
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <input
+                    type="text"
+                    value={quoteSearchTerm}
+                    onChange={(e) => setQuoteSearchTerm(e.target.value)}
+                    placeholder="Search by customer email, product name, or ref code..."
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-2.5 text-xs text-slate-900 outline-none transition focus:border-slate-500 focus:bg-white"
+                  />
                 </div>
-                <div className="divide-y divide-border max-h-64 overflow-y-auto">
-                  {staticProducts.map((p) => (
-                    <div key={p.slug} className="flex items-center justify-between px-5 py-3">
-                      <div>
-                        <div className="text-sm font-medium text-ink">{p.name}</div>
-                        <div className="text-[11px] text-muted-foreground">{p.categoryLabel}</div>
+
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                    <Filter className="h-3.5 w-3.5" />
+                    <span>Status:</span>
+                  </div>
+                  <select
+                    value={quoteFilterStatus}
+                    onChange={(e) => setQuoteFilterStatus(e.target.value)}
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 outline-none focus:border-slate-500"
+                  >
+                    <option value="all">All Statuses</option>
+                    <option value="Pending">Pending ({quotes.filter((q) => q.status === "Pending").length})</option>
+                    <option value="Contacted">Contacted ({quotes.filter((q) => q.status === "Contacted").length})</option>
+                    <option value="Fulfilled">Fulfilled ({quotes.filter((q) => q.status === "Fulfilled").length})</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Quotes Table */}
+              {filteredQuotes.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-16 text-center">
+                  <MessageSquare className="mx-auto h-10 w-10 text-slate-300 mb-3" />
+                  <p className="font-semibold text-slate-800 text-sm">No quote requests found</p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {quotes.length === 0
+                      ? "When buyers submit RFQ forms on product pages, their requests will be stored and listed here."
+                      : "No quotes match your current filter or search criteria."}
+                  </p>
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden divide-y divide-slate-100">
+                  {filteredQuotes.map((q) => (
+                    <div key={q.id} className="p-4 sm:p-6 hover:bg-slate-50/60 transition-colors space-y-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-mono text-xs font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                              #{q.refCode}
+                            </span>
+                            <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${
+                              q.status === "Pending"
+                                ? "bg-amber-100 text-amber-800 border border-amber-200"
+                                : q.status === "Contacted"
+                                  ? "bg-blue-100 text-blue-800 border border-blue-200"
+                                  : "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                            }`}>
+                              {q.status}
+                            </span>
+                            <span className="text-xs text-slate-400">
+                              {new Date(q.createdAt).toLocaleDateString()} at {new Date(q.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+
+                          <h4 className="font-bold text-slate-900 text-sm">{q.productName}</h4>
+                          <p className="text-xs text-slate-600">
+                            Buyer Email: <a href={`mailto:${q.email}`} className="font-semibold text-slate-900 hover:underline">{q.email}</a>
+                            {q.phone && <span> · Phone: <strong className="text-slate-900">{q.phone}</strong></span>}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-3 shrink-0">
+                          <div className="text-right text-xs">
+                            <div className="font-bold text-slate-900">Qty: {q.quantity}</div>
+                            <div className="text-slate-500">Destination: {q.destination}</div>
+                          </div>
+
+                          <select
+                            value={q.status}
+                            onChange={(e) => handleStatusChange(q.id, e.target.value as QuoteRequest["status"])}
+                            className="rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-900 outline-none focus:border-slate-500 cursor-pointer"
+                          >
+                            <option value="Pending">Pending</option>
+                            <option value="Contacted">Contacted</option>
+                            <option value="Fulfilled">Fulfilled</option>
+                          </select>
+
+                          <button
+                            onClick={() => handleDeleteQuote(q.id)}
+                            className="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50 transition-colors cursor-pointer"
+                            title="Delete Quote"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
                       </div>
-                      <div className="text-sm text-muted-foreground">{formatINR(p.wholesalePrice)}/{p.unit}</div>
+
+                      {(q.notes || q.deliveryDate || q.fileName) && (
+                        <div className="mt-3 pt-3 border-t border-slate-100 text-xs text-slate-600 bg-slate-50 p-3 rounded-xl space-y-1">
+                          {q.deliveryDate && <p><strong className="text-slate-800">Target Delivery Date:</strong> {q.deliveryDate}</p>}
+                          {q.notes && <p><strong className="text-slate-800">Tech Pack / Custom Notes:</strong> {q.notes}</p>}
+                          {q.fileName && <p><strong className="text-slate-800">Attached File:</strong> {q.fileName}</p>}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
-              </div>
+              )}
             </div>
           )}
+
+          {/* ── SECURITY SETTINGS TAB ─────────────────────────────────────── */}
+          {activeTab === "settings" && <SecuritySettingsSection />}
         </div>
       </main>
     </div>
   );
 }
 
-// ── HELPERS ────────────────────────────────────────────────────────────────
-const inputCls = "w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-ink outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20";
+// ── KPI STAT CARD COMPONENT ────────────────────────────────────────────────
+function StatCard({
+  title,
+  value,
+  badge,
+  icon: Icon,
+  highlight = false,
+}: {
+  title: string;
+  value: number;
+  badge: string;
+  icon: any;
+  highlight?: boolean;
+}) {
+  return (
+    <div className={`rounded-2xl border p-5 shadow-sm hover:shadow-md transition-all ${
+      highlight ? "border-amber-300 bg-amber-50/50" : "border-slate-200 bg-white"
+    }`}>
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{title}</span>
+        <div className={`flex h-9 w-9 items-center justify-center rounded-xl border ${
+          highlight
+            ? "border-amber-200 bg-amber-100 text-amber-900"
+            : "border-slate-200 bg-slate-50 text-slate-700"
+        }`}>
+          <Icon className="h-4 w-4" />
+        </div>
+      </div>
+      <div className="mt-3 flex items-baseline gap-2">
+        <span className="font-display text-2xl font-bold text-slate-900">{value}</span>
+      </div>
+      <span className="mt-1 block text-[11px] text-slate-400">{badge}</span>
+    </div>
+  );
+}
+
+// ── FORM SECTION CARD COMPONENT ──────────────────────────────────────────
+function FormSection({
+  step,
+  title,
+  children,
+}: {
+  step: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+      <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
+        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-900 font-bold text-xs border border-slate-200">
+          {step}
+        </div>
+        <h3 className="font-display font-bold text-slate-900 text-sm sm:text-base">{title}</h3>
+      </div>
+      <div className="space-y-4">{children}</div>
+    </div>
+  );
+}
+
+// ── SECURITY & RATE LIMIT SETTINGS SECTION ─────────────────────────────────
+function SecuritySettingsSection() {
+  const [rateSettings, setRateSettings] = useState<RateLimitSettings>(getRateLimitSettings);
+  const [rateSuccess, setRateSuccess] = useState("");
+
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passError, setPassError] = useState("");
+  const [passSuccess, setPassSuccess] = useState("");
+  const [passLoading, setPassLoading] = useState(false);
+
+  const handleSaveRateSettings = (e: React.FormEvent) => {
+    e.preventDefault();
+    setRateSuccess("");
+    saveRateLimitSettings(rateSettings);
+    setRateSuccess("✅ Security rate limit rules updated successfully!");
+    setTimeout(() => setRateSuccess(""), 4000);
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPassError("");
+    setPassSuccess("");
+
+    if (!currentPassword) return setPassError("Current password is required.");
+    if (!newPassword || newPassword.length < 4) return setPassError("New password must be at least 4 characters.");
+    if (newPassword !== confirmPassword) return setPassError("New passwords do not match.");
+
+    setPassLoading(true);
+    const currentHash = await sha256(currentPassword);
+    const storedHash = getStoredPasswordHash();
+
+    if (currentHash !== storedHash) {
+      setPassError("Current password is incorrect.");
+      setPassLoading(false);
+      return;
+    }
+
+    const newHash = await sha256(newPassword);
+    saveStoredPasswordHash(newHash);
+
+    setPassLoading(false);
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setPassSuccess("✅ Admin password updated & SHA-256 digest saved!");
+    setTimeout(() => setPassSuccess(""), 4000);
+  };
+
+  return (
+    <div className="max-w-3xl space-y-6">
+      {/* Rate Limit Rules Card */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
+        <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+          <Shield className="h-5 w-5 text-slate-800" />
+          <h3 className="font-display font-bold text-slate-900 text-base">Login Rate Limiting Controls</h3>
+        </div>
+
+        {rateSuccess && (
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-semibold text-emerald-800 flex items-center justify-between">
+            <span>{rateSuccess}</span>
+            <button onClick={() => setRateSuccess("")}><X className="h-4 w-4" /></button>
+          </div>
+        )}
+
+        <form onSubmit={handleSaveRateSettings} className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Max Failed Attempts *
+              </label>
+              <input
+                type="number"
+                min="1"
+                max="20"
+                value={rateSettings.maxAttempts}
+                onChange={(e) => setRateSettings({ ...rateSettings, maxAttempts: Number(e.target.value) })}
+                className={inputCls}
+                required
+              />
+              <span className="text-[11px] text-slate-400 mt-1 block">Failed logins before lockout.</span>
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Lockout Duration (Min) *
+              </label>
+              <input
+                type="number"
+                min="1"
+                max="1440"
+                value={rateSettings.lockoutDurationMinutes}
+                onChange={(e) => setRateSettings({ ...rateSettings, lockoutDurationMinutes: Number(e.target.value) })}
+                className={inputCls}
+                required
+              />
+              <span className="text-[11px] text-slate-400 mt-1 block">Lockout period in minutes.</span>
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Idle Timeout (Min) *
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="1440"
+                value={rateSettings.idleTimeoutMinutes ?? 30}
+                onChange={(e) => setRateSettings({ ...rateSettings, idleTimeoutMinutes: Number(e.target.value) })}
+                className={inputCls}
+                required
+              />
+              <span className="text-[11px] text-slate-400 mt-1 block">Auto-logout inactivity (0=off).</span>
+            </div>
+          </div>
+
+          <Button type="submit" className="gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold">
+            <Save className="h-4 w-4" /> Save Security Rules
+          </Button>
+        </form>
+      </div>
+
+      {/* SHA-256 Change Password Card */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
+        <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+          <Lock className="h-5 w-5 text-slate-800" />
+          <h3 className="font-display font-bold text-slate-900 text-base">Change Admin Password (SHA-256 Digest)</h3>
+        </div>
+
+        {passSuccess && (
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-semibold text-emerald-800 flex items-center justify-between">
+            <span>{passSuccess}</span>
+            <button onClick={() => setPassSuccess("")}><X className="h-4 w-4" /></button>
+          </div>
+        )}
+        {passError && (
+          <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-semibold text-rose-800 flex items-center justify-between">
+            <span>{passError}</span>
+            <button onClick={() => setPassError("")}><X className="h-4 w-4" /></button>
+          </div>
+        )}
+
+        <form onSubmit={handleChangePassword} className="space-y-4">
+          <div>
+            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Current Password *
+            </label>
+            <input
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              placeholder="Enter current password"
+              className={inputCls}
+              required
+            />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
+                New Password *
+              </label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter new password"
+                className={inputCls}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Confirm New Password *
+              </label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm new password"
+                className={inputCls}
+                required
+              />
+            </div>
+          </div>
+
+          <Button type="submit" disabled={passLoading} className="gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold">
+            <Key className="h-4 w-4" /> {passLoading ? "Hashing & Saving…" : "Update Admin Password"}
+          </Button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ── CONFIRM EXIT & LOGOUT MODAL ───────────────────────────────────────────
+function ConfirmExitModal({
+  isOpen,
+  isFormDirty,
+  target,
+  onCancel,
+  onConfirmLogout,
+  onConfirmNavigateStore,
+}: {
+  isOpen: boolean;
+  isFormDirty: boolean;
+  target: "logout" | "store" | null;
+  onCancel: () => void;
+  onConfirmLogout: () => void;
+  onConfirmNavigateStore: () => void;
+}) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4">
+      <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 font-bold shrink-0 border border-amber-100">
+            <Shield className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="font-display font-bold text-slate-900 text-base">
+              {target === "logout" ? "Confirm Admin Sign Out" : "Leaving Admin Dashboard"}
+            </h3>
+            <p className="text-xs text-slate-500">Logout & Navigation Protection</p>
+          </div>
+        </div>
+
+        <div className="text-xs text-slate-600 leading-relaxed space-y-2">
+          {isFormDirty && (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-amber-900 font-medium flex items-start gap-2">
+              <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600 mt-0.5" />
+              <span>Unsaved changes detected in Product Form. Exiting will discard your input.</span>
+            </div>
+          )}
+          <p>
+            {target === "logout"
+              ? "Are you sure you want to sign out? You will need to re-enter your admin credentials."
+              : "Would you like to return to the live storefront? You can choose to stay logged in or sign out."}
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-2 pt-2">
+          <Button onClick={onCancel} variant="outline" className="flex-1 text-xs cursor-pointer">
+            Cancel
+          </Button>
+
+          {target === "store" && (
+            <Button onClick={onConfirmNavigateStore} variant="secondary" className="flex-1 text-xs cursor-pointer">
+              Go to Store (Stay Logged In)
+            </Button>
+          )}
+
+          <Button onClick={onConfirmLogout} variant="destructive" className="flex-1 gap-1 text-xs cursor-pointer">
+            <LogOut className="h-3.5 w-3.5" /> {target === "logout" ? "Yes, Sign Out" : "Sign Out & Leave"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── UI HELPERS ─────────────────────────────────────────────────────────────
+const inputCls = "w-full rounded-xl border border-slate-200 bg-slate-50/80 px-3.5 py-2.5 text-xs text-slate-900 outline-none transition focus:border-slate-600 focus:bg-white focus:ring-2 focus:ring-slate-600/10";
 
 function FormField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
         {label}
       </label>
       {children}
     </div>
   );
 }
-
