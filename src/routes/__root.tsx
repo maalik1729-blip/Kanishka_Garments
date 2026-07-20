@@ -6,6 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  useLocation,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
@@ -124,16 +125,18 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith("/admin");
 
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col bg-white text-black font-favorit selection:bg-black selection:text-white">
-        <SiteHeader />
+        {!isAdmin && <SiteHeader />}
         <main className="flex-1">
           <Outlet />
         </main>
-        <SiteFooter />
-        <ChatWidget />
+        {!isAdmin && <SiteFooter />}
+        {!isAdmin && <ChatWidget />}
       </div>
     </QueryClientProvider>
   );
