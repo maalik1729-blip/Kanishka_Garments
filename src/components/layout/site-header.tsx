@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
-import { Heart, Search, User, ShoppingBag, Menu, X } from "lucide-react";
+import { Search, User, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const categoryLinks = [
@@ -72,15 +72,6 @@ export function SiteHeader() {
               <Search className="w-[18px] h-[18px] stroke-[1.5]" />
             </button>
 
-            {/* Wishlist Icon */}
-            <Link
-              to="/products"
-              className="hidden sm:block p-1 text-black hover:opacity-60 transition-opacity"
-              aria-label="Wishlist"
-            >
-              <Heart className="w-[18px] h-[18px] stroke-[1.5]" />
-            </Link>
-
             {/* Account Icon */}
             <Link
               to="/wholesale"
@@ -88,18 +79,6 @@ export function SiteHeader() {
               aria-label="Account"
             >
               <User className="w-[18px] h-[18px] stroke-[1.5]" />
-            </Link>
-
-            {/* Shopping Bag Icon with Badge */}
-            <Link
-              to="/wholesale"
-              className="p-1 text-black hover:opacity-60 transition-opacity relative flex items-center"
-              aria-label="Shopping Bag"
-            >
-              <ShoppingBag className="w-[18px] h-[18px] stroke-[1.5]" />
-              <span className="ml-1 text-[11px] font-medium text-black">
-                (0)
-              </span>
             </Link>
           </div>
         </div>

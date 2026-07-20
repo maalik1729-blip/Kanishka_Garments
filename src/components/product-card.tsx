@@ -1,13 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { formatINR } from "@/lib/cart";
 import type { Product } from "@/lib/products";
-import { Heart, ShieldCheck, FileText } from "lucide-react";
+import { ShieldCheck, FileText } from "lucide-react";
 import { useState } from "react";
 
 const FALLBACK = "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&h=750&fit=crop&q=80";
 
 export function ProductCard({ product }: { product: Product }) {
-  const [isWishlisted, setIsWishlisted] = useState(false);
   const [activeColorIndex, setActiveColorIndex] = useState(0);
 
   const swatches = product.colorSwatches && product.colorSwatches.length > 0 
@@ -36,23 +35,6 @@ export function ProductCard({ product }: { product: Product }) {
           />
         </Link>
         
-        {/* Wishlist Heart Icon */}
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            setIsWishlisted(!isWishlisted);
-          }}
-          aria-label="Save to Wishlist"
-          className="absolute top-2.5 right-2.5 z-10 cursor-pointer p-1.5 bg-white/90 backdrop-blur-sm text-black transition-colors hover:bg-white border border-black/10"
-        >
-          <Heart
-            className={`w-3.5 h-3.5 transition-colors ${
-              isWishlisted
-                ? "fill-black text-black"
-                : "text-black fill-none stroke-[1.5]"
-            }`}
-          />
-        </button>
 
         {/* B2B Badges overlay */}
         <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">

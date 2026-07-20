@@ -301,14 +301,6 @@ function ProductDetail() {
                 )}
               </div>
 
-              {/* Wishlist Button */}
-              <button
-                onClick={() => setIsWishlisted(!isWishlisted)}
-                aria-label="Save to Wishlist"
-                className="absolute top-4 right-4 z-10 p-2.5 bg-white/90 backdrop-blur-sm cursor-pointer hover:bg-white transition-colors border border-black/10"
-              >
-                <Heart className={`w-4 h-4 ${isWishlisted ? "fill-black text-black" : "text-black stroke-[1.5]"}`} />
-              </button>
 
               {/* Interactive Media Overlay Badges (Requirement 1: Texture & 3D Drape Viewer) */}
               <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-2 z-10">
