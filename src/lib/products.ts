@@ -369,8 +369,8 @@ export const staticProducts: Product[] = [
   {
     slug: "gym-workout-tees",
     name: "Gym / Workout T-Shirts",
-    category: "activewear",
-    categoryLabel: "Activewear",
+    category: "gents",
+    categoryLabel: "Gents & Activewear",
     subType: "dry-fit tee",
     isReadymade: true,
     shortDescription: "140–160 GSM Dry-Fit Polyester Spandex, Moisture-wicking treatment, Anti-microbial.",

@@ -53,45 +53,13 @@ function ProductsPage() {
   }, [allProducts, c]);
 
   const getCategoryCount = (slug: string) => {
-    if (slug === "activewear") {
-      return allProducts.filter((p) => p.category === "activewear" || p.subType === "dry-fit tee" || p.subType === "jogger" || p.subType === "leggings" || p.name.toLowerCase().includes("gym") || p.name.toLowerCase().includes("jogger") || p.name.toLowerCase().includes("leggings")).length;
-    }
-    if (slug === "sweats") {
-      return allProducts.filter((p) => p.category === "sweats" || p.subType === "hoodie" || p.name.toLowerCase().includes("hoodie") || p.name.toLowerCase().includes("sweat")).length;
-    }
-    if (slug === "gents") {
-      return allProducts.filter((p) => p.category === "gents" || p.gender === "gents").length;
-    }
-    if (slug === "ladies") {
-      return allProducts.filter((p) => p.category === "ladies" || p.gender === "ladies").length;
-    }
-    if (slug === "kids") {
-      return allProducts.filter((p) => p.category === "kids" || p.gender === "kids").length;
-    }
-    if (slug === "fabric") {
-      return allProducts.filter((p) => p.category === "fabric" || !p.isReadymade).length;
-    }
     return allProducts.filter((p) => p.category === slug).length;
   };
 
   const filtered = useMemo(() => {
     let list = allProducts;
     if (c) {
-      if (c === "activewear") {
-        list = list.filter((p) => p.category === "activewear" || p.subType === "dry-fit tee" || p.subType === "jogger" || p.subType === "leggings" || p.name.toLowerCase().includes("gym") || p.name.toLowerCase().includes("jogger") || p.name.toLowerCase().includes("leggings"));
-      } else if (c === "sweats") {
-        list = list.filter((p) => p.category === "sweats" || p.subType === "hoodie" || p.name.toLowerCase().includes("hoodie") || p.name.toLowerCase().includes("sweat"));
-      } else if (c === "gents") {
-        list = list.filter((p) => p.category === "gents" || p.gender === "gents");
-      } else if (c === "ladies") {
-        list = list.filter((p) => p.category === "ladies" || p.gender === "ladies");
-      } else if (c === "kids") {
-        list = list.filter((p) => p.category === "kids" || p.gender === "kids");
-      } else if (c === "fabric") {
-        list = list.filter((p) => p.category === "fabric" || !p.isReadymade);
-      } else {
-        list = list.filter((p) => p.category === c);
-      }
+      list = list.filter((p) => p.category === c);
     }
     if (type) list = list.filter((p) => p.subType === type);
     if (searchQuery.trim()) {
