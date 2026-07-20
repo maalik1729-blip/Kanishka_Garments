@@ -91,7 +91,7 @@ function Index() {
                     to="/products"
                     className="bg-black text-white px-8 py-3.5 text-[12px] font-bold tracking-[0.05em] uppercase rounded-none hover:bg-neutral-800 transition-colors inline-block cursor-pointer shadow-none"
                   >
-                    NEW COLLECTION
+                    VIEW COLLECTION
                   </Link>
 
                   {/* Decorative Diagonal Hatched Lines */}
