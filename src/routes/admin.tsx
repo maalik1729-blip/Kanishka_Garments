@@ -1,8 +1,8 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState, useEffect, useCallback } from "react";
 import {
   LogOut, Plus, Trash2, Package, Eye, EyeOff, LayoutDashboard,
-  ShoppingBag, Users, TrendingUp, Save, X, Edit2, ChevronDown, ChevronUp
+  ShoppingBag, Users, TrendingUp, Save, X, Edit2, ChevronDown, ChevronUp, ArrowLeft
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -232,21 +232,6 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     setAdminProducts(getAdminProducts());
   }, []);
 
-  // Intercept browser back arrow to prevent accidental exit from admin panel to user pages
-  useEffect(() => {
-    window.history.pushState(null, "", window.location.href);
-
-    const handlePopState = () => {
-      window.history.pushState(null, "", window.location.href);
-      setActiveTab((prevTab) => (prevTab !== "dashboard" ? "dashboard" : prevTab));
-    };
-
-    window.addEventListener("popstate", handlePopState);
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-    };
-  }, []);
-
   const allProducts = [...staticProducts, ...adminProducts];
   const totalProducts = allProducts.length;
   const totalCategories = new Set(allProducts.map((p) => p.category)).size;
@@ -357,13 +342,19 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       {/* ── SIDEBAR ──────────────────────────────────────────────────────── */}
       <aside className="fixed left-0 top-0 z-30 flex h-screen w-64 flex-col border-r border-border bg-ink text-brand-foreground shadow-xl">
         {/* Logo */}
-        <div className="flex items-center gap-3 border-b border-white/10 px-5 py-4">
+        <Link
+          to="/"
+          className="flex items-center gap-3 border-b border-white/10 px-5 py-4 hover:bg-white/5 transition-colors group"
+          title="Return to User / Store Page"
+        >
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white text-ink font-display font-bold text-[11px]">KG</div>
           <div>
-            <div className="font-display text-sm font-bold">KANISHKA GARMENTS</div>
-            <div className="text-[10px] uppercase tracking-widest text-white/40">Admin Panel</div>
+            <div className="font-display text-sm font-bold text-white group-hover:text-white">KANISHKA GARMENTS</div>
+            <div className="text-[10px] uppercase tracking-widest text-white/40 group-hover:text-white/70 flex items-center gap-1">
+              <ArrowLeft className="h-3 w-3" /> Back to User Page
+            </div>
           </div>
-        </div>
+        </Link>
 
         {/* Nav */}
         <nav className="flex-1 space-y-1 p-3 pt-4">
@@ -416,9 +407,19 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         {/* Topbar */}
         <div className="sticky top-0 z-20 border-b border-border bg-white/90 backdrop-blur">
           <div className="flex h-14 items-center justify-between px-6">
-            <h1 className="font-display text-lg font-bold text-ink capitalize">
-              {activeTab === "add" ? (editingSlug ? "Edit Product" : "Add New Product") : activeTab}
-            </h1>
+            <div className="flex items-center gap-3">
+              <Link
+                to="/"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-gray-100 px-3 py-1.5 text-xs font-medium text-ink transition hover:bg-gray-200"
+                title="Return to Storefront"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                <span>Back to Store</span>
+              </Link>
+              <h1 className="font-display text-lg font-bold text-ink capitalize">
+                {activeTab === "add" ? (editingSlug ? "Edit Product" : "Add New Product") : activeTab}
+              </h1>
+            </div>
             <div className="flex items-center gap-4">
               <div className="text-xs text-muted-foreground hidden sm:block">
                 Signed in as <span className="font-semibold text-ink">admin</span>
