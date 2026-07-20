@@ -5,8 +5,6 @@ import { cn } from "@/lib/utils";
 
 const categoryLinks = [
   { to: "/products", label: "SHOP" },
-  { to: "/products", label: "ACTIVEWEAR" },
-  { to: "/products", label: "SWEATS" },
   { to: "/wholesale", label: "WHOLESALE" },
   { to: "/about", label: "ABOUT" },
   { to: "/contact", label: "CONTACT" },
