@@ -33,11 +33,24 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const [allProducts, setAllProducts] = useState<Product[]>(staticProducts);
+  const [allProducts, setAllProducts] = useState<Product[]>(() => [
+    ...staticProducts,
+    ...getAdminProducts(),
+  ]);
   const [activeTab, setActiveTab] = useState("ALL");
 
   useEffect(() => {
-    setAllProducts([...staticProducts, ...getAdminProducts()]);
+    const refreshProducts = () => {
+      setAllProducts([...staticProducts, ...getAdminProducts()]);
+    };
+    refreshProducts();
+
+    window.addEventListener("kanishka_products_updated", refreshProducts);
+    window.addEventListener("storage", refreshProducts);
+    return () => {
+      window.removeEventListener("kanishka_products_updated", refreshProducts);
+      window.removeEventListener("storage", refreshProducts);
+    };
   }, []);
 
   const filteredProducts = allProducts.filter((p) => {

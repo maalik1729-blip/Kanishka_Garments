@@ -49,6 +49,8 @@ export type Product = {
   badge?: string;
   vendors?: string;
   pricingTiers?: PricingTier[];
+  gender?: string;
+  occasion?: string;
   isAdminAdded?: boolean;
 };
 
@@ -128,6 +130,9 @@ export function getAdminProducts(): Product[] {
 export function saveAdminProducts(products: Product[]) {
   try {
     localStorage.setItem(ADMIN_PRODUCTS_KEY, JSON.stringify(products));
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("kanishka_products_updated"));
+    }
   } catch {}
 }
 

@@ -38,13 +38,43 @@ function ProductsPage() {
   const { c, type, q, rm } = Route.useSearch();
   const navigate = useNavigate({ from: "/products/" });
 
-  const [allProducts, setAllProducts] = useState<Product[]>(staticProducts);
+  const [allProducts, setAllProducts] = useState<Product[]>(() => [
+    ...staticProducts,
+    ...getAdminProducts(),
+  ]);
   const [priceRange, setPriceRange] = useState(0);
   const [searchQuery, setSearchQuery] = useState(q || "");
 
   useEffect(() => {
-    setAllProducts([...staticProducts, ...getAdminProducts()]);
+    const refreshProducts = () => {
+      setAllProducts([...staticProducts, ...getAdminProducts()]);
+    };
+    refreshProducts();
+
+    window.addEventListener("kanishka_products_updated", refreshProducts);
+    window.addEventListener("storage", refreshProducts);
+    return () => {
+      window.removeEventListener("kanishka_products_updated", refreshProducts);
+      window.removeEventListener("storage", refreshProducts);
+    };
   }, []);
+
+  const categoriesList = useMemo(() => {
+    const mainSlugs = new Set(mainCategories.map((m) => m.slug));
+    const extraMap = new Map<string, { slug: string; label: string; blurb: string }>();
+
+    allProducts.forEach((p) => {
+      if (!mainSlugs.has(p.category) && !extraMap.has(p.category)) {
+        extraMap.set(p.category, {
+          slug: p.category,
+          label: p.categoryLabel || p.category.charAt(0).toUpperCase() + p.category.slice(1),
+          blurb: p.shortDescription || "",
+        });
+      }
+    });
+
+    return [...mainCategories, ...Array.from(extraMap.values())];
+  }, [allProducts]);
 
   const subTypes = useMemo(() => {
     const base = c ? allProducts.filter((p) => p.category === c) : allProducts;
@@ -64,16 +94,21 @@ function ProductsPage() {
     if (type) list = list.filter((p) => p.subType === type);
     if (searchQuery.trim()) {
       const qLower = searchQuery.toLowerCase();
-      list = list.filter((p) => p.name.toLowerCase().includes(qLower) || p.categoryLabel.toLowerCase().includes(qLower) || p.composition.toLowerCase().includes(qLower));
+      list = list.filter(
+        (p) =>
+          p.name.toLowerCase().includes(qLower) ||
+          p.categoryLabel.toLowerCase().includes(qLower) ||
+          p.composition.toLowerCase().includes(qLower)
+      );
     }
-    if (rm === "readymade") list = list.filter((p) => p.isReadymade);
-    if (rm === "fabric") list = list.filter((p) => !p.isReadymade);
+    if (rm === "readymade") list = list.filter((p) => p.isReadymade !== false);
+    if (rm === "fabric") list = list.filter((p) => p.isReadymade === false);
     const pr = PRICE_RANGES[priceRange];
     list = list.filter((p) => p.wholesalePrice >= pr.min && p.wholesalePrice < pr.max);
     return list;
   }, [allProducts, c, type, searchQuery, rm, priceRange]);
 
-  const activeCat = mainCategories.find((m) => m.slug === c);
+  const activeCat = categoriesList.find((m) => m.slug === c);
 
   const setSearch = (patch: Record<string, string | undefined>) =>
     navigate({ search: (prev) => ({ ...prev, ...patch }) });
@@ -124,7 +159,7 @@ function ProductsPage() {
             >
               ALL ({allProducts.length})
             </button>
-            {mainCategories.map((cat) => {
+            {categoriesList.map((cat) => {
               const count = getCategoryCount(cat.slug);
               return (
                 <button

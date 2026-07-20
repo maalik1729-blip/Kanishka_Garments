@@ -2,11 +2,11 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState, useEffect, useCallback } from "react";
 import {
   LogOut, Plus, Trash2, Package, Eye, EyeOff, LayoutDashboard,
-  ShoppingBag, Users, TrendingUp, Save, X, Edit2, ChevronDown, ChevronUp, ArrowLeft
+  ShoppingBag, Users, TrendingUp, Save, X, Edit2, ChevronDown, ChevronUp, ArrowLeft, Menu
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  staticProducts, getAdminProducts, saveAdminProducts, retailCategories
+  staticProducts, getAdminProducts, saveAdminProducts
 } from "@/lib/products";
 import type { Product } from "@/lib/products";
 import { formatINR } from "@/lib/cart";
@@ -30,8 +30,8 @@ type NewProductForm = {
   name: string;
   category: Product["category"];
   categoryLabel: string;
-  gender: string;
-  occasion: string;
+  subType: string;
+  isReadymade: string;
   shortDescription: string;
   description: string;
   imageUrl: string;
@@ -40,18 +40,23 @@ type NewProductForm = {
   moq: string;
   composition: string;
   gsm: string;
+  yarnCount: string;
+  dyeingFinishing: string;
+  printingCompatibility: string;
+  qualityParameters: string;
   colors: string;
   sizes: string;
   leadTime: string;
   badge: string;
+  vendors: string;
 };
 
 const EMPTY_FORM: NewProductForm = {
   name: "",
-  category: "knitwear",
-  categoryLabel: "Knitwear",
-  gender: "",
-  occasion: "",
+  category: "gents",
+  categoryLabel: "Gents & Unisex Wear",
+  subType: "t-shirt",
+  isReadymade: "readymade",
   shortDescription: "",
   description: "",
   imageUrl: "",
@@ -60,26 +65,32 @@ const EMPTY_FORM: NewProductForm = {
   moq: "",
   composition: "",
   gsm: "",
+  yarnCount: "",
+  dyeingFinishing: "",
+  printingCompatibility: "",
+  qualityParameters: "",
   colors: "",
   sizes: "",
   leadTime: "7–14 days",
   badge: "",
+  vendors: "",
 };
 
 const categoryOptions: { value: Product["category"]; label: string }[] = [
+  { value: "gents",         label: "Gents & Unisex Wear" },
+  { value: "ladies",        label: "Ladies Wear" },
+  { value: "activewear",    label: "Activewear" },
+  { value: "sweats",        label: "Sweats & Hoodies" },
+  { value: "kids",          label: "Kids & Baby Wear" },
+  { value: "innerwear",     label: "Innerwear & Vests" },
+  { value: "fabric",        label: "Raw Knitted Fabrics" },
   { value: "knitwear",      label: "Knitwear" },
-  { value: "fabric",        label: "Fabric" },
-  { value: "yarn",          label: "Yarn" },
   { value: "home-textiles", label: "Home Textiles" },
-  { value: "ladies",        label: "Ladies" },
-  { value: "gents",         label: "Gents" },
+  { value: "yarn",          label: "Yarn" },
   { value: "boys",          label: "Boys" },
   { value: "girls",         label: "Girls" },
-  { value: "kids",          label: "Kids (0–5 yr)" },
   { value: "elders",        label: "Elders" },
 ];
-
-const occasionOptions = ["casual", "formal", "festival", "sportswear", "ethnic"];
 
 // ── MAIN COMPONENT ─────────────────────────────────────────────────────────
 function AdminPage() {
@@ -129,7 +140,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
 
   return (
     <div
-      className="flex min-h-screen items-center justify-center"
+      className="flex min-h-screen items-center justify-center p-4"
       style={{ background: "linear-gradient(135deg, #0f1b3d 0%, #1e3a5f 60%, #3b6fa0 100%)" }}
     >
       {/* Blobs */}
@@ -140,8 +151,8 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
           style={{ background: "radial-gradient(circle, #1e3a5f, transparent)" }} />
       </div>
 
-      <div className="relative z-10 w-full max-w-md px-4">
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-xl">
+      <div className="relative z-10 w-full max-w-md">
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
           {/* Logo */}
           <div className="mb-8 flex flex-col items-center gap-3">
             <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white text-ink font-display font-bold text-sm shadow-lg">
@@ -203,7 +214,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 w-full rounded-lg bg-white py-3 text-sm font-bold text-ink transition hover:bg-white/90 disabled:opacity-60"
+              className="mt-2 w-full rounded-lg bg-white py-3 text-sm font-bold text-ink transition hover:bg-white/90 disabled:opacity-60 cursor-pointer"
             >
               {loading ? "Signing in…" : "Sign In"}
             </button>
@@ -222,6 +233,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [adminProducts, setAdminProducts] = useState<Product[]>([]);
   const [activeTab, setActiveTab] = useState<"dashboard" | "add" | "manage">("dashboard");
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [form, setForm] = useState<NewProductForm>(EMPTY_FORM);
   const [formError, setFormError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
@@ -270,13 +282,15 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     const colorsArr = form.colors.split(",").map((c) => c.trim()).filter(Boolean);
     const sizesArr = form.sizes ? form.sizes.split(",").map((s) => s.trim()).filter(Boolean) : undefined;
 
+    const isReadymade = form.isReadymade === "readymade";
+
     const newProduct: Product = {
       slug,
       name: form.name.trim(),
       category: form.category,
       categoryLabel: form.categoryLabel,
-      gender: form.gender as Product["gender"] || undefined,
-      occasion: form.occasion as Product["occasion"] || undefined,
+      subType: form.subType.trim().toLowerCase() || undefined,
+      isReadymade,
       shortDescription: form.shortDescription.trim(),
       description: form.description.trim() || form.shortDescription.trim(),
       image: form.imageUrl.trim() || "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=800&q=80",
@@ -285,10 +299,15 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       moq: Number(form.moq),
       composition: form.composition.trim(),
       gsm: form.gsm.trim() || undefined,
+      yarnCount: form.yarnCount.trim() || undefined,
+      dyeingFinishing: form.dyeingFinishing.trim() || undefined,
+      printingCompatibility: form.printingCompatibility.trim() || undefined,
+      qualityParameters: form.qualityParameters.trim() || undefined,
       colors: colorsArr.length ? colorsArr : ["Custom shades"],
       sizes: sizesArr,
       leadTime: form.leadTime.trim() || "7–14 days",
       badge: form.badge.trim() || undefined,
+      vendors: form.vendors.trim() || undefined,
       isAdminAdded: true,
     };
 
@@ -312,8 +331,8 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       name: product.name,
       category: product.category,
       categoryLabel: product.categoryLabel,
-      gender: product.gender ?? "",
-      occasion: product.occasion ?? "",
+      subType: product.subType ?? "",
+      isReadymade: product.isReadymade !== false ? "readymade" : "fabric",
       shortDescription: product.shortDescription,
       description: product.description,
       imageUrl: product.image.startsWith("http") ? product.image : "",
@@ -322,10 +341,15 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       moq: String(product.moq),
       composition: product.composition,
       gsm: product.gsm ?? "",
+      yarnCount: product.yarnCount ?? "",
+      dyeingFinishing: product.dyeingFinishing ?? "",
+      printingCompatibility: product.printingCompatibility ?? "",
+      qualityParameters: product.qualityParameters ?? "",
       colors: product.colors.join(", "),
       sizes: product.sizes?.join(", ") ?? "",
       leadTime: product.leadTime,
       badge: product.badge ?? "",
+      vendors: product.vendors ?? "",
     });
     setEditingSlug(product.slug);
     setActiveTab("add");
@@ -339,11 +363,24 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
+      {/* Mobile Backdrop Overlay */}
+      {mobileSidebarOpen && (
+        <div
+          onClick={() => setMobileSidebarOpen(false)}
+          className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm lg:hidden transition-opacity"
+        />
+      )}
+
       {/* ── SIDEBAR ──────────────────────────────────────────────────────── */}
-      <aside className="fixed left-0 top-0 z-30 flex h-screen w-64 flex-col border-r border-border bg-ink text-brand-foreground shadow-xl">
+      <aside
+        className={`fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r border-border bg-ink text-brand-foreground shadow-xl transition-transform duration-300 ${
+          mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        }`}
+      >
         {/* Logo */}
         <Link
           to="/"
+          onClick={() => setMobileSidebarOpen(false)}
           className="flex items-center gap-3 border-b border-white/10 px-5 py-4 hover:bg-white/5 transition-colors group"
           title="Return to User / Store Page"
         >
@@ -365,8 +402,12 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
           ].map((item) => (
             <button
               key={item.id}
-              onClick={() => { setActiveTab(item.id); if (item.id !== "add") resetForm(); }}
-              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+              onClick={() => {
+                setActiveTab(item.id);
+                if (item.id !== "add") resetForm();
+                setMobileSidebarOpen(false);
+              }}
+              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors cursor-pointer ${
                 activeTab === item.id
                   ? "bg-white/15 text-white"
                   : "text-white/60 hover:bg-white/10 hover:text-white"
@@ -395,7 +436,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
           </a>
           <button
             onClick={onLogout}
-            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-white/50 hover:bg-red-500/20 hover:text-red-400 transition-colors"
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-white/50 hover:bg-red-500/20 hover:text-red-400 transition-colors cursor-pointer"
           >
             <LogOut className="h-3.5 w-3.5" /> Sign Out
           </button>
@@ -403,38 +444,47 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       </aside>
 
       {/* ── MAIN CONTENT ─────────────────────────────────────────────────── */}
-      <main className="ml-64 flex-1 overflow-auto">
+      <main className="flex-1 lg:ml-64 overflow-auto min-w-0">
         {/* Topbar */}
         <div className="sticky top-0 z-20 border-b border-border bg-white/90 backdrop-blur">
-          <div className="flex h-14 items-center justify-between px-6">
-            <div className="flex items-center gap-3">
+          <div className="flex h-14 items-center justify-between px-4 sm:px-6">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+              {/* Mobile Hamburger Menu Toggle */}
+              <button
+                onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+                className="inline-flex items-center justify-center rounded-lg border border-border p-1.5 text-ink hover:bg-gray-100 lg:hidden cursor-pointer"
+                aria-label="Toggle navigation"
+              >
+                <Menu className="h-4 w-4" />
+              </button>
+
               <Link
                 to="/"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-gray-100 px-3 py-1.5 text-xs font-medium text-ink transition hover:bg-gray-200"
+                className="inline-flex items-center gap-1 sm:gap-1.5 rounded-lg border border-border bg-gray-100 px-2.5 py-1.5 text-xs font-medium text-ink transition hover:bg-gray-200 shrink-0"
                 title="Return to Storefront"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
-                <span>Back to Store</span>
+                <span className="hidden sm:inline">Back to Store</span>
               </Link>
-              <h1 className="font-display text-lg font-bold text-ink capitalize">
+              <h1 className="font-display text-base sm:text-lg font-bold text-ink capitalize truncate">
                 {activeTab === "add" ? (editingSlug ? "Edit Product" : "Add New Product") : activeTab}
               </h1>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 shrink-0">
               <div className="text-xs text-muted-foreground hidden sm:block">
                 Signed in as <span className="font-semibold text-ink">admin</span>
               </div>
               <button
                 onClick={onLogout}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-100 hover:text-red-700"
+                className="inline-flex items-center gap-1 sm:gap-1.5 rounded-lg border border-red-200 bg-red-50 px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-100 hover:text-red-700 cursor-pointer"
               >
-                <LogOut className="h-3.5 w-3.5" /> Sign Out
+                <LogOut className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Sign Out</span>
               </button>
             </div>
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {/* ── DASHBOARD TAB ────────────────────────────────────────────── */}
           {activeTab === "dashboard" && (
             <div className="space-y-6">
@@ -526,10 +576,10 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               )}
 
               <div className="rounded-xl border border-border bg-white p-6 shadow-sm space-y-5">
-                <h2 className="font-display font-bold text-ink text-base">Basic Information</h2>
+                <h2 className="font-display font-bold text-ink text-base">1. Classification & Catalog Filters (Matches /products page)</h2>
 
                 <FormField label="Product Name *">
-                  <input id="prod-name" value={form.name} onChange={(e) => updateForm("name", e.target.value)} placeholder="e.g. Premium Cotton Kurti" className={inputCls} required />
+                  <input id="prod-name" value={form.name} onChange={(e) => updateForm("name", e.target.value)} placeholder="e.g. Basic Round-Neck T-Shirt" className={inputCls} required />
                 </FormField>
 
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -541,38 +591,50 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                     </select>
                   </FormField>
 
-                  <FormField label="Occasion">
-                    <select id="prod-occasion" value={form.occasion} onChange={(e) => updateForm("occasion", e.target.value)} className={inputCls}>
-                      <option value="">— None —</option>
-                      {occasionOptions.map((o) => (
-                        <option key={o} value={o}>{o.charAt(0).toUpperCase() + o.slice(1)}</option>
-                      ))}
+                  <FormField label="Garment Type *">
+                    <select id="prod-isreadymade" value={form.isReadymade} onChange={(e) => updateForm("isReadymade", e.target.value)} className={inputCls}>
+                      <option value="readymade">Readymade Apparel</option>
+                      <option value="fabric">Raw Fabrics & Knits</option>
                     </select>
                   </FormField>
                 </div>
 
-                <FormField label="Short Description *">
-                  <input id="prod-short-desc" value={form.shortDescription} onChange={(e) => updateForm("shortDescription", e.target.value)} placeholder="One-line summary for product cards" className={inputCls} />
-                </FormField>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField label="Sub-Category / Style (optional)">
+                    <input id="prod-subtype" value={form.subType} onChange={(e) => updateForm("subType", e.target.value)} placeholder="e.g. t-shirt, polo, hoodie, jogger, leggings" className={inputCls} />
+                  </FormField>
 
-                <FormField label="Full Description">
-                  <textarea id="prod-desc" value={form.description} onChange={(e) => updateForm("description", e.target.value)} placeholder="Detailed product description" rows={3} className={inputCls} />
-                </FormField>
+                  <FormField label="Badge (optional)">
+                    <input id="prod-badge" value={form.badge} onChange={(e) => updateForm("badge", e.target.value)} placeholder="e.g. BESTSELLER, TRENDING, HIGH DEMAND" className={inputCls} />
+                  </FormField>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-border bg-white p-6 shadow-sm space-y-5">
+                <h2 className="font-display font-bold text-ink text-base">2. Product Media & Description</h2>
 
                 <FormField label="Product Image URL">
-                  <input id="prod-image" type="url" value={form.imageUrl} onChange={(e) => updateForm("imageUrl", e.target.value)} placeholder="https://example.com/image.jpg (leave blank for default)" className={inputCls} />
+                  <input id="prod-image" type="url" value={form.imageUrl} onChange={(e) => updateForm("imageUrl", e.target.value)} placeholder="https://example.com/image.jpg (leave blank for default placeholder)" className={inputCls} />
                   {form.imageUrl && (
                     <img src={form.imageUrl} alt="Preview" className="mt-2 h-24 w-24 rounded-lg object-cover border border-border" onError={(e) => (e.currentTarget.style.display = "none")} />
                   )}
                 </FormField>
+
+                <FormField label="Short Summary / Card Description *">
+                  <input id="prod-short-desc" value={form.shortDescription} onChange={(e) => updateForm("shortDescription", e.target.value)} placeholder="One-line summary for product cards & lookbook grid" className={inputCls} />
+                </FormField>
+
+                <FormField label="Full Product Description">
+                  <textarea id="prod-desc" value={form.description} onChange={(e) => updateForm("description", e.target.value)} placeholder="Detailed product description for buyer spec sheet" rows={3} className={inputCls} />
+                </FormField>
               </div>
 
               <div className="rounded-xl border border-border bg-white p-6 shadow-sm space-y-5">
-                <h2 className="font-display font-bold text-ink text-base">Pricing & MOQ</h2>
+                <h2 className="font-display font-bold text-ink text-base">3. Wholesale Pricing & MOQ</h2>
 
                 <div className="grid gap-4 sm:grid-cols-3">
                   <FormField label="Wholesale Price (₹) *">
-                    <input id="prod-price" type="number" min="0" value={form.wholesalePrice} onChange={(e) => updateForm("wholesalePrice", e.target.value)} placeholder="e.g. 350" className={inputCls} />
+                    <input id="prod-price" type="number" min="0" value={form.wholesalePrice} onChange={(e) => updateForm("wholesalePrice", e.target.value)} placeholder="e.g. 130" className={inputCls} />
                   </FormField>
                   <FormField label="Unit *">
                     <select id="prod-unit" value={form.unit} onChange={(e) => updateForm("unit", e.target.value)} className={inputCls}>
@@ -588,31 +650,53 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               </div>
 
               <div className="rounded-xl border border-border bg-white p-6 shadow-sm space-y-5">
-                <h2 className="font-display font-bold text-ink text-base">Product Details</h2>
+                <h2 className="font-display font-bold text-ink text-base">4. Fabric Specifications & Technical Details</h2>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <FormField label="Composition *">
-                    <input id="prod-comp" value={form.composition} onChange={(e) => updateForm("composition", e.target.value)} placeholder="e.g. 100% Cotton" className={inputCls} />
+                    <input id="prod-comp" value={form.composition} onChange={(e) => updateForm("composition", e.target.value)} placeholder="e.g. 100% Combed Cotton" className={inputCls} />
                   </FormField>
                   <FormField label="GSM (optional)">
                     <input id="prod-gsm" value={form.gsm} onChange={(e) => updateForm("gsm", e.target.value)} placeholder="e.g. 180 GSM" className={inputCls} />
                   </FormField>
                 </div>
 
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField label="Yarn Count (optional)">
+                    <input id="prod-yarn" value={form.yarnCount} onChange={(e) => updateForm("yarnCount", e.target.value)} placeholder="e.g. 30s Super Combed Yarn" className={inputCls} />
+                  </FormField>
+                  <FormField label="Dyeing & Finishing (optional)">
+                    <input id="prod-dyeing" value={form.dyeingFinishing} onChange={(e) => updateForm("dyeingFinishing", e.target.value)} placeholder="e.g. Bio-washed, Silicon-washed" className={inputCls} />
+                  </FormField>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField label="Printing Compatibility (optional)">
+                    <input id="prod-printing" value={form.printingCompatibility} onChange={(e) => updateForm("printingCompatibility", e.target.value)} placeholder="e.g. Screen Print, DTG, Puff Print, Embroidery" className={inputCls} />
+                  </FormField>
+                  <FormField label="Quality Standard (optional)">
+                    <input id="prod-quality" value={form.qualityParameters} onChange={(e) => updateForm("qualityParameters", e.target.value)} placeholder="e.g. Pre-shrunk (Under 3%), ISO Grade 4+" className={inputCls} />
+                  </FormField>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-border bg-white p-6 shadow-sm space-y-5">
+                <h2 className="font-display font-bold text-ink text-base">5. Variants, Commercials & Vendors</h2>
+
                 <FormField label="Colors (comma-separated)">
-                  <input id="prod-colors" value={form.colors} onChange={(e) => updateForm("colors", e.target.value)} placeholder="e.g. Red, Blue, Green, White" className={inputCls} />
+                  <input id="prod-colors" value={form.colors} onChange={(e) => updateForm("colors", e.target.value)} placeholder="e.g. Black, White, Navy Blue, Olive Green" className={inputCls} />
                 </FormField>
 
                 <FormField label="Sizes (comma-separated, optional)">
-                  <input id="prod-sizes" value={form.sizes} onChange={(e) => updateForm("sizes", e.target.value)} placeholder="e.g. S, M, L, XL, XXL or 2Y, 4Y, 6Y" className={inputCls} />
+                  <input id="prod-sizes" value={form.sizes} onChange={(e) => updateForm("sizes", e.target.value)} placeholder="e.g. S, M, L, XL, 2XL" className={inputCls} />
                 </FormField>
 
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <FormField label="Lead Time">
-                    <input id="prod-lead" value={form.leadTime} onChange={(e) => updateForm("leadTime", e.target.value)} placeholder="e.g. 7–14 days" className={inputCls} />
+                  <FormField label="Production Lead Time">
+                    <input id="prod-lead" value={form.leadTime} onChange={(e) => updateForm("leadTime", e.target.value)} placeholder="e.g. Sampling: 3–5 days | Bulk: 12–15 days" className={inputCls} />
                   </FormField>
-                  <FormField label="Badge (optional)">
-                    <input id="prod-badge" value={form.badge} onChange={(e) => updateForm("badge", e.target.value)} placeholder="e.g. New, Festival, Best seller" className={inputCls} />
+                  <FormField label="Primary Mill Vendors (optional)">
+                    <input id="prod-vendors" value={form.vendors} onChange={(e) => updateForm("vendors", e.target.value)} placeholder="e.g. Tirupur Knitwears Exports" className={inputCls} />
                   </FormField>
                 </div>
               </div>
@@ -651,7 +735,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                 </div>
               ) : (
                 <div className="rounded-xl border border-border bg-white shadow-sm overflow-hidden">
-                  <div className="grid grid-cols-[1fr_auto_auto_auto] gap-3 border-b border-border bg-gray-50 px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  <div className="hidden sm:grid sm:grid-cols-[1fr_auto_auto_auto] gap-3 border-b border-border bg-gray-50 px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                     <div>Product</div>
                     <div>Price</div>
                     <div>MOQ</div>
@@ -660,7 +744,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                   <div className="divide-y divide-border">
                     {adminProducts.map((p) => (
                       <div key={p.slug}>
-                        <div className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-3 px-5 py-4">
+                        <div className="flex flex-col sm:grid sm:grid-cols-[1fr_auto_auto_auto] sm:items-center gap-3 px-4 sm:px-5 py-4">
                           <div className="flex items-center gap-3 min-w-0">
                             <img
                               src={p.image.startsWith("http") ? p.image : "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=80&q=60"}
@@ -673,36 +757,38 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                               <div className="text-[11px] text-muted-foreground">{p.categoryLabel}{p.badge ? ` · ${p.badge}` : ""}</div>
                             </div>
                           </div>
-                          <div className="text-sm font-bold text-ink whitespace-nowrap">{formatINR(p.wholesalePrice)}/{p.unit}</div>
-                          <div className="text-sm text-muted-foreground whitespace-nowrap">{p.moq} {p.unit}s</div>
-                          <div className="flex items-center gap-1">
-                            <button
-                              onClick={() => setExpandedSlug(expandedSlug === p.slug ? null : p.slug)}
-                              className="rounded-md p-1.5 text-muted-foreground hover:bg-gray-100 hover:text-ink transition-colors"
-                              title="Details"
-                            >
-                              {expandedSlug === p.slug ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                            </button>
-                            <button
-                              onClick={() => handleEditProduct(p)}
-                              className="rounded-md p-1.5 text-blue-500 hover:bg-blue-50 transition-colors"
-                              title="Edit"
-                            >
-                              <Edit2 className="h-4 w-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteProduct(p.slug)}
-                              className="rounded-md p-1.5 text-red-500 hover:bg-red-50 transition-colors"
-                              title="Delete"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
+                          <div className="flex items-center justify-between sm:justify-end gap-3 text-xs sm:text-sm">
+                            <div className="font-bold text-ink sm:whitespace-nowrap">{formatINR(p.wholesalePrice)}/{p.unit}</div>
+                            <div className="text-muted-foreground sm:whitespace-nowrap">MOQ {p.moq} {p.unit}s</div>
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => setExpandedSlug(expandedSlug === p.slug ? null : p.slug)}
+                                className="rounded-md p-1.5 text-muted-foreground hover:bg-gray-100 hover:text-ink transition-colors cursor-pointer"
+                                title="Details"
+                              >
+                                {expandedSlug === p.slug ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                              </button>
+                              <button
+                                onClick={() => handleEditProduct(p)}
+                                className="rounded-md p-1.5 text-blue-500 hover:bg-blue-50 transition-colors cursor-pointer"
+                                title="Edit"
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteProduct(p.slug)}
+                                className="rounded-md p-1.5 text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
+                                title="Delete"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
                           </div>
                         </div>
 
                         {/* Expanded row */}
                         {expandedSlug === p.slug && (
-                          <div className="border-t border-border bg-gray-50 px-5 py-4 text-sm text-muted-foreground space-y-1">
+                          <div className="border-t border-border bg-gray-50 px-4 sm:px-5 py-4 text-xs sm:text-sm text-muted-foreground space-y-1">
                             <p><span className="font-medium text-ink">Description:</span> {p.shortDescription}</p>
                             <p><span className="font-medium text-ink">Colors:</span> {p.colors.join(", ")}</p>
                             {p.sizes && <p><span className="font-medium text-ink">Sizes:</span> {p.sizes.join(", ")}</p>}

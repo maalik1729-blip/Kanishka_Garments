@@ -26,9 +26,7 @@ export function SiteHeader() {
           <nav className="hidden lg:flex items-center gap-6">
             {categoryLinks.map((item) => {
               const active =
-                item.to === "/"
-                  ? pathname === "/"
-                  : pathname === item.to || pathname.startsWith(item.to + "/");
+                pathname === item.to || pathname.startsWith(item.to + "/");
               return (
                 <Link
                   key={item.label}
