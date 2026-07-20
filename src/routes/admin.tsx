@@ -232,6 +232,21 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     setAdminProducts(getAdminProducts());
   }, []);
 
+  // Intercept browser back arrow to prevent accidental exit from admin panel to user pages
+  useEffect(() => {
+    window.history.pushState(null, "", window.location.href);
+
+    const handlePopState = () => {
+      window.history.pushState(null, "", window.location.href);
+      setActiveTab((prevTab) => (prevTab !== "dashboard" ? "dashboard" : prevTab));
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
+
   const allProducts = [...staticProducts, ...adminProducts];
   const totalProducts = allProducts.length;
   const totalCategories = new Set(allProducts.map((p) => p.category)).size;
