@@ -399,12 +399,22 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       {/* ── MAIN CONTENT ─────────────────────────────────────────────────── */}
       <main className="ml-64 flex-1 overflow-auto">
         {/* Topbar */}
-        <div className="sticky top-0 z-20 border-b border-border bg-white/80 backdrop-blur">
+        <div className="sticky top-0 z-20 border-b border-border bg-white/90 backdrop-blur">
           <div className="flex h-14 items-center justify-between px-6">
             <h1 className="font-display text-lg font-bold text-ink capitalize">
               {activeTab === "add" ? (editingSlug ? "Edit Product" : "Add New Product") : activeTab}
             </h1>
-            <div className="text-xs text-muted-foreground">Signed in as <span className="font-semibold text-ink">admin</span></div>
+            <div className="flex items-center gap-4">
+              <div className="text-xs text-muted-foreground hidden sm:block">
+                Signed in as <span className="font-semibold text-ink">admin</span>
+              </div>
+              <button
+                onClick={onLogout}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-100 hover:text-red-700"
+              >
+                <LogOut className="h-3.5 w-3.5" /> Sign Out
+              </button>
+            </div>
           </div>
         </div>
 
