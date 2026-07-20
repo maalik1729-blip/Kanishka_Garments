@@ -62,17 +62,31 @@ export type MainCategory = {
 
 export const mainCategories: MainCategory[] = [
   {
+    slug: "activewear",
+    label: "Activewear",
+    icon: "",
+    blurb: "Dry-Fit Gym Tops · Track Pants · Stretch Leggings · Workout Tees",
+    image: imgP6,
+  },
+  {
+    slug: "sweats",
+    label: "Sweats & Hoodies",
+    icon: "",
+    blurb: "Cotton Fleece Hoodies · Zip-ups · Heavyweight Sweatshirts · Joggers",
+    image: imgP4,
+  },
+  {
     slug: "gents",
     label: "Gents & Unisex Wear",
     icon: "",
-    blurb: "Basic Tees · Polo T-Shirts · Oversized Streetwear · Hoodies · Joggers · Gym Tops",
+    blurb: "Basic Tees · Polo T-Shirts · Oversized Streetwear",
     image: imgP1,
   },
   {
     slug: "ladies",
     label: "Ladies Wear",
     icon: "",
-    blurb: "Cotton-Lycra Leggings · Treggings · Activewear · Kurtis",
+    blurb: "Cotton-Lycra Leggings · Treggings · Kurtis",
     image: imgP7,
   },
   {
@@ -263,7 +277,7 @@ export const staticProducts: Product[] = [
   {
     slug: "hoodies-zipup-pullover",
     name: "Hoodies (Zip-up and Pullover)",
-    category: "gents",
+    category: "sweats",
     categoryLabel: "Sweats & Hoodies",
     subType: "hoodie",
     isReadymade: true,
@@ -309,7 +323,7 @@ export const staticProducts: Product[] = [
   {
     slug: "joggers-track-pants",
     name: "Joggers & Track Pants",
-    category: "gents",
+    category: "activewear",
     categoryLabel: "Activewear & Bottoms",
     subType: "jogger",
     isReadymade: true,
@@ -355,7 +369,7 @@ export const staticProducts: Product[] = [
   {
     slug: "gym-workout-tees",
     name: "Gym / Workout T-Shirts",
-    category: "gents",
+    category: "activewear",
     categoryLabel: "Activewear",
     subType: "dry-fit tee",
     isReadymade: true,
