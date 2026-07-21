@@ -109,6 +109,7 @@ textile-trade-hub-main/
 - Detailed B2B Tech Pack specification table (GSM, Shrinkage rating, Dyeing specs, Mill origin).
 - Volume tier pricing calculator automatically adjusting bulk cost based on MOQ.
 - Custom Request For Quote (RFQ) modal form allowing buyers to request custom colors, GSM, or private label branding.
+- **Escape Key Keyboard Navigation**: Pressing `Escape` (`Esc`) key closes any active modal (RFQ modal, 3D preview, fabric zoom); if no modal is open, it returns to the previous page in history (or defaults back to `/products`).
 
 ### 5. Catalog Search, Filtering & Lookbook (`src/routes/products.index.tsx`)
 

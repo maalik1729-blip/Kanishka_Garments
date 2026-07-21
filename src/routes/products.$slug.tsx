@@ -1,5 +1,5 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 import {
   ArrowLeft,
   Check,
@@ -61,6 +61,7 @@ export const Route = createFileRoute("/products/$slug")({
 
 function ProductDetail() {
   const { product } = Route.useLoaderData();
+  const navigate = useNavigate();
 
   // Gallery & Media States
   const [activeImage, setActiveImage] = useState<string>(product.image || FALLBACK_MAIN);
@@ -89,6 +90,34 @@ function ProductDetail() {
     notes: "",
     fileName: "",
   });
+
+  // Handle ESC key to close open modals or navigate back to previous page
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (showRfqModal) {
+          setShowRfqModal(false);
+          return;
+        }
+        if (showFabricZoomModal) {
+          setShowFabricZoomModal(false);
+          return;
+        }
+        if (show3dModal) {
+          setShow3dModal(false);
+          return;
+        }
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          navigate({ to: "/products" });
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showRfqModal, showFabricZoomModal, show3dModal, navigate]);
 
   const related = getAllProducts()
     .filter((p) => p.category === product.category && p.slug !== product.slug)
