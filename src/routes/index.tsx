@@ -71,16 +71,16 @@ function Index() {
         <div className="mx-auto max-w-[1440px] px-6 lg:px-12 py-10 lg:py-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             
-            {/* Left Content (Urban Street / Kanishka Apparel Poster Style) */}
+            {/* Left Content (Garment Manufacturing Poster Style) */}
             <div className="lg:col-span-6 flex flex-col justify-between space-y-6">
               
               {/* Top Logo / Brand Badge */}
               <div className="flex flex-col items-start">
-                <div className="border border-black px-3 py-1 font-bold text-[14px] leading-none tracking-[0.05em] uppercase text-black">
+                <div className="border border-black px-3 py-1 font-bold text-[14px] leading-none tracking-[0.05em] uppercase text-black rounded-md">
                   KANISHKA
                 </div>
                 <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-600 mt-1">
-                  STREETWEAR & FABRICS
+                  GARMENT MANUFACTURING & TEXTILE MILL
                 </div>
               </div>
 
@@ -88,47 +88,35 @@ function Index() {
               <div className="w-28 h-[3px] bg-black my-2" />
 
               {/* Main Extended Headline */}
-              <h1 className="font-bold text-[32px] sm:text-[44px] lg:text-[50px] leading-[1.08] tracking-tight uppercase text-black font-favorit">
-                PROVE YOUR GENERATION URBAN STYLE
+              <h1 className="font-bold text-[32px] sm:text-[42px] lg:text-[48px] leading-[1.08] tracking-tight uppercase text-black font-favorit">
+                CUSTOM APPAREL & GARMENT MANUFACTURING
               </h1>
 
               {/* Subtitle */}
               <p className="text-[14px] sm:text-[15px] text-neutral-700 font-normal leading-relaxed max-w-md">
-                Activewear, knitwear and more than just clothes
+                End-to-end OEM garment production, custom private label branding, heavy GSM knits & wholesale textile manufacturing direct from Tirupur.
               </p>
 
-              {/* Button & Graphic Line Accent */}
-              <div className="pt-2">
-                <div className="inline-block relative">
-                  <Link
-                    to="/products"
-                    className="bg-black text-white px-8 py-3.5 text-[12px] font-bold tracking-[0.05em] uppercase rounded-none hover:bg-neutral-800 transition-colors inline-block cursor-pointer shadow-none"
-                  >
-                    VIEW COLLECTION
-                  </Link>
+              {/* Action Buttons */}
+              <div className="pt-2 flex flex-wrap items-center gap-3">
+                <Link
+                  to="/products"
+                  className="bg-black text-white px-7 py-3.5 text-[12px] font-bold tracking-[0.05em] uppercase rounded-lg hover:bg-neutral-800 transition-colors inline-block cursor-pointer shadow-sm"
+                >
+                  VIEW CATALOG & SPECS
+                </Link>
 
-                  {/* Decorative Diagonal Hatched Lines */}
-                  <div className="mt-2 w-48 h-6 overflow-hidden">
-                    <svg className="w-full h-full" viewBox="0 0 200 30" fill="none">
-                      <line x1="10" y1="30" x2="30" y2="0" stroke="black" strokeWidth="2" />
-                      <line x1="25" y1="30" x2="45" y2="0" stroke="black" strokeWidth="2" />
-                      <line x1="40" y1="30" x2="60" y2="0" stroke="black" strokeWidth="2" />
-                      <line x1="55" y1="30" x2="75" y2="0" stroke="black" strokeWidth="2" />
-                      <line x1="70" y1="30" x2="90" y2="0" stroke="black" strokeWidth="2" />
-                      <line x1="85" y1="30" x2="105" y2="0" stroke="black" strokeWidth="2" />
-                      <line x1="100" y1="30" x2="120" y2="0" stroke="black" strokeWidth="2" />
-                      <line x1="115" y1="30" x2="135" y2="0" stroke="black" strokeWidth="2" />
-                      <line x1="130" y1="30" x2="150" y2="0" stroke="black" strokeWidth="2" />
-                      <line x1="145" y1="30" x2="165" y2="0" stroke="black" strokeWidth="2" />
-                      <line x1="160" y1="30" x2="180" y2="0" stroke="black" strokeWidth="2" />
-                    </svg>
-                  </div>
-                </div>
+                <Link
+                  to="/wholesale"
+                  className="bg-white border border-black text-black px-6 py-3.5 text-[12px] font-bold tracking-[0.05em] uppercase rounded-lg hover:bg-neutral-100 transition-colors inline-block cursor-pointer"
+                >
+                  REQUEST BULK RFQ
+                </Link>
               </div>
 
               {/* Bottom Reference & Right Accent Line */}
               <div className="pt-6 flex items-center justify-between border-t border-black/20 text-[11px] text-neutral-600 font-medium tracking-[0.025em]">
-                <span>www.kanishkagarments.com</span>
+                <span>www.kanishkagarments.com · Tirupur, India</span>
                 <div className="flex items-center gap-1">
                   <div className="w-3 h-[4px] bg-black" />
                   <div className="w-12 h-[4px] bg-black" />

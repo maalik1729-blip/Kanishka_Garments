@@ -88,8 +88,10 @@ textile-trade-hub-main/
 - **Swatches**: Switched swatch buttons from square to circular `rounded-full` with an active ring indicator (`ring-2 ring-black ring-offset-1`).
 - **CTA Button**: Styled "SPECS & RFQ" button with `rounded-lg` rounded corners.
 
-### 2. Homepage Hero Section Image Upgrade (`src/assets/hero.png` & `src/routes/index.tsx`)
+### 2. Homepage Hero Section Image & Copy Upgrade (`src/assets/hero.png` & `src/routes/index.tsx`)
 - Replaced previous hero image with the new model photo wearing a yellow-and-black striped long-sleeve tee with sunglasses (`da753bec-2d15-44b1-bcf8-917db3ba779e (1).png`).
+- Updated Hero poster copy to showcase **Garment Manufacturing, Custom OEM Production, Private Label Branding & Wholesale Textile Mill** capabilities direct from Tirupur, India.
+- Added dual CTA action buttons: `VIEW CATALOG & SPECS` and `REQUEST BULK RFQ`.
 - Maintained `mix-blend-multiply` against the `#f0efe7` canvas for background blending.
 
 ### 3. B2B Admin Panel Dashboard (`src/routes/admin.tsx`)
