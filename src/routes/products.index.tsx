@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 import { z } from "zod";
 import { X, Search } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
-import { mainCategories, staticProducts, getAdminProducts, fetchAdminProductsApi } from "@/lib/products";
+import { mainCategories, staticProducts, getAdminProducts, fetchAdminProductsApi, getAllProducts } from "@/lib/products";
 import type { Product } from "@/lib/products";
 import { formatINR } from "@/lib/cart";
 
@@ -42,21 +42,18 @@ function ProductsPage() {
   const { c, type, q, rm } = Route.useSearch();
   const navigate = useNavigate({ from: "/products/" });
 
-  const [allProducts, setAllProducts] = useState<Product[]>(() => [
-    ...staticProducts,
-    ...getAdminProducts(),
-  ]);
+  const [allProducts, setAllProducts] = useState<Product[]>(() => getAllProducts());
   const [priceRange, setPriceRange] = useState(0);
   const [searchQuery, setSearchQuery] = useState(q || "");
 
   useEffect(() => {
     const refreshProducts = () => {
-      setAllProducts([...staticProducts, ...getAdminProducts()]);
+      setAllProducts(getAllProducts());
     };
     
     const fetchProducts = async () => {
-      const data = await fetchAdminProductsApi();
-      setAllProducts([...staticProducts, ...data]);
+      await fetchAdminProductsApi();
+      setAllProducts(getAllProducts());
     };
     
     fetchProducts();

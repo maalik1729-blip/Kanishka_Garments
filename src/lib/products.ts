@@ -760,7 +760,10 @@ export const staticProducts: Product[] = [
 // ── PUBLIC HELPERS ────────────────────────────────────────────────────────
 
 export function getAllProducts(): Product[] {
-  return [...staticProducts, ...getAdminProducts()];
+  const map = new Map<string, Product>();
+  staticProducts.forEach((p) => map.set(p.slug, p));
+  getAdminProducts().forEach((p) => map.set(p.slug, p));
+  return Array.from(map.values());
 }
 
 export function getProduct(slug: string): Product | undefined {
