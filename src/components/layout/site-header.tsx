@@ -57,7 +57,7 @@ export function SiteHeader() {
             to="/"
             className="text-[24px] sm:text-[28px] md:text-[30px] font-bold tracking-[0.025em] text-black uppercase hover:opacity-90 transition-opacity text-center"
           >
-            KANISHKA
+            TM KANISHKA
           </Link>
 
           {/* Right: Icon Cluster */}

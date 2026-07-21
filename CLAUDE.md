@@ -1,6 +1,13 @@
 # CLAUDE.md — Complete Codebase Architecture & Change Log
 
-This file serves as the unified master reference for **Kanishka Garments** — an editorial B2B apparel lookbook, wholesale fabric catalog, and custom private label manufacturing platform.
+This file serves as the unified master reference for **TM KANISHKA GARMENTS** — an editorial B2B apparel lookbook, wholesale fabric catalog, and custom private label manufacturing platform based in Tirupur, India.
+
+- **Company Name**: TM KANISHKA GARMENTS
+- **Address**: D.No.2/95A-3, Shop D S & S Complex, HRHK Nagar, S.R.Nagar South, Andipalayam Pirivu, TIRUPPUR - 641687
+- **Direct Cell / WhatsApp**: +91 87540 11563
+- **GSTIN**: 33CNRPT6310G1ZS
+- **Email**: tmkanishkagarments@gmail.com
+- **Bank Details**: State Bank of India | A/C: 43605722884 | IFSC: SBIN0000935 | Branch: Tirupur Main Branch
 
 ---
 

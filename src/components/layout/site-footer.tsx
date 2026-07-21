@@ -97,19 +97,23 @@ export function SiteFooter() {
           {/* Column 4: Location & Direct Contact */}
           <div>
             <h4 className="text-[12px] font-medium uppercase tracking-[0.025em] text-black mb-3">
-              HEADQUARTERS
+              HEADQUARTERS & MILL
             </h4>
             <p className="text-[12px] text-neutral-600 font-normal leading-relaxed">
-              Kanishka Garments Textile Hub
+              <strong>TM KANISHKA GARMENTS</strong>
               <br />
-              42 Kumaran Nagar, Tirupur 641 604
+              D.No.2/95A-3, Shop D S & S Complex,
               <br />
-              Tamil Nadu, India
+              HRHK Nagar, S.R.Nagar South,
+              <br />
+              Andipalayam Pirivu, TIRUPPUR - 641687
             </p>
             <p className="mt-3 text-[12px] text-black font-normal">
-              Direct: +91 421 420 4200
+              Cell: +91 87540 11563
               <br />
-              Email: wholesale@kanishkagarments.com
+              Email: tmkanishkagarments@gmail.com
+              <br />
+              GSTIN: 33CNRPT6310G1ZS
             </p>
           </div>
         </div>

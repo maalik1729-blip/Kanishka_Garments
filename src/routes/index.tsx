@@ -82,7 +82,7 @@ function Index() {
               {/* Top Logo / Brand Badge */}
               <div className="flex flex-col items-start">
                 <div className="border border-black px-3 py-1 font-bold text-[14px] leading-none tracking-[0.05em] uppercase text-black rounded-md">
-                  KANISHKA
+                  TM KANISHKA
                 </div>
                 <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-600 mt-1">
                   GARMENT MANUFACTURING & TEXTILE MILL
@@ -122,7 +122,7 @@ function Index() {
 
               {/* Bottom Reference & Right Accent Line */}
               <div className="pt-6 flex items-center justify-between border-t border-black/20 text-[11px] text-neutral-600 font-medium tracking-[0.025em]">
-                <span>www.kanishkagarments.com · Tirupur, India</span>
+                <span>Cell: +91 87540 11563 · GSTIN: 33CNRPT6310G1ZS · Tirupur, India</span>
                 <div className="flex items-center gap-1">
                   <div className="w-3 h-[4px] bg-black" />
                   <div className="w-12 h-[4px] bg-black" />

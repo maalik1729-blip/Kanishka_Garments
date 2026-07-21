@@ -1130,7 +1130,7 @@ function ProductDetail() {
             <div className="flex items-center gap-2 mb-1">
               <FileText className="w-4 h-4 text-black" />
               <span className="text-[10px] font-bold uppercase tracking-[0.05em] text-neutral-500">
-                KANISHKA GARMENTS MILL RFQ
+                TM KANISHKA GARMENTS MILL RFQ
               </span>
             </div>
 

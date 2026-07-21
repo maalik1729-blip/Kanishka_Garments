@@ -64,56 +64,63 @@ function ContactPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* Left Column: Direct Contact Cards */}
           <div className="lg:col-span-5 space-y-4">
-            <div className="bg-[#f0efe7] p-6 border border-black space-y-2">
+            <div className="bg-[#f0efe7] p-6 border border-black space-y-2 rounded-xl">
               <MapPin className="w-5 h-5 text-black" />
               <h4 className="text-[12px] font-bold uppercase text-black pt-1">
-                HEAD OFFICE & MILL
+                HEAD OFFICE & FACTORY MILL
               </h4>
               <p className="text-[12px] text-neutral-700 font-normal leading-relaxed">
-                42 Kumaran Nagar
+                <strong>TM KANISHKA GARMENTS</strong>
                 <br />
-                Tirupur 641 604
+                D.No.2/95A-3, Shop D S & S Complex,
+                <br />
+                HRHK Nagar, S.R.Nagar South,
+                <br />
+                Andipalayam Pirivu, TIRUPPUR - 641687
                 <br />
                 Tamil Nadu, India
               </p>
             </div>
 
-            <div className="bg-[#f0efe7] p-6 border border-black space-y-2">
+            <div className="bg-[#f0efe7] p-6 border border-black space-y-2 rounded-xl">
               <Phone className="w-5 h-5 text-black" />
               <h4 className="text-[12px] font-bold uppercase text-black pt-1">PHONE & WHATSAPP</h4>
               <p className="text-[12px] text-neutral-700 font-normal leading-relaxed">
-                Wholesale:{" "}
-                <a href="tel:+914214204200" className="underline font-medium text-black">
-                  +91 421 420 4200
+                Direct / Cell:{" "}
+                <a href="tel:8754011563" className="underline font-medium text-black">
+                  +91 87540 11563
                 </a>
                 <br />
-                Retail:{" "}
-                <a href="tel:+914214204201" className="underline font-medium text-black">
-                  +91 421 420 4201
-                </a>
+                GSTIN: <strong>33CNRPT6310G1ZS</strong>
               </p>
             </div>
 
-            <div className="bg-[#f0efe7] p-6 border border-black space-y-2">
+            <div className="bg-[#f0efe7] p-6 border border-black space-y-2 rounded-xl">
               <Mail className="w-5 h-5 text-black" />
-              <h4 className="text-[12px] font-bold uppercase text-black pt-1">EMAIL INQUIRIES</h4>
+              <h4 className="text-[12px] font-bold uppercase text-black pt-1">EMAIL & BANKING</h4>
               <p className="text-[12px] text-neutral-700 font-normal leading-relaxed">
-                Exports:{" "}
+                Official Email:{" "}
                 <a
-                  href="mailto:wholesale@kanishkagarments.com"
+                  href="mailto:tmkanishkagarments@gmail.com"
                   className="underline font-medium text-black"
                 >
-                  wholesale@kanishkagarments.com
-                </a>
-                <br />
-                General:{" "}
-                <a
-                  href="mailto:info@kanishkagarments.com"
-                  className="underline font-medium text-black"
-                >
-                  info@kanishkagarments.com
+                  tmkanishkagarments@gmail.com
                 </a>
               </p>
+              <div className="pt-2 border-t border-black/10 text-[11px] text-neutral-600 space-y-0.5">
+                <p>
+                  <strong>Bank:</strong> State Bank of India
+                </p>
+                <p>
+                  <strong>A/C No:</strong> 43605722884
+                </p>
+                <p>
+                  <strong>IFSC Code:</strong> SBIN0000935
+                </p>
+                <p>
+                  <strong>Branch:</strong> Tirupur Main Branch
+                </p>
+              </div>
             </div>
           </div>
 

@@ -105,17 +105,27 @@ function WholesalePage() {
               ))}
             </div>
 
-            <div className="bg-[#f0efe7] border border-black p-6 space-y-2 text-[12px]">
+            <div className="bg-[#f0efe7] border border-black p-6 space-y-2 text-[12px] rounded-xl">
               <span className="font-bold uppercase tracking-[0.025em] text-black block mb-2">
-                DIRECT CONTACT INFO
+                DIRECT MILL CONTACT & BANK DETAILS
               </span>
               <p className="text-black font-normal flex items-center gap-2">
-                <Phone className="w-3.5 h-3.5" /> +91 421 420 4200 (Call / WhatsApp)
+                <Phone className="w-3.5 h-3.5 text-black" /> +91 87540 11563 (Call / WhatsApp)
               </p>
-              <p className="text-black font-normal">Email: wholesale@kanishkagarments.com</p>
+              <p className="text-black font-normal">Email: tmkanishkagarments@gmail.com</p>
+              <p className="text-black font-normal">GSTIN: 33CNRPT6310G1ZS</p>
               <p className="text-neutral-600">
-                Location: 42 Kumaran Nagar, Tirupur, Tamil Nadu 641 604
+                Address: D.No.2/95A-3, Shop D S & S Complex, HRHK Nagar, S.R.Nagar South,
+                Andipalayam Pirivu, TIRUPPUR - 641687
               </p>
+              <div className="pt-2 border-t border-black/10 text-[11px] text-neutral-700 space-y-0.5">
+                <p>
+                  <strong>Bank:</strong> State Bank of India | <strong>A/C:</strong> 43605722884
+                </p>
+                <p>
+                  <strong>IFSC:</strong> SBIN0000935 | <strong>Branch:</strong> Tirupur Main Branch
+                </p>
+              </div>
             </div>
           </div>
 
