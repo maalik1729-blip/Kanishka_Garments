@@ -40,7 +40,11 @@ export const Route = createFileRoute("/products/$slug")({
   },
   head: ({ loaderData }) => ({
     meta: [
-      { title: loaderData ? `${loaderData.product.name} — B2B Specs & Wholesale | KANISHKA GARMENTS` : "Product Details" },
+      {
+        title: loaderData
+          ? `${loaderData.product.name} — B2B Specs & Wholesale | KANISHKA GARMENTS`
+          : "Product Details",
+      },
       { name: "description", content: loaderData?.product.shortDescription ?? "" },
     ],
   }),
@@ -48,20 +52,24 @@ export const Route = createFileRoute("/products/$slug")({
   notFoundComponent: () => (
     <div className="mx-auto max-w-[1440px] px-6 py-24 text-center font-favorit">
       <h1 className="text-[30px] font-normal text-black">PRODUCT NOT FOUND</h1>
-      <Link to="/products" className="btn-ghost-cta mt-6 inline-block">RETURN TO CATALOGUE</Link>
+      <Link to="/products" className="btn-ghost-cta mt-6 inline-block">
+        RETURN TO CATALOGUE
+      </Link>
     </div>
   ),
 });
 
 function ProductDetail() {
   const { product } = Route.useLoaderData();
-  
+
   // Gallery & Media States
   const [activeImage, setActiveImage] = useState<string>(product.image || FALLBACK_MAIN);
   const [selectedColor, setSelectedColor] = useState<string>(product.colors[0]);
   const [selectedSize, setSelectedSize] = useState<string | undefined>(product.sizes?.[0]);
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const [activeTab, setActiveTab] = useState<"specs" | "oem" | "commercial" | "compliance">("specs");
+  const [activeTab, setActiveTab] = useState<"specs" | "oem" | "commercial" | "compliance">(
+    "specs",
+  );
 
   // Modal States
   const [showRfqModal, setShowRfqModal] = useState(false);
@@ -86,13 +94,15 @@ function ProductDetail() {
     .filter((p) => p.category === product.category && p.slug !== product.slug)
     .slice(0, 4);
 
-  const swatches = product.colorSwatches && product.colorSwatches.length > 0 
-    ? product.colorSwatches 
-    : product.colors.map((c) => ({ name: c, hex: "#1A1A1A" }));
+  const swatches =
+    product.colorSwatches && product.colorSwatches.length > 0
+      ? product.colorSwatches
+      : product.colors.map((c) => ({ name: c, hex: "#1A1A1A" }));
 
-  const galleryList = product.galleryImages && product.galleryImages.length > 0
-    ? product.galleryImages
-    : [product.image || FALLBACK_MAIN];
+  const galleryList =
+    product.galleryImages && product.galleryImages.length > 0
+      ? product.galleryImages
+      : [product.image || FALLBACK_MAIN];
 
   const handleDownloadSpecSheet = () => {
     toast.success(`Preparing Spec Sheet for ${product.name}...`);
@@ -103,8 +113,9 @@ function ProductDetail() {
       return;
     }
 
-    const tiersHtml = product.pricingTiers && product.pricingTiers.length > 0
-      ? `
+    const tiersHtml =
+      product.pricingTiers && product.pricingTiers.length > 0
+        ? `
         <div style="margin-top: 20px;">
           <div style="font-size: 13px; font-weight: bold; text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 4px; margin-bottom: 8px;">Dynamic Volume Wholesale Pricing</div>
           <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
@@ -115,25 +126,38 @@ function ProductDetail() {
               </tr>
             </thead>
             <tbody>
-              ${product.pricingTiers.map(t => `
+              ${product.pricingTiers
+                .map(
+                  (t) => `
                 <tr style="border-bottom: 1px solid #eee;">
                   <td style="padding: 8px 12px; font-weight: 500;">${t.tier}</td>
                   <td style="padding: 8px 12px; text-align: right; font-weight: bold; color: #000;">₹${t.price} / ${product.unit}</td>
                 </tr>
-              `).join('')}
+              `,
+                )
+                .join("")}
             </tbody>
           </table>
         </div>
       `
-      : '';
+        : "";
 
-    const certsHtml = product.certifications && product.certifications.length > 0
-      ? product.certifications.map(c => `<span style="display: inline-block; background: #f0efe7; border: 1px solid #000; padding: 4px 10px; font-size: 10px; margin-right: 6px; margin-bottom: 6px; font-weight: bold; text-transform: uppercase;">${c}</span>`).join('')
-      : '';
+    const certsHtml =
+      product.certifications && product.certifications.length > 0
+        ? product.certifications
+            .map(
+              (c) =>
+                `<span style="display: inline-block; background: #f0efe7; border: 1px solid #000; padding: 4px 10px; font-size: 10px; margin-right: 6px; margin-bottom: 6px; font-weight: bold; text-transform: uppercase;">${c}</span>`,
+            )
+            .join("")
+        : "";
 
-    const customOptionsHtml = product.customizationOptions && product.customizationOptions.length > 0
-      ? product.customizationOptions.map(opt => `<li style="margin-bottom: 4px; color: #333;">${opt}</li>`).join('')
-      : '';
+    const customOptionsHtml =
+      product.customizationOptions && product.customizationOptions.length > 0
+        ? product.customizationOptions
+            .map((opt) => `<li style="margin-bottom: 4px; color: #333;">${opt}</li>`)
+            .join("")
+        : "";
 
     const htmlContent = `
       <!DOCTYPE html>
@@ -199,28 +223,36 @@ function ProductDetail() {
           <div class="section-title">Technical Specifications & Fabric Parameters</div>
           <table class="spec-table">
             <tr><th>Fabric Composition</th><td><strong>${product.composition}</strong></td></tr>
-            ${product.gsm ? `<tr><th>Fabric Weight (GSM)</th><td>${product.gsm}</td></tr>` : ''}
-            ${product.yarnCount ? `<tr><th>Yarn Count & Type</th><td>${product.yarnCount}</td></tr>` : ''}
-            ${product.dyeingFinishing ? `<tr><th>Dyeing & Finishing</th><td>${product.dyeingFinishing}</td></tr>` : ''}
-            ${product.printingCompatibility ? `<tr><th>Printing & Embroidery</th><td>${product.printingCompatibility}</td></tr>` : ''}
-            ${product.qualityParameters ? `<tr><th>Quality Standard</th><td>${product.qualityParameters}</td></tr>` : ''}
-            ${product.colors ? `<tr><th>Available Stock Colors</th><td>${product.colors.join(', ')}</td></tr>` : ''}
-            ${product.sizes ? `<tr><th>Available Sizes</th><td>${product.sizes.join(', ')}</td></tr>` : ''}
+            ${product.gsm ? `<tr><th>Fabric Weight (GSM)</th><td>${product.gsm}</td></tr>` : ""}
+            ${product.yarnCount ? `<tr><th>Yarn Count & Type</th><td>${product.yarnCount}</td></tr>` : ""}
+            ${product.dyeingFinishing ? `<tr><th>Dyeing & Finishing</th><td>${product.dyeingFinishing}</td></tr>` : ""}
+            ${product.printingCompatibility ? `<tr><th>Printing & Embroidery</th><td>${product.printingCompatibility}</td></tr>` : ""}
+            ${product.qualityParameters ? `<tr><th>Quality Standard</th><td>${product.qualityParameters}</td></tr>` : ""}
+            ${product.colors ? `<tr><th>Available Stock Colors</th><td>${product.colors.join(", ")}</td></tr>` : ""}
+            ${product.sizes ? `<tr><th>Available Sizes</th><td>${product.sizes.join(", ")}</td></tr>` : ""}
           </table>
 
           ${tiersHtml}
 
-          ${customOptionsHtml ? `
+          ${
+            customOptionsHtml
+              ? `
             <div class="section-title">White-Label & OEM Customization Options</div>
             <ul style="font-size: 12px; line-height: 1.6; padding-left: 20px; margin-top: 5px;">
               ${customOptionsHtml}
             </ul>
-          ` : ''}
+          `
+              : ""
+          }
 
-          ${certsHtml ? `
+          ${
+            certsHtml
+              ? `
             <div class="section-title">Factory Certifications & Quality Control</div>
             <div>${certsHtml}</div>
-          ` : ''}
+          `
+              : ""
+          }
 
           <div class="footer">
             <div>KANISHKA GARMENTS · Tirupur, Tamil Nadu, India · Direct Sales: +91 421 420 4200</div>
@@ -269,7 +301,6 @@ function ProductDetail() {
   return (
     <div className="bg-white font-favorit text-black py-8 md:py-14">
       <div className="mx-auto max-w-[1440px] px-4 md:px-8">
-        
         {/* ── BREADCRUMB & MILL SPEC REVISION HEADER ── */}
         <div className="flex items-center justify-between mb-8 pb-4 border-b border-neutral-200 text-[11px] text-neutral-500">
           <Link
@@ -289,17 +320,17 @@ function ProductDetail() {
 
         {/* ── REQUIREMENT 1 & 7: HIGH-IMPACT VISUALS GALLERY & CORE SPECS GRID ── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
-          
           {/* Left Column: High-Impact Visual Gallery (7 Columns) */}
           <div className="lg:col-span-7 space-y-4">
-            
             {/* Main Featured Photo Display */}
             <div className="relative aspect-[4/5] bg-[#f0efe7] overflow-hidden border border-black/10 group">
               <img
                 src={activeImage}
                 alt={product.name}
                 className="w-full h-full object-cover rounded-none transition-all duration-300"
-                onError={(e) => { e.currentTarget.src = product.image; }}
+                onError={(e) => {
+                  e.currentTarget.src = product.image;
+                }}
               />
 
               {/* Top Action Floating Badges */}
@@ -315,7 +346,6 @@ function ProductDetail() {
                   </span>
                 )}
               </div>
-
 
               {/* Interactive Media Overlay Badges (Requirement 1: Texture & 3D Drape Viewer) */}
               <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-2 z-10">
@@ -349,10 +379,16 @@ function ProductDetail() {
                     key={idx}
                     onClick={() => setActiveImage(imgUrl)}
                     className={`relative w-20 aspect-square shrink-0 overflow-hidden border-2 cursor-pointer transition-all ${
-                      activeImage === imgUrl ? "border-black scale-105" : "border-neutral-200 hover:border-black opacity-80 hover:opacity-100"
+                      activeImage === imgUrl
+                        ? "border-black scale-105"
+                        : "border-neutral-200 hover:border-black opacity-80 hover:opacity-100"
                     }`}
                   >
-                    <img src={imgUrl} alt={`Angle ${idx + 1}`} className="w-full h-full object-cover" />
+                    <img
+                      src={imgUrl}
+                      alt={`Angle ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                    />
                     <span className="absolute bottom-1 right-1 text-[8px] font-bold bg-black/70 text-white px-1 py-0.2">
                       #{idx + 1}
                     </span>
@@ -378,21 +414,21 @@ function ProductDetail() {
                   TIRUPPUR MILL QUALITY GUARANTEE
                 </span>
                 <p className="text-neutral-600 text-[11px] mt-0.5 leading-relaxed">
-                  Every batch undergoes 100% bio-wash treatment, pre-shrunk anti-torquing processing (shrinkage &lt;3%), and ISO Grade 4+ color fastness inspection prior to dispatch.
+                  Every batch undergoes 100% bio-wash treatment, pre-shrunk anti-torquing processing
+                  (shrinkage &lt;3%), and ISO Grade 4+ color fastness inspection prior to dispatch.
                 </p>
               </div>
             </div>
-
           </div>
 
           {/* Right Column: Core Specs & Action-Oriented B2B CTAs (5 Columns) */}
           <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-24 font-favorit">
-            
             {/* Header info */}
             <div>
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="text-[10px] font-bold uppercase tracking-[0.05em] text-neutral-500">
-                  {product.categoryLabel} {product.subType ? `· ${product.subType.toUpperCase()}` : ""}
+                  {product.categoryLabel}{" "}
+                  {product.subType ? `· ${product.subType.toUpperCase()}` : ""}
                 </span>
                 <span className="text-[10px] bg-neutral-100 text-neutral-700 px-2 py-0.5 font-bold uppercase">
                   {product.isReadymade ? "READYMADE APPAREL" : "RAW KNITTED FABRIC"}
@@ -425,11 +461,16 @@ function ProductDetail() {
                   <span className="font-bold text-[11px] uppercase tracking-[0.05em] text-black flex items-center gap-1.5">
                     <Layers className="w-3.5 h-3.5 text-black" /> DYNAMIC VOLUME WHOLESALE PRICING
                   </span>
-                  <span className="text-[10px] text-neutral-500 font-bold uppercase">EX-FACTORY TIRUPUR</span>
+                  <span className="text-[10px] text-neutral-500 font-bold uppercase">
+                    EX-FACTORY TIRUPUR
+                  </span>
                 </div>
                 <div className="divide-y divide-black/10 text-[12px]">
                   {product.pricingTiers.map((tier, i) => (
-                    <div key={tier.tier} className={`flex justify-between items-center py-2 ${i === 0 ? "font-bold text-black" : "text-neutral-700"}`}>
+                    <div
+                      key={tier.tier}
+                      className={`flex justify-between items-center py-2 ${i === 0 ? "font-bold text-black" : "text-neutral-700"}`}
+                    >
                       <span className="font-medium">{tier.tier}</span>
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-black">{formatINR(tier.price)}</span>
@@ -439,14 +480,14 @@ function ProductDetail() {
                   ))}
                 </div>
                 <p className="text-[10px] text-neutral-500 italic pt-1">
-                  * Bulk discounts applied automatically at quote generation for orders over 5,000 pcs.
+                  * Bulk discounts applied automatically at quote generation for orders over 5,000
+                  pcs.
                 </p>
               </div>
             )}
 
             {/* REQUIREMENT 4: COLORWAY & SIZE SELECTION */}
             <div className="space-y-4 border-t border-neutral-200 pt-4">
-              
               {/* Stock Colors Swatch Selector */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-[12px]">
@@ -460,12 +501,16 @@ function ProductDetail() {
                       onClick={() => setSelectedColor(sw.name)}
                       title={sw.name}
                       className={`w-7 h-7 rounded-none cursor-pointer transition-transform relative ${
-                        selectedColor === sw.name ? "border-2 border-black scale-110 shadow-sm" : "border border-neutral-300 hover:border-black"
+                        selectedColor === sw.name
+                          ? "border-2 border-black scale-110 shadow-sm"
+                          : "border border-neutral-300 hover:border-black"
                       }`}
                       style={{ backgroundColor: sw.hex }}
                     >
                       {selectedColor === sw.name && (
-                        <span className={`absolute inset-0 flex items-center justify-center ${sw.hex === "#FFFFFF" || sw.hex === "#FFF2B2" ? "text-black" : "text-white"}`}>
+                        <span
+                          className={`absolute inset-0 flex items-center justify-center ${sw.hex === "#FFFFFF" || sw.hex === "#FFF2B2" ? "text-black" : "text-white"}`}
+                        >
                           <Check className="w-3 h-3 stroke-[3]" />
                         </span>
                       )}
@@ -478,7 +523,9 @@ function ProductDetail() {
               {product.sizes && product.sizes.length > 0 && (
                 <div className="space-y-2 pt-2">
                   <div className="flex items-center justify-between text-[12px]">
-                    <span className="font-bold uppercase tracking-[0.025em]">SIZE RATIO / SPECS:</span>
+                    <span className="font-bold uppercase tracking-[0.025em]">
+                      SIZE RATIO / SPECS:
+                    </span>
                     <span className="text-neutral-600 font-medium">{selectedSize}</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -498,7 +545,6 @@ function ProductDetail() {
                   </div>
                 </div>
               )}
-
             </div>
 
             {/* REQUIREMENT 3: MOQ & SAMPLE POLICY QUICK SUMMARY BOX */}
@@ -527,7 +573,6 @@ function ProductDetail() {
 
             {/* ── REQUIREMENT 6: ACTION-ORIENTED B2B CTAS ── */}
             <div className="space-y-3 pt-2">
-              
               {/* CTA 1: Request Bulk Quote (RFQ) Form Modal Trigger */}
               <button
                 onClick={() => setShowRfqModal(true)}
@@ -547,13 +592,14 @@ function ProductDetail() {
               {/* CTA 3: Instant WhatsApp / Live Chat */}
               <a
                 href={`https://wa.me/914214204200?text=${encodeURIComponent(
-                  `Hello Kanishka Garments, I would like to request a wholesale quote for ${product.name} (GSM: ${product.gsm || "Standard"}, MOQ: ${product.moq} ${product.unit}s).`
+                  `Hello Kanishka Garments, I would like to request a wholesale quote for ${product.name} (GSM: ${product.gsm || "Standard"}, MOQ: ${product.moq} ${product.unit}s).`,
                 )}`}
                 target="_blank"
                 rel="noreferrer"
                 className="w-full py-3 border border-black text-center text-[12px] font-bold uppercase tracking-[0.05em] bg-[#f0efe7] text-black hover:bg-black hover:text-white transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
-                <MessageCircle className="w-4 h-4 text-emerald-600 group-hover:text-white" /> INSTANT WHATSAPP / LIVE CHAT (+91 421 420 4200)
+                <MessageCircle className="w-4 h-4 text-emerald-600 group-hover:text-white" />{" "}
+                INSTANT WHATSAPP / LIVE CHAT (+91 421 420 4200)
               </a>
 
               {/* CTA 4: Download Spec Sheet (PDF) */}
@@ -563,15 +609,12 @@ function ProductDetail() {
               >
                 <Printer className="w-3.5 h-3.5 text-black" /> EXPORT TECHNICAL SPEC SHEET (PDF)
               </button>
-
             </div>
-
           </div>
         </div>
 
         {/* ── REQUIREMENT 2, 4, 5, 7: RECOMMENDED 4-TAB WIREFRAME STRUCTURE ── */}
         <div className="mt-20 border-t border-black pt-12">
-          
           <div className="mb-4 flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-[0.05em] text-neutral-500">
               DETAILED MANUFACTURING DOCUMENTATION
@@ -587,7 +630,11 @@ function ProductDetail() {
               { id: "specs" as const, label: "1. TECHNICAL SPECIFICATIONS", icon: Layers },
               { id: "oem" as const, label: "2. CUSTOMIZATION & OEM / ODM", icon: FileText },
               { id: "commercial" as const, label: "3. COMMERCIAL TERMS & LOGISTICS", icon: Clock },
-              { id: "compliance" as const, label: "4. CERTIFICATIONS & QUALITY CONTROL", icon: ShieldCheck },
+              {
+                id: "compliance" as const,
+                label: "4. CERTIFICATIONS & QUALITY CONTROL",
+                icon: ShieldCheck,
+              },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -605,7 +652,6 @@ function ProductDetail() {
 
           {/* Tab Content Panes */}
           <div className="py-8 bg-[#f0efe7] p-6 md:p-10 border border-t-0 border-black font-favorit">
-            
             {/* ── TAB 1: Detailed Specifications (Requirement 2 Table) ── */}
             {activeTab === "specs" && (
               <div className="space-y-8">
@@ -615,7 +661,8 @@ function ProductDetail() {
                       CORE TEXTILE & FABRIC SPECIFICATIONS
                     </h3>
                     <p className="text-[12px] text-neutral-600 mt-0.5">
-                      Comprehensive mill technical metrics evaluated for export quality & brand production.
+                      Comprehensive mill technical metrics evaluated for export quality & brand
+                      production.
                     </p>
                   </div>
                   <span className="bg-black text-white text-[10px] font-bold px-3 py-1 uppercase tracking-wider self-start md:self-auto">
@@ -629,49 +676,87 @@ function ProductDetail() {
                     <thead>
                       <tr className="bg-black text-white text-[11px] font-bold uppercase tracking-wider">
                         <th className="py-3.5 px-4 border-r border-neutral-700 w-1/4">Parameter</th>
-                        <th className="py-3.5 px-4 border-r border-neutral-700 w-2/5">Specification Details</th>
+                        <th className="py-3.5 px-4 border-r border-neutral-700 w-2/5">
+                          Specification Details
+                        </th>
                         <th className="py-3.5 px-4 w-1/3">Mill Benchmark / Standard</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-neutral-200">
                       <tr>
-                        <td className="py-3.5 px-4 font-bold text-black border-r border-neutral-200 bg-neutral-50">Fabric Composition</td>
-                        <td className="py-3.5 px-4 font-medium text-black border-r border-neutral-200">{product.composition}</td>
-                        <td className="py-3.5 px-4 text-neutral-600">100% Combed Cotton, Poly-Cotton, Organic Cotton, Bamboo Blends</td>
+                        <td className="py-3.5 px-4 font-bold text-black border-r border-neutral-200 bg-neutral-50">
+                          Fabric Composition
+                        </td>
+                        <td className="py-3.5 px-4 font-medium text-black border-r border-neutral-200">
+                          {product.composition}
+                        </td>
+                        <td className="py-3.5 px-4 text-neutral-600">
+                          100% Combed Cotton, Poly-Cotton, Organic Cotton, Bamboo Blends
+                        </td>
                       </tr>
                       {product.gsm && (
                         <tr>
-                          <td className="py-3.5 px-4 font-bold text-black border-r border-neutral-200 bg-neutral-50">Fabric Weight (GSM)</td>
-                          <td className="py-3.5 px-4 font-medium text-black border-r border-neutral-200">{product.gsm}</td>
-                          <td className="py-3.5 px-4 text-neutral-600">140 GSM to 340 GSM Heavyweight Knits</td>
+                          <td className="py-3.5 px-4 font-bold text-black border-r border-neutral-200 bg-neutral-50">
+                            Fabric Weight (GSM)
+                          </td>
+                          <td className="py-3.5 px-4 font-medium text-black border-r border-neutral-200">
+                            {product.gsm}
+                          </td>
+                          <td className="py-3.5 px-4 text-neutral-600">
+                            140 GSM to 340 GSM Heavyweight Knits
+                          </td>
                         </tr>
                       )}
                       {product.yarnCount && (
                         <tr>
-                          <td className="py-3.5 px-4 font-bold text-black border-r border-neutral-200 bg-neutral-50">Yarn Count & Type</td>
-                          <td className="py-3.5 px-4 font-medium text-black border-r border-neutral-200">{product.yarnCount}</td>
-                          <td className="py-3.5 px-4 text-neutral-600">30s Super Combed, 24s Carded, 20s Compact Yarn</td>
+                          <td className="py-3.5 px-4 font-bold text-black border-r border-neutral-200 bg-neutral-50">
+                            Yarn Count & Type
+                          </td>
+                          <td className="py-3.5 px-4 font-medium text-black border-r border-neutral-200">
+                            {product.yarnCount}
+                          </td>
+                          <td className="py-3.5 px-4 text-neutral-600">
+                            30s Super Combed, 24s Carded, 20s Compact Yarn
+                          </td>
                         </tr>
                       )}
                       {product.dyeingFinishing && (
                         <tr>
-                          <td className="py-3.5 px-4 font-bold text-black border-r border-neutral-200 bg-neutral-50">Dyeing & Finishing</td>
-                          <td className="py-3.5 px-4 font-medium text-black border-r border-neutral-200">{product.dyeingFinishing}</td>
-                          <td className="py-3.5 px-4 text-neutral-600">Bio-washed, Silicon-washed, Softener, Reactive Dyes</td>
+                          <td className="py-3.5 px-4 font-bold text-black border-r border-neutral-200 bg-neutral-50">
+                            Dyeing & Finishing
+                          </td>
+                          <td className="py-3.5 px-4 font-medium text-black border-r border-neutral-200">
+                            {product.dyeingFinishing}
+                          </td>
+                          <td className="py-3.5 px-4 text-neutral-600">
+                            Bio-washed, Silicon-washed, Softener, Reactive Dyes
+                          </td>
                         </tr>
                       )}
                       {product.printingCompatibility && (
                         <tr>
-                          <td className="py-3.5 px-4 font-bold text-black border-r border-neutral-200 bg-neutral-50">Printing & Decor</td>
-                          <td className="py-3.5 px-4 font-medium text-black border-r border-neutral-200">{product.printingCompatibility}</td>
-                          <td className="py-3.5 px-4 text-neutral-600">Screen Print, DTG, Puff Print, HD Print, High-density Embroidery</td>
+                          <td className="py-3.5 px-4 font-bold text-black border-r border-neutral-200 bg-neutral-50">
+                            Printing & Decor
+                          </td>
+                          <td className="py-3.5 px-4 font-medium text-black border-r border-neutral-200">
+                            {product.printingCompatibility}
+                          </td>
+                          <td className="py-3.5 px-4 text-neutral-600">
+                            Screen Print, DTG, Puff Print, HD Print, High-density Embroidery
+                          </td>
                         </tr>
                       )}
                       {product.qualityParameters && (
                         <tr>
-                          <td className="py-3.5 px-4 font-bold text-black border-r border-neutral-200 bg-neutral-50">Quality Parameters</td>
-                          <td className="py-3.5 px-4 font-medium text-black border-r border-neutral-200">{product.qualityParameters}</td>
-                          <td className="py-3.5 px-4 text-neutral-600">Pre-shrunk (&lt;3%), ISO Grade 4+ Color Fastness</td>
+                          <td className="py-3.5 px-4 font-bold text-black border-r border-neutral-200 bg-neutral-50">
+                            Quality Parameters
+                          </td>
+                          <td className="py-3.5 px-4 font-medium text-black border-r border-neutral-200">
+                            {product.qualityParameters}
+                          </td>
+                          <td className="py-3.5 px-4 text-neutral-600">
+                            Pre-shrunk (&lt;3%), ISO Grade 4+ Color Fastness
+                          </td>
                         </tr>
                       )}
                     </tbody>
@@ -683,7 +768,8 @@ function ProductDetail() {
                   <div className="bg-white border border-black p-6 space-y-4">
                     <div className="flex items-center justify-between">
                       <h4 className="font-bold text-[14px] uppercase text-black flex items-center gap-2">
-                        <Layers className="w-4 h-4 text-black" /> MULTI-ANGLE & STITCHING SPECIFICATION DIAGRAM
+                        <Layers className="w-4 h-4 text-black" /> MULTI-ANGLE & STITCHING
+                        SPECIFICATION DIAGRAM
                       </h4>
                       <span className="text-[10px] font-bold bg-black text-white px-2 py-0.5 uppercase">
                         FULL TECH PACK VIEWER
@@ -710,7 +796,8 @@ function ProductDetail() {
                     WHITE-LABEL & OEM / ODM CUSTOMIZATION OPTIONS
                   </h3>
                   <p className="text-[12px] text-neutral-600 mt-0.5">
-                    Demonstrating how this base product can be fully modified for private labeling & brand launches.
+                    Demonstrating how this base product can be fully modified for private labeling &
+                    brand launches.
                   </p>
                 </div>
 
@@ -720,14 +807,21 @@ function ProductDetail() {
                       <FileText className="w-4 h-4 text-black" /> CUSTOM BRAND TAGGING & LABELS
                     </div>
                     <p className="text-neutral-600 leading-relaxed">
-                      Custom woven neck labels, satin wash care labels, heat-seal tagless size transfers, and custom printed cardstock hangtags with safety pin or cord fasteners.
+                      Custom woven neck labels, satin wash care labels, heat-seal tagless size
+                      transfers, and custom printed cardstock hangtags with safety pin or cord
+                      fasteners.
                     </p>
                     <div className="flex flex-wrap gap-2 pt-1">
-                      {["Woven Neck Tag", "Care Label", "Heat Press Tagless", "Hangtag"].map((t) => (
-                        <span key={t} className="bg-[#f0efe7] text-black text-[10px] font-bold px-2 py-0.5 border border-black/10">
-                          {t}
-                        </span>
-                      ))}
+                      {["Woven Neck Tag", "Care Label", "Heat Press Tagless", "Hangtag"].map(
+                        (t) => (
+                          <span
+                            key={t}
+                            className="bg-[#f0efe7] text-black text-[10px] font-bold px-2 py-0.5 border border-black/10"
+                          >
+                            {t}
+                          </span>
+                        ),
+                      )}
                     </div>
                   </div>
 
@@ -736,7 +830,9 @@ function ProductDetail() {
                       <Sparkles className="w-4 h-4 text-black" /> CUSTOM COLORS & PANTONE MATCHING
                     </div>
                     <p className="text-neutral-600 leading-relaxed">
-                      Full support for customized TPX/TCX Pantone matching alongside stock color options. Standard 48-hour lab-dip swatch approval turnaround before bulk dyeing.
+                      Full support for customized TPX/TCX Pantone matching alongside stock color
+                      options. Standard 48-hour lab-dip swatch approval turnaround before bulk
+                      dyeing.
                     </p>
                     <div className="flex items-center gap-2 pt-1 text-[11px] font-bold text-black">
                       <span className="w-3 h-3 rounded-full bg-rose-500 inline-block" />
@@ -751,7 +847,9 @@ function ProductDetail() {
                       <Layers className="w-4 h-4 text-black" /> SIZE RATIOS & TECH-PACK ADOPTION
                     </div>
                     <p className="text-neutral-600 leading-relaxed">
-                      Standard size charts (US, UK, EU, Asian fit) plus full adoption of your custom measurement tech-pack specifications (chest width, length, shoulder drop, sleeve opening).
+                      Standard size charts (US, UK, EU, Asian fit) plus full adoption of your custom
+                      measurement tech-pack specifications (chest width, length, shoulder drop,
+                      sleeve opening).
                     </p>
                     <span className="text-[11px] font-bold text-black block">
                       FITS: US FIT · EU FIT · ASIAN FIT · OVERSIZED DROP-SHOULDER
@@ -763,7 +861,8 @@ function ProductDetail() {
                       <Package className="w-4 h-4 text-black" /> CUSTOM PACKAGING & BARCODING
                     </div>
                     <p className="text-neutral-600 leading-relaxed">
-                      Single polybags, eco-friendly/biodegradable packaging, custom printed boxes, or flat-pack options. Includes custom barcode stickers & retail hanger prep.
+                      Single polybags, eco-friendly/biodegradable packaging, custom printed boxes,
+                      or flat-pack options. Includes custom barcode stickers & retail hanger prep.
                     </p>
                     <span className="text-[11px] font-bold text-black block">
                       PACKS: RECYCLED POLYBAG · ECO KRAFT BOX · FBA BARCODE READY
@@ -787,26 +886,37 @@ function ProductDetail() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="bg-white p-6 border border-black/10 space-y-3">
-                    <span className="text-[10px] font-bold uppercase text-neutral-500">MINIMUM ORDER QUANTITY</span>
-                    <h4 className="font-bold text-black text-[14px]">{product.moq} {product.unit.toUpperCase()}S / COLOR</h4>
+                    <span className="text-[10px] font-bold uppercase text-neutral-500">
+                      MINIMUM ORDER QUANTITY
+                    </span>
+                    <h4 className="font-bold text-black text-[14px]">
+                      {product.moq} {product.unit.toUpperCase()}S / COLOR
+                    </h4>
                     <p className="text-neutral-600 leading-relaxed">
-                      Clear breakdown for bulk production. Custom Pantone color dyeing requires {product.moq} pcs minimum per shade.
+                      Clear breakdown for bulk production. Custom Pantone color dyeing requires{" "}
+                      {product.moq} pcs minimum per shade.
                     </p>
                   </div>
 
                   <div className="bg-white p-6 border border-black/10 space-y-3">
-                    <span className="text-[10px] font-bold uppercase text-neutral-500">SAMPLE POLICY & TURNAROUND</span>
+                    <span className="text-[10px] font-bold uppercase text-neutral-500">
+                      SAMPLE POLICY & TURNAROUND
+                    </span>
                     <h4 className="font-bold text-black text-[14px]">3 TO 7 DAYS DISPATCH</h4>
                     <p className="text-neutral-600 leading-relaxed">
-                      {product.samplePolicy || "Tech-pack samples provided prior to bulk production. Sample costs are 100% refunded or credited against bulk PO placement."}
+                      {product.samplePolicy ||
+                        "Tech-pack samples provided prior to bulk production. Sample costs are 100% refunded or credited against bulk PO placement."}
                     </p>
                   </div>
 
                   <div className="bg-white p-6 border border-black/10 space-y-3">
-                    <span className="text-[10px] font-bold uppercase text-neutral-500">PRODUCTION LEAD TIME</span>
+                    <span className="text-[10px] font-bold uppercase text-neutral-500">
+                      PRODUCTION LEAD TIME
+                    </span>
                     <h4 className="font-bold text-black text-[14px]">{product.leadTime}</h4>
                     <p className="text-neutral-600 leading-relaxed">
-                      Fast-track sampling in 3–5 days. Bulk execution delivered within 12–20 days depending on order volume and decoration type.
+                      Fast-track sampling in 3–5 days. Bulk execution delivered within 12–20 days
+                      depending on order volume and decoration type.
                     </p>
                   </div>
                 </div>
@@ -814,9 +924,12 @@ function ProductDetail() {
                 {/* Logistics & Payment Terms */}
                 <div className="bg-white p-6 border border-black/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <div>
-                    <h4 className="font-bold uppercase text-black text-[13px]">EXPORT PORTS & FREIGHT TERMS</h4>
+                    <h4 className="font-bold uppercase text-black text-[13px]">
+                      EXPORT PORTS & FREIGHT TERMS
+                    </h4>
                     <p className="text-neutral-600 mt-0.5">
-                      FOB / CIF / DDP shipment via Air Freight (Tuticorin / Chennai Airport) & Sea Containers (Tirupur ICD / Tuticorin Port / Chennai Port).
+                      FOB / CIF / DDP shipment via Air Freight (Tuticorin / Chennai Airport) & Sea
+                      Containers (Tirupur ICD / Tuticorin Port / Chennai Port).
                     </p>
                   </div>
                   <button
@@ -843,10 +956,26 @@ function ProductDetail() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {[
-                    { title: "OEKO-TEX STANDARD 100", tag: "Chemical Safety", desc: "Tested and certified for harmful substances, AZO-free dyes, and skin safety." },
-                    { title: "GOTS ORGANIC CERTIFIED", tag: "Eco Cotton", desc: "Global Organic Textile Standard certification for 100% organic cotton inputs." },
-                    { title: "BSCI & SEDEX AUDITED", tag: "Social Compliance", desc: "Passes international ethical audit requirements, fair wages, zero child labor." },
-                    { title: "AQL 2.5 QC INSPECTION", tag: "Quality Assurance", desc: "Strict ISO defect limit inspection (AQL 2.5 Level II) on 100% finished garments." },
+                    {
+                      title: "OEKO-TEX STANDARD 100",
+                      tag: "Chemical Safety",
+                      desc: "Tested and certified for harmful substances, AZO-free dyes, and skin safety.",
+                    },
+                    {
+                      title: "GOTS ORGANIC CERTIFIED",
+                      tag: "Eco Cotton",
+                      desc: "Global Organic Textile Standard certification for 100% organic cotton inputs.",
+                    },
+                    {
+                      title: "BSCI & SEDEX AUDITED",
+                      tag: "Social Compliance",
+                      desc: "Passes international ethical audit requirements, fair wages, zero child labor.",
+                    },
+                    {
+                      title: "AQL 2.5 QC INSPECTION",
+                      tag: "Quality Assurance",
+                      desc: "Strict ISO defect limit inspection (AQL 2.5 Level II) on 100% finished garments.",
+                    },
                   ].map((cert) => (
                     <div key={cert.title} className="bg-white p-5 border border-black/10 space-y-2">
                       <div className="flex items-center justify-between">
@@ -883,7 +1012,6 @@ function ProductDetail() {
                 </div>
               </div>
             )}
-
           </div>
         </div>
 
@@ -900,7 +1028,8 @@ function ProductDetail() {
               DOWNLOAD TECHNICAL SPEC SHEET (PDF)
             </h3>
             <p className="text-[12px] text-neutral-600 mt-1 max-w-xl">
-              Export a complete printable spec sheet containing fabric composition, yarn counts, volume pricing tiers, and mill certifications for internal procurement review.
+              Export a complete printable spec sheet containing fabric composition, yarn counts,
+              volume pricing tiers, and mill certifications for internal procurement review.
             </p>
           </div>
           <button
@@ -918,7 +1047,10 @@ function ProductDetail() {
               <h3 className="favorit-heading text-[20px] font-bold text-black uppercase">
                 RECOMMENDED APPAREL STYLES FROM TIRUPPUR
               </h3>
-              <Link to="/products" className="text-[12px] font-bold text-black hover:opacity-60 flex items-center gap-1">
+              <Link
+                to="/products"
+                className="text-[12px] font-bold text-black hover:opacity-60 flex items-center gap-1"
+              >
                 VIEW ALL PRODUCTS <ChevronRight className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -929,7 +1061,6 @@ function ProductDetail() {
             </div>
           </div>
         )}
-
       </div>
 
       {/* ── REQUIREMENT 6: INTERACTIVE RFQ FORM MODAL POPUP ── */}
@@ -954,15 +1085,21 @@ function ProductDetail() {
               REQUEST BULK QUOTE (RFQ)
             </h3>
             <p className="text-[12px] text-neutral-600 mt-1 mb-6">
-              <strong className="text-black">{product.name}</strong> — Ex-Mill Tirupur Direct Quotation
+              <strong className="text-black">{product.name}</strong> — Ex-Mill Tirupur Direct
+              Quotation
             </p>
 
             {rfqSubmitted ? (
               <div className="py-10 text-center space-y-3 bg-[#f0efe7] border border-black p-6">
                 <CheckCircle2 className="w-12 h-12 text-black mx-auto stroke-[2]" />
-                <h4 className="text-[16px] font-bold uppercase text-black">RFQ SUBMITTED SUCCESSFULLY!</h4>
+                <h4 className="text-[16px] font-bold uppercase text-black">
+                  RFQ SUBMITTED SUCCESSFULLY!
+                </h4>
                 <p className="text-[12px] text-neutral-600 leading-relaxed max-w-md mx-auto">
-                  Quote Reference <strong className="text-black">#{rfqRefCode || "KG-RFQ-2026-8800"}</strong> generated and saved to admin portal. Our export procurement manager will email you official pricing within 24 hours.
+                  Quote Reference{" "}
+                  <strong className="text-black">#{rfqRefCode || "KG-RFQ-2026-8800"}</strong>{" "}
+                  generated and saved to admin portal. Our export procurement manager will email you
+                  official pricing within 24 hours.
                 </p>
               </div>
             ) : (
@@ -1055,7 +1192,9 @@ function ProductDetail() {
                   </label>
                   <input
                     type="file"
-                    onChange={(e) => setRfqForm({ ...rfqForm, fileName: e.target.files?.[0]?.name || "" })}
+                    onChange={(e) =>
+                      setRfqForm({ ...rfqForm, fileName: e.target.files?.[0]?.name || "" })
+                    }
                     className="w-full text-[11px] text-neutral-600 border border-neutral-300 p-2 cursor-pointer"
                   />
                   {rfqForm.fileName && (
@@ -1073,7 +1212,6 @@ function ProductDetail() {
                 </button>
               </form>
             )}
-
           </div>
         </div>
       )}
@@ -1100,7 +1238,9 @@ function ProductDetail() {
               {product.name} — WEAVE DETAIL
             </h3>
             <p className="text-[12px] text-neutral-600 mb-4">
-              Composition: <strong>{product.composition}</strong> | Weight: <strong>{product.gsm || "180 GSM"}</strong> | Yarn: <strong>{product.yarnCount || "30s Combed"}</strong>
+              Composition: <strong>{product.composition}</strong> | Weight:{" "}
+              <strong>{product.gsm || "180 GSM"}</strong> | Yarn:{" "}
+              <strong>{product.yarnCount || "30s Combed"}</strong>
             </p>
 
             <div className="relative aspect-square w-full bg-neutral-900 border border-black overflow-hidden group">
@@ -1110,7 +1250,8 @@ function ProductDetail() {
                 className="w-full h-full object-cover scale-150 group-hover:scale-[2.2] transition-transform duration-500 cursor-zoom-in"
               />
               <div className="absolute bottom-4 left-4 bg-black/80 text-white px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider flex items-center gap-2">
-                <Sparkles className="w-3 h-3 text-amber-300" /> HOVER OVER FABRIC FOR MICRO-WEAVE MAGNIFICATION
+                <Sparkles className="w-3 h-3 text-amber-300" /> HOVER OVER FABRIC FOR MICRO-WEAVE
+                MAGNIFICATION
               </div>
             </div>
 
@@ -1159,7 +1300,7 @@ function ProductDetail() {
                 className={`w-full h-full object-cover transition-all duration-300 ${is3dRotating ? "scale-[1.02]" : ""}`}
               />
               <div className="absolute top-4 right-4 bg-black text-white text-[10px] font-mono font-bold px-2 py-1">
-                ROTATION ANGLE: {((currentAngle % 4) * 90)}°
+                ROTATION ANGLE: {(currentAngle % 4) * 90}°
               </div>
             </div>
 
@@ -1174,7 +1315,9 @@ function ProductDetail() {
               <button
                 onClick={() => setIs3dRotating(!is3dRotating)}
                 className={`py-2 px-5 text-[11px] font-bold uppercase flex items-center gap-1.5 cursor-pointer ${
-                  is3dRotating ? "bg-black text-white" : "bg-[#f0efe7] border border-black text-black"
+                  is3dRotating
+                    ? "bg-black text-white"
+                    : "bg-[#f0efe7] border border-black text-black"
                 }`}
               >
                 {is3dRotating ? "PAUSE AUTO-ROTATE" : "AUTO-ROTATE 360°"}
@@ -1183,7 +1326,6 @@ function ProductDetail() {
           </div>
         </div>
       )}
-
     </div>
   );
 }

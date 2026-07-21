@@ -18,7 +18,11 @@ export const Route = createFileRoute("/products/")({
   head: () => ({
     meta: [
       { title: "Catalog & Lookbook — KANISHKA GARMENTS" },
-      { name: "description", content: "Explore the gallery-like activewear and apparel catalog. Minimalist knitwear, fabrics, and custom wholesale manufacturing." },
+      {
+        name: "description",
+        content:
+          "Explore the gallery-like activewear and apparel catalog. Minimalist knitwear, fabrics, and custom wholesale manufacturing.",
+      },
     ],
   }),
   validateSearch: searchSchema,
@@ -98,7 +102,7 @@ function ProductsPage() {
         (p) =>
           p.name.toLowerCase().includes(qLower) ||
           p.categoryLabel.toLowerCase().includes(qLower) ||
-          p.composition.toLowerCase().includes(qLower)
+          p.composition.toLowerCase().includes(qLower),
       );
     }
     if (rm === "readymade") list = list.filter((p) => p.isReadymade !== false);
@@ -116,7 +120,6 @@ function ProductsPage() {
   return (
     <div className="bg-white font-favorit text-black py-10 md:py-16">
       <div className="mx-auto max-w-[1440px] px-4 md:px-8">
-        
         {/* Editorial Heading */}
         <div className="mb-8 border-b border-black pb-6">
           <span className="text-[10px] font-bold uppercase tracking-[0.025em] text-neutral-500">
@@ -134,7 +137,6 @@ function ProductsPage() {
 
         {/* Search & Category Tab Switcher Bar */}
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 mb-8">
-          
           {/* Underlined Search Input */}
           <div className="relative w-full md:w-80">
             <input
@@ -182,7 +184,6 @@ function ProductsPage() {
           {/* Sidebar Filters */}
           <aside className="w-full lg:w-64 shrink-0 border-t lg:border-t-0 lg:border-r border-black pt-6 lg:pt-0 lg:pr-6">
             <div className="space-y-6">
-              
               {/* Type Filter */}
               <div>
                 <h4 className="text-[11px] font-bold uppercase tracking-[0.025em] text-black mb-3">
@@ -219,7 +220,9 @@ function ProductsPage() {
                     <button
                       onClick={() => setSearch({ type: undefined })}
                       className={`text-left py-1 hover:opacity-60 transition-opacity capitalize ${
-                        !type ? "font-bold text-black underline underline-offset-4" : "text-neutral-600 font-normal"
+                        !type
+                          ? "font-bold text-black underline underline-offset-4"
+                          : "text-neutral-600 font-normal"
                       }`}
                     >
                       All Sub-categories
@@ -229,7 +232,9 @@ function ProductsPage() {
                         key={st}
                         onClick={() => setSearch({ type: st })}
                         className={`text-left py-1 hover:opacity-60 transition-opacity capitalize ${
-                          type === st ? "font-bold text-black underline underline-offset-4" : "text-neutral-600 font-normal"
+                          type === st
+                            ? "font-bold text-black underline underline-offset-4"
+                            : "text-neutral-600 font-normal"
                         }`}
                       >
                         {st}
@@ -250,7 +255,9 @@ function ProductsPage() {
                       key={pr.label}
                       onClick={() => setPriceRange(i)}
                       className={`text-left py-1 hover:opacity-60 transition-opacity ${
-                        priceRange === i ? "font-bold text-black underline underline-offset-4" : "text-neutral-600 font-normal"
+                        priceRange === i
+                          ? "font-bold text-black underline underline-offset-4"
+                          : "text-neutral-600 font-normal"
                       }`}
                     >
                       {pr.label}
@@ -278,7 +285,9 @@ function ProductsPage() {
           {/* Main Grid View */}
           <div className="flex-1">
             <div className="flex items-center justify-between mb-6 pb-2 border-b border-neutral-200 text-[12px] text-neutral-500 font-normal">
-              <span>{filtered.length} ITEM{filtered.length !== 1 ? "S" : ""} FOUND</span>
+              <span>
+                {filtered.length} ITEM{filtered.length !== 1 ? "S" : ""} FOUND
+              </span>
               {filtered.length > 0 && (
                 <span>
                   RANGE: {formatINR(Math.min(...filtered.map((p) => p.wholesalePrice)))} –{" "}
@@ -295,7 +304,9 @@ function ProductsPage() {
               </div>
             ) : (
               <div className="py-24 text-center border border-black/10 p-8 font-favorit">
-                <p className="text-[16px] font-normal text-black">NO PRODUCTS MATCH YOUR SELECTION</p>
+                <p className="text-[16px] font-normal text-black">
+                  NO PRODUCTS MATCH YOUR SELECTION
+                </p>
                 <p className="text-[12px] text-neutral-500 mt-2">
                   Try adjusting your category filter or search query.
                 </p>
@@ -324,14 +335,14 @@ function ProductsPage() {
               Need custom PMS pantone matching or tailored GSM weights?
             </h3>
             <p className="text-[12px] text-neutral-600 mt-1">
-              Our Tirupur spinning & knitting facility manufactures custom specs with 48-hour quote turnaround.
+              Our Tirupur spinning & knitting facility manufactures custom specs with 48-hour quote
+              turnaround.
             </p>
           </div>
           <Link to="/wholesale" className="btn-filled-add py-3 px-8 text-[12px] whitespace-nowrap">
             REQUEST MILL QUOTE
           </Link>
         </div>
-
       </div>
     </div>
   );

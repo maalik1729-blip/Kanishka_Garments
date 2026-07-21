@@ -18,7 +18,8 @@ export function ChatWidget() {
             </button>
           </div>
           <p className="mb-3 text-neutral-600 leading-relaxed">
-            Welcome to Kanishka Garments. Ask us about bulk MOQ orders, custom lab-dips, or activewear sample kits.
+            Welcome to Kanishka Garments. Ask us about bulk MOQ orders, custom lab-dips, or
+            activewear sample kits.
           </p>
           <div className="space-y-2">
             <input

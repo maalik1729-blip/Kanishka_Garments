@@ -6,14 +6,14 @@ export function SiteFooter() {
     <footer className="mt-16 bg-[#f0efe7] text-black font-favorit border-t border-black">
       <div className="mx-auto max-w-[1440px] px-6 lg:px-12 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
-          
           {/* Column 1: Newsletter / Editorial voice */}
           <div className="flex flex-col">
             <h4 className="text-[12px] font-medium uppercase tracking-[0.025em] text-black mb-3">
               THE EDITORIAL LOOKBOOK
             </h4>
             <p className="text-[12px] text-neutral-600 font-normal leading-relaxed mb-4">
-              Subscribe for exclusive seasonal lookbook drops, fabric lab-dip updates, and wholesale garment availability directly from our Tirupur mill.
+              Subscribe for exclusive seasonal lookbook drops, fabric lab-dip updates, and wholesale
+              garment availability directly from our Tirupur mill.
             </p>
             <form onSubmit={(e) => e.preventDefault()} className="flex items-center gap-2">
               <input
@@ -37,11 +37,31 @@ export function SiteFooter() {
               SHOP COLLECTION
             </h4>
             <ul className="space-y-2 text-[12px] text-black font-normal">
-              <li><Link to="/products" className="hover:opacity-60 transition-opacity">Activewear & Sets</Link></li>
-              <li><Link to="/products" className="hover:opacity-60 transition-opacity">Hoodies & Sweats</Link></li>
-              <li><Link to="/products" className="hover:opacity-60 transition-opacity">Cotton Fabrics & Knits</Link></li>
-              <li><Link to="/products" className="hover:opacity-60 transition-opacity">T-Shirts & Oversized Tops</Link></li>
-              <li><Link to="/products" className="hover:opacity-60 transition-opacity">New Arrivals</Link></li>
+              <li>
+                <Link to="/products" className="hover:opacity-60 transition-opacity">
+                  Activewear & Sets
+                </Link>
+              </li>
+              <li>
+                <Link to="/products" className="hover:opacity-60 transition-opacity">
+                  Hoodies & Sweats
+                </Link>
+              </li>
+              <li>
+                <Link to="/products" className="hover:opacity-60 transition-opacity">
+                  Cotton Fabrics & Knits
+                </Link>
+              </li>
+              <li>
+                <Link to="/products" className="hover:opacity-60 transition-opacity">
+                  T-Shirts & Oversized Tops
+                </Link>
+              </li>
+              <li>
+                <Link to="/products" className="hover:opacity-60 transition-opacity">
+                  New Arrivals
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -51,10 +71,26 @@ export function SiteFooter() {
               MANUFACTURING
             </h4>
             <ul className="space-y-2 text-[12px] text-black font-normal">
-              <li><Link to="/wholesale" className="hover:opacity-60 transition-opacity">Wholesale Inquiry & RFQ</Link></li>
-              <li><Link to="/about" className="hover:opacity-60 transition-opacity">Mill Architecture & Capacity</Link></li>
-              <li><Link to="/about" className="hover:opacity-60 transition-opacity">Private Labeling & OEM</Link></li>
-              <li><Link to="/contact" className="hover:opacity-60 transition-opacity">Sample Kit Request</Link></li>
+              <li>
+                <Link to="/wholesale" className="hover:opacity-60 transition-opacity">
+                  Wholesale Inquiry & RFQ
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="hover:opacity-60 transition-opacity">
+                  Mill Architecture & Capacity
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="hover:opacity-60 transition-opacity">
+                  Private Labeling & OEM
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="hover:opacity-60 transition-opacity">
+                  Sample Kit Request
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -64,25 +100,33 @@ export function SiteFooter() {
               HEADQUARTERS
             </h4>
             <p className="text-[12px] text-neutral-600 font-normal leading-relaxed">
-              Kanishka Garments Textile Hub<br />
-              42 Kumaran Nagar, Tirupur 641 604<br />
+              Kanishka Garments Textile Hub
+              <br />
+              42 Kumaran Nagar, Tirupur 641 604
+              <br />
               Tamil Nadu, India
             </p>
             <p className="mt-3 text-[12px] text-black font-normal">
-              Direct: +91 421 420 4200<br />
+              Direct: +91 421 420 4200
+              <br />
               Email: wholesale@kanishkagarments.com
             </p>
           </div>
-
         </div>
 
         {/* Hairline Divider & Copyright */}
         <div className="mt-16 pt-8 border-t border-neutral-300 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-neutral-500 font-normal">
           <p>© {new Date().getFullYear()} KANISHKA GARMENTS. ALL RIGHTS RESERVED.</p>
           <div className="flex gap-6">
-            <Link to="/about" className="hover:text-black">PRIVACY POLICY</Link>
-            <Link to="/about" className="hover:text-black">TERMS OF SERVICE</Link>
-            <Link to="/contact" className="hover:text-black">LOCATION & MAP</Link>
+            <Link to="/about" className="hover:text-black">
+              PRIVACY POLICY
+            </Link>
+            <Link to="/about" className="hover:text-black">
+              TERMS OF SERVICE
+            </Link>
+            <Link to="/contact" className="hover:text-black">
+              LOCATION & MAP
+            </Link>
           </div>
         </div>
       </div>

@@ -33,7 +33,7 @@ export function saveQuoteRequests(quotes: QuoteRequest[]): void {
 }
 
 export function addQuoteRequest(
-  quote: Omit<QuoteRequest, "id" | "refCode" | "status" | "createdAt">
+  quote: Omit<QuoteRequest, "id" | "refCode" | "status" | "createdAt">,
 ): QuoteRequest {
   const existing = getQuoteRequests();
   const refCode = `KG-RFQ-2026-${Math.floor(1000 + Math.random() * 9000)}`;

@@ -8,7 +8,11 @@ export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
       { title: "Contact Mill — KANISHKA GARMENTS" },
-      { name: "description", content: "Reach our Tirupur textile mill team directly. Address, phone, email, and inquiry form." },
+      {
+        name: "description",
+        content:
+          "Reach our Tirupur textile mill team directly. Address, phone, email, and inquiry form.",
+      },
     ],
   }),
   component: ContactPage,
@@ -35,14 +39,15 @@ function ContactPage() {
     setBusy(true);
     await new Promise((r) => setTimeout(r, 500));
     setBusy(false);
-    toast.success("Message sent", { description: "We will get back to you within 1 business day." });
+    toast.success("Message sent", {
+      description: "We will get back to you within 1 business day.",
+    });
     form.reset();
   };
 
   return (
     <div className="bg-white font-favorit text-black py-12 md:py-20">
       <div className="mx-auto max-w-[1440px] px-4 md:px-8">
-        
         <div className="max-w-xl mb-12">
           <span className="text-[10px] font-bold uppercase tracking-[0.025em] text-neutral-500">
             GET IN TOUCH
@@ -51,20 +56,24 @@ function ContactPage() {
             Talk to the Mill.
           </h1>
           <p className="text-[13px] text-neutral-600 font-normal mt-2 leading-relaxed">
-            For sales inquiries, custom sample kits, factory visits, or private label consultations, our Tirupur office responds within 1 business day.
+            For sales inquiries, custom sample kits, factory visits, or private label consultations,
+            our Tirupur office responds within 1 business day.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          
           {/* Left Column: Direct Contact Cards */}
           <div className="lg:col-span-5 space-y-4">
             <div className="bg-[#f0efe7] p-6 border border-black space-y-2">
               <MapPin className="w-5 h-5 text-black" />
-              <h4 className="text-[12px] font-bold uppercase text-black pt-1">HEAD OFFICE & MILL</h4>
+              <h4 className="text-[12px] font-bold uppercase text-black pt-1">
+                HEAD OFFICE & MILL
+              </h4>
               <p className="text-[12px] text-neutral-700 font-normal leading-relaxed">
-                42 Kumaran Nagar<br />
-                Tirupur 641 604<br />
+                42 Kumaran Nagar
+                <br />
+                Tirupur 641 604
+                <br />
                 Tamil Nadu, India
               </p>
             </div>
@@ -73,8 +82,15 @@ function ContactPage() {
               <Phone className="w-5 h-5 text-black" />
               <h4 className="text-[12px] font-bold uppercase text-black pt-1">PHONE & WHATSAPP</h4>
               <p className="text-[12px] text-neutral-700 font-normal leading-relaxed">
-                Wholesale: <a href="tel:+914214204200" className="underline font-medium text-black">+91 421 420 4200</a><br />
-                Retail: <a href="tel:+914214204201" className="underline font-medium text-black">+91 421 420 4201</a>
+                Wholesale:{" "}
+                <a href="tel:+914214204200" className="underline font-medium text-black">
+                  +91 421 420 4200
+                </a>
+                <br />
+                Retail:{" "}
+                <a href="tel:+914214204201" className="underline font-medium text-black">
+                  +91 421 420 4201
+                </a>
               </p>
             </div>
 
@@ -82,8 +98,21 @@ function ContactPage() {
               <Mail className="w-5 h-5 text-black" />
               <h4 className="text-[12px] font-bold uppercase text-black pt-1">EMAIL INQUIRIES</h4>
               <p className="text-[12px] text-neutral-700 font-normal leading-relaxed">
-                Exports: <a href="mailto:wholesale@kanishkagarments.com" className="underline font-medium text-black">wholesale@kanishkagarments.com</a><br />
-                General: <a href="mailto:info@kanishkagarments.com" className="underline font-medium text-black">info@kanishkagarments.com</a>
+                Exports:{" "}
+                <a
+                  href="mailto:wholesale@kanishkagarments.com"
+                  className="underline font-medium text-black"
+                >
+                  wholesale@kanishkagarments.com
+                </a>
+                <br />
+                General:{" "}
+                <a
+                  href="mailto:info@kanishkagarments.com"
+                  className="underline font-medium text-black"
+                >
+                  info@kanishkagarments.com
+                </a>
               </p>
             </div>
           </div>
@@ -96,7 +125,10 @@ function ContactPage() {
 
             <form onSubmit={onSubmit} className="space-y-4">
               <div>
-                <label htmlFor="name" className="block text-[10px] font-bold uppercase text-black mb-1.5">
+                <label
+                  htmlFor="name"
+                  className="block text-[10px] font-bold uppercase text-black mb-1.5"
+                >
                   YOUR NAME *
                 </label>
                 <input
@@ -110,7 +142,10 @@ function ContactPage() {
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-[10px] font-bold uppercase text-black mb-1.5">
+                <label
+                  htmlFor="email"
+                  className="block text-[10px] font-bold uppercase text-black mb-1.5"
+                >
                   EMAIL ADDRESS *
                 </label>
                 <input
@@ -125,7 +160,10 @@ function ContactPage() {
               </div>
 
               <div>
-                <label htmlFor="subject" className="block text-[10px] font-bold uppercase text-black mb-1.5">
+                <label
+                  htmlFor="subject"
+                  className="block text-[10px] font-bold uppercase text-black mb-1.5"
+                >
                   SUBJECT *
                 </label>
                 <input
@@ -139,7 +177,10 @@ function ContactPage() {
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-[10px] font-bold uppercase text-black mb-1.5">
+                <label
+                  htmlFor="message"
+                  className="block text-[10px] font-bold uppercase text-black mb-1.5"
+                >
                   MESSAGE *
                 </label>
                 <textarea
@@ -168,9 +209,7 @@ function ContactPage() {
               </button>
             </form>
           </div>
-
         </div>
-
       </div>
     </div>
   );

@@ -160,14 +160,20 @@ export const staticProducts: Product[] = [
     dyeingFinishing: "Bio-washed, Silicon-washed, Reactive Dyes",
     printingCompatibility: "Screen Print, DTG, Puff Print, High-density Embroidery",
     qualityParameters: "Pre-shrunk (Under 3% shrinkage), ISO Grade 4+ Color Fastness",
-    samplePolicy: "Sample kit available in 3–5 days. Sample cost 100% refunded on bulk order confirmation.",
+    samplePolicy:
+      "Sample kit available in 3–5 days. Sample cost 100% refunded on bulk order confirmation.",
     customizationOptions: [
       "Custom Woven Neck Labels & Size Tags",
       "Custom PMS/TPX Pantone Color Matching",
       "US / EU / Asian Tech-Pack Fit Adoption",
       "Single Polybag & Recycled Paper Packaging",
     ],
-    certifications: ["OEKO-TEX Standard 100", "GOTS Organic Certified", "BSCI Audit Passed", "AQL 2.5 QC Standard"],
+    certifications: [
+      "OEKO-TEX Standard 100",
+      "GOTS Organic Certified",
+      "BSCI Audit Passed",
+      "AQL 2.5 QC Standard",
+    ],
     colors: ["Black", "White", "Navy Blue", "Melange Grey", "Olive Green", "Maroon"],
     colorSwatches: [
       { name: "Black", hex: "#1A1A1A" },
@@ -286,7 +292,8 @@ export const staticProducts: Product[] = [
     categoryLabel: "Sweats & Hoodies",
     subType: "hoodie",
     isReadymade: true,
-    shortDescription: "300–340 GSM Cotton Fleece, Brushed Interior, Matching drawstrings & kangaroo pocket.",
+    shortDescription:
+      "300–340 GSM Cotton Fleece, Brushed Interior, Matching drawstrings & kangaroo pocket.",
     description:
       "Heavyweight 300–340 GSM cotton fleece hoodies engineered with plush brushed interior for superior warmth. Double-layered hood, flat drawstrings, heavy 2x2 rib cuffs, and roomy front kangaroo pocket.",
     image: imgP4,
@@ -332,7 +339,8 @@ export const staticProducts: Product[] = [
     categoryLabel: "Activewear & Bottoms",
     subType: "jogger",
     isReadymade: true,
-    shortDescription: "240–280 GSM French Terry / Interlock, Elastic waistband, Drawstring, Side zip pockets.",
+    shortDescription:
+      "240–280 GSM French Terry / Interlock, Elastic waistband, Drawstring, Side zip pockets.",
     description:
       "Ergonomic activewear joggers crafted from 240–280 GSM French Terry. Includes high-grade elastic waistband with cord drawstrings, reinforced crotch gusset, deep side zip pockets, and snug ankle ribbing.",
     image: imgP5,
@@ -378,7 +386,8 @@ export const staticProducts: Product[] = [
     categoryLabel: "Gents & Activewear",
     subType: "dry-fit tee",
     isReadymade: true,
-    shortDescription: "140–160 GSM Dry-Fit Polyester Spandex, Moisture-wicking treatment, Anti-microbial.",
+    shortDescription:
+      "140–160 GSM Dry-Fit Polyester Spandex, Moisture-wicking treatment, Anti-microbial.",
     description:
       "Performance activewear gym tops crafted from 140–160 GSM lightweight micro-polyester spandex blend. Quick-dry moisture-wicking technology, anti-microbial finish, raglan sleeves, and flatlock anti-chafing seams.",
     image: imgP6,
@@ -400,7 +409,11 @@ export const staticProducts: Product[] = [
       "Custom Tagless Neck Heat Press Labels",
       "Eco-friendly Polybag Packaging",
     ],
-    certifications: ["OEKO-TEX Standard 100", "ISO 14001 Environmental Audit", "AQL 2.5 QC Standard"],
+    certifications: [
+      "OEKO-TEX Standard 100",
+      "ISO 14001 Environmental Audit",
+      "AQL 2.5 QC Standard",
+    ],
     colors: ["Stealth Black", "Electric Blue", "Cool Grey", "Neon Red"],
     colorSwatches: [
       { name: "Stealth Black", hex: "#121212" },
@@ -492,7 +505,11 @@ export const staticProducts: Product[] = [
       "Custom Baby Gift Box Packaging",
       "Custom Pantone Pastel Shade Matching",
     ],
-    certifications: ["GOTS Organic Global Standard", "OEKO-TEX Class 1 Baby Certified", "AQL 2.5 QC Standard"],
+    certifications: [
+      "GOTS Organic Global Standard",
+      "OEKO-TEX Class 1 Baby Certified",
+      "AQL 2.5 QC Standard",
+    ],
     colors: ["Pastel Yellow", "Sky Blue", "Baby Pink", "Natural Ecru", "Mint Green"],
     colorSwatches: [
       { name: "Pastel Yellow", hex: "#FFF2B2" },
@@ -574,7 +591,8 @@ export const staticProducts: Product[] = [
     gsm: "160–200 GSM",
     yarnCount: "30s Combed Compact Yarn",
     dyeingFinishing: "High Temperature Soft Dyeing, Bio-polished, Pre-shrunk",
-    printingCompatibility: "Suitable for Screen Printing, Reactive Digital Printing, Sublimation Blends",
+    printingCompatibility:
+      "Suitable for Screen Printing, Reactive Digital Printing, Sublimation Blends",
     qualityParameters: "Zero spirality (Under 2%), ISO Grade 4.5 Color Fastness",
     samplePolicy: "Fabric swatch hanger book & 1-meter sample roll in 3 days.",
     customizationOptions: [

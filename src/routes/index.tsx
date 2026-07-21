@@ -5,9 +5,12 @@ import { staticProducts, getAdminProducts } from "@/lib/products";
 import type { Product } from "@/lib/products";
 import heroImg from "@/assets/hero.png";
 
-const EDITORIAL_LEFT = "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&h=1000&fit=crop&q=85&auto=format";
-const EDITORIAL_RIGHT = "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=800&h=1000&fit=crop&q=85&auto=format";
-const BLUSH_SECTION_IMG = "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1000&h=650&fit=crop&q=85&auto=format";
+const EDITORIAL_LEFT =
+  "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&h=1000&fit=crop&q=85&auto=format";
+const EDITORIAL_RIGHT =
+  "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=800&h=1000&fit=crop&q=85&auto=format";
+const BLUSH_SECTION_IMG =
+  "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1000&h=650&fit=crop&q=85&auto=format";
 
 const CATEGORY_TABS = [
   { id: "ALL", label: "ALL COLLECTION" },
@@ -56,7 +59,12 @@ function Index() {
   const filteredProducts = allProducts.filter((p) => {
     if (activeTab === "ALL") return true;
     if (activeTab === "ACTIVEWEAR") return p.category === "ladies" || p.category === "gents";
-    if (activeTab === "HOODIES") return p.name.toLowerCase().includes("kurti") || p.name.toLowerCase().includes("tee") || p.name.toLowerCase().includes("shirt");
+    if (activeTab === "HOODIES")
+      return (
+        p.name.toLowerCase().includes("kurti") ||
+        p.name.toLowerCase().includes("tee") ||
+        p.name.toLowerCase().includes("shirt")
+      );
     if (activeTab === "LADIES") return p.category === "ladies";
     if (activeTab === "GENTS") return p.category === "gents";
     if (activeTab === "FABRIC") return p.category === "fabric" || p.category === "home-textiles";
@@ -65,15 +73,12 @@ function Index() {
 
   return (
     <div className="bg-white font-favorit text-black selection:bg-black selection:text-white">
-      
       {/* ── 1. HERO SECTION — Poster Style Layout with hero.png on Right ── */}
       <section className="w-full bg-[#f0efe7] border-b border-black">
         <div className="mx-auto max-w-[1440px] px-6 lg:px-12 py-10 lg:py-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            
             {/* Left Content (Garment Manufacturing Poster Style) */}
             <div className="lg:col-span-6 flex flex-col justify-between space-y-6">
-              
               {/* Top Logo / Brand Badge */}
               <div className="flex flex-col items-start">
                 <div className="border border-black px-3 py-1 font-bold text-[14px] leading-none tracking-[0.05em] uppercase text-black rounded-md">
@@ -94,7 +99,8 @@ function Index() {
 
               {/* Subtitle */}
               <p className="text-[14px] sm:text-[15px] text-neutral-700 font-normal leading-relaxed max-w-md">
-                End-to-end OEM garment production, custom private label branding, heavy GSM knits & wholesale textile manufacturing direct from Tirupur.
+                End-to-end OEM garment production, custom private label branding, heavy GSM knits &
+                wholesale textile manufacturing direct from Tirupur.
               </p>
 
               {/* Action Buttons */}
@@ -122,7 +128,6 @@ function Index() {
                   <div className="w-12 h-[4px] bg-black" />
                 </div>
               </div>
-
             </div>
 
             {/* Right Column: Hero Image (hero.png) */}
@@ -135,7 +140,6 @@ function Index() {
                 />
               </div>
             </div>
-
           </div>
         </div>
       </section>
@@ -198,9 +202,18 @@ function Index() {
               className="w-full h-full object-cover rounded-none transition-transform duration-500 hover:scale-[1.01]"
             />
             <div className="absolute bottom-6 left-6 bg-white/90 backdrop-blur-sm p-4 max-w-xs border border-black/10">
-              <span className="text-[10px] uppercase font-bold tracking-[0.025em] text-neutral-500">LOOKBOOK SPREAD 01</span>
-              <h3 className="text-[16px] font-normal text-black mt-1">Form & Function Activewear</h3>
-              <Link to="/products" className="text-[11px] font-medium underline underline-offset-4 mt-2 inline-block">EXPLORE LOOKBOOK →</Link>
+              <span className="text-[10px] uppercase font-bold tracking-[0.025em] text-neutral-500">
+                LOOKBOOK SPREAD 01
+              </span>
+              <h3 className="text-[16px] font-normal text-black mt-1">
+                Form & Function Activewear
+              </h3>
+              <Link
+                to="/products"
+                className="text-[11px] font-medium underline underline-offset-4 mt-2 inline-block"
+              >
+                EXPLORE LOOKBOOK →
+              </Link>
             </div>
           </div>
 
@@ -211,9 +224,16 @@ function Index() {
               className="w-full h-full object-cover rounded-none transition-transform duration-500 hover:scale-[1.01]"
             />
             <div className="absolute bottom-6 left-6 bg-white/90 backdrop-blur-sm p-4 max-w-xs border border-black/10">
-              <span className="text-[10px] uppercase font-bold tracking-[0.025em] text-neutral-500">LOOKBOOK SPREAD 02</span>
+              <span className="text-[10px] uppercase font-bold tracking-[0.025em] text-neutral-500">
+                LOOKBOOK SPREAD 02
+              </span>
               <h3 className="text-[16px] font-normal text-black mt-1">Direct Tirupur Mill Knits</h3>
-              <Link to="/wholesale" className="text-[11px] font-medium underline underline-offset-4 mt-2 inline-block">REQUEST MILL SPECS →</Link>
+              <Link
+                to="/wholesale"
+                className="text-[11px] font-medium underline underline-offset-4 mt-2 inline-block"
+              >
+                REQUEST MILL SPECS →
+              </Link>
             </div>
           </div>
         </div>
@@ -230,7 +250,9 @@ function Index() {
               Monochrome Precision. Vertically Integrated Textile Manufacturing.
             </h2>
             <p className="text-[14px] leading-relaxed text-neutral-700">
-              Founded in Tirupur, India, Kanishka Garments operates a gallery-like manufacturing canvas. We produce 100% combed cotton, biowashed fleece, activewear sets, and custom yarn for global private label partners and wholesale buyers.
+              Founded in Tirupur, India, Kanishka Garments operates a gallery-like manufacturing
+              canvas. We produce 100% combed cotton, biowashed fleece, activewear sets, and custom
+              yarn for global private label partners and wholesale buyers.
             </p>
             <div className="pt-4 flex flex-wrap gap-4">
               <Link to="/wholesale" className="btn-filled-add py-3 px-8 text-[12px] font-medium">
@@ -269,7 +291,6 @@ function Index() {
           ))}
         </div>
       </section>
-
     </div>
   );
 }

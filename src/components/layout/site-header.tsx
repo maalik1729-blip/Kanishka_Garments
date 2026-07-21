@@ -17,23 +17,20 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 bg-white font-favorit">
-
       {/* Main Header Bar */}
       <div className="border-b border-black bg-white px-4 md:px-8 py-[6px]">
         <div className="mx-auto flex max-w-[1440px] items-center justify-between min-h-[52px]">
-          
           {/* Left: Desktop Category Links */}
           <nav className="hidden lg:flex items-center gap-6">
             {categoryLinks.map((item) => {
-              const active =
-                pathname === item.to || pathname.startsWith(item.to + "/");
+              const active = pathname === item.to || pathname.startsWith(item.to + "/");
               return (
                 <Link
                   key={item.label}
                   to={item.to}
                   className={cn(
                     "text-[12px] font-medium tracking-[0.025em] text-black hover:opacity-60 transition-opacity",
-                    active && "underline underline-offset-4 decoration-[1px]"
+                    active && "underline underline-offset-4 decoration-[1px]",
                   )}
                 >
                   {item.label}
@@ -48,7 +45,11 @@ export function SiteHeader() {
             className="lg:hidden p-1 text-black cursor-pointer"
             aria-label="Toggle menu"
           >
-            {mobileOpen ? <X className="w-5 h-5 stroke-[1.5]" /> : <Menu className="w-5 h-5 stroke-[1.5]" />}
+            {mobileOpen ? (
+              <X className="w-5 h-5 stroke-[1.5]" />
+            ) : (
+              <Menu className="w-5 h-5 stroke-[1.5]" />
+            )}
           </button>
 
           {/* Center: Brand Wordmark (Favorit 30px Weight 700) */}

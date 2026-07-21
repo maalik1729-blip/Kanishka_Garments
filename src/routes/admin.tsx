@@ -1,20 +1,39 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 import {
-  LogOut, Plus, Trash2, Package, Eye, EyeOff, LayoutDashboard,
-  ShoppingBag, Save, Edit2, ChevronDown, ChevronUp, ArrowLeft, Menu,
-  Shield, Lock, Key, Search, Sparkles, Layers,
-  FileText, CheckCircle2, AlertTriangle, Filter, RotateCcw, X, MessageSquare
+  LogOut,
+  Plus,
+  Trash2,
+  Package,
+  Eye,
+  EyeOff,
+  LayoutDashboard,
+  ShoppingBag,
+  Save,
+  Edit2,
+  ChevronDown,
+  ChevronUp,
+  ArrowLeft,
+  Menu,
+  Shield,
+  Lock,
+  Key,
+  Search,
+  Sparkles,
+  Layers,
+  FileText,
+  CheckCircle2,
+  AlertTriangle,
+  Filter,
+  RotateCcw,
+  X,
+  MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  staticProducts, getAdminProducts, saveAdminProducts
-} from "@/lib/products";
+import { staticProducts, getAdminProducts, saveAdminProducts } from "@/lib/products";
 import type { Product } from "@/lib/products";
 import { formatINR } from "@/lib/cart";
-import {
-  getQuoteRequests, updateQuoteStatus, deleteQuoteRequest
-} from "@/lib/quotes";
+import { getQuoteRequests, updateQuoteStatus, deleteQuoteRequest } from "@/lib/quotes";
 import type { QuoteRequest } from "@/lib/quotes";
 
 const ADMIN_AUTH_KEY = "KANISHKA_admin_auth";
@@ -42,10 +61,13 @@ export type RateLimitSettings = {
 };
 
 export function getRateLimitSettings(): RateLimitSettings {
-  if (typeof window === "undefined") return { maxAttempts: 5, lockoutDurationMinutes: 15, idleTimeoutMinutes: 30 };
+  if (typeof window === "undefined")
+    return { maxAttempts: 5, lockoutDurationMinutes: 15, idleTimeoutMinutes: 30 };
   try {
     const raw = localStorage.getItem(RATE_LIMIT_SETTINGS_KEY);
-    return raw ? { idleTimeoutMinutes: 30, ...JSON.parse(raw) } : { maxAttempts: 5, lockoutDurationMinutes: 15, idleTimeoutMinutes: 30 };
+    return raw
+      ? { idleTimeoutMinutes: 30, ...JSON.parse(raw) }
+      : { maxAttempts: 5, lockoutDurationMinutes: 15, idleTimeoutMinutes: 30 };
   } catch {
     return { maxAttempts: 5, lockoutDurationMinutes: 15, idleTimeoutMinutes: 30 };
   }
@@ -70,10 +92,7 @@ export function saveStoredPasswordHash(hash: string) {
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
-    meta: [
-      { title: "Admin Portal — KANISHKA GARMENTS" },
-      { robots: "noindex, nofollow" },
-    ],
+    meta: [{ title: "Admin Portal — KANISHKA GARMENTS" }, { robots: "noindex, nofollow" }],
   }),
   component: AdminPage,
 });
@@ -130,19 +149,19 @@ const EMPTY_FORM: NewProductForm = {
 };
 
 const categoryOptions: { value: Product["category"]; label: string }[] = [
-  { value: "gents",         label: "Gents & Unisex Wear" },
-  { value: "ladies",        label: "Ladies Wear" },
-  { value: "activewear",    label: "Activewear" },
-  { value: "sweats",        label: "Sweats & Hoodies" },
-  { value: "kids",          label: "Kids & Baby Wear" },
-  { value: "innerwear",     label: "Innerwear & Vests" },
-  { value: "fabric",        label: "Raw Knitted Fabrics" },
-  { value: "knitwear",      label: "Knitwear" },
+  { value: "gents", label: "Gents & Unisex Wear" },
+  { value: "ladies", label: "Ladies Wear" },
+  { value: "activewear", label: "Activewear" },
+  { value: "sweats", label: "Sweats & Hoodies" },
+  { value: "kids", label: "Kids & Baby Wear" },
+  { value: "innerwear", label: "Innerwear & Vests" },
+  { value: "fabric", label: "Raw Knitted Fabrics" },
+  { value: "knitwear", label: "Knitwear" },
   { value: "home-textiles", label: "Home Textiles" },
-  { value: "yarn",          label: "Yarn" },
-  { value: "boys",          label: "Boys" },
-  { value: "girls",         label: "Girls" },
-  { value: "elders",        label: "Elders" },
+  { value: "yarn", label: "Yarn" },
+  { value: "boys", label: "Boys" },
+  { value: "girls", label: "Girls" },
+  { value: "elders", label: "Elders" },
 ];
 
 // ── MAIN WRAPPER COMPONENT ─────────────────────────────────────────────────
@@ -237,10 +256,14 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
           const lockTime = Date.now() + settings.lockoutDurationMinutes * 60 * 1000;
           setLockoutUntil(lockTime);
           localStorage.setItem(RATE_LIMIT_LOCKOUT_KEY, String(lockTime));
-          setError(`Too many failed login attempts (${newAttempts}/${settings.maxAttempts}). Account locked for ${settings.lockoutDurationMinutes}m.`);
+          setError(
+            `Too many failed login attempts (${newAttempts}/${settings.maxAttempts}). Account locked for ${settings.lockoutDurationMinutes}m.`,
+          );
         } else {
           const remainingAttempts = settings.maxAttempts - newAttempts;
-          setError(`Invalid username or password. (${remainingAttempts} attempt${remainingAttempts > 1 ? "s" : ""} remaining)`);
+          setError(
+            `Invalid username or password. (${remainingAttempts} attempt${remainingAttempts > 1 ? "s" : ""} remaining)`,
+          );
         }
         setLoading(false);
       }
@@ -266,8 +289,12 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
               className="mx-auto h-14 w-14 rounded-2xl shadow-lg border border-slate-700 bg-black"
             />
             <div>
-              <h1 className="font-display text-xl font-bold tracking-wider text-white uppercase">KANISHKA GARMENTS</h1>
-              <p className="text-xs uppercase tracking-widest text-slate-400 mt-1">Management Portal</p>
+              <h1 className="font-display text-xl font-bold tracking-wider text-white uppercase">
+                KANISHKA GARMENTS
+              </h1>
+              <p className="text-xs uppercase tracking-widest text-slate-400 mt-1">
+                Management Portal
+              </p>
             </div>
           </div>
 
@@ -343,7 +370,11 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
               disabled={loading || isLockedOut}
               className="mt-2 w-full rounded-xl bg-white py-3 text-sm font-bold text-slate-950 shadow-md transition hover:bg-slate-100 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
             >
-              {loading ? "Verifying SHA-256 Hash…" : isLockedOut ? "Account Locked" : "Sign In to Dashboard"}
+              {loading
+                ? "Verifying SHA-256 Hash…"
+                : isLockedOut
+                  ? "Account Locked"
+                  : "Sign In to Dashboard"}
             </button>
           </form>
 
@@ -363,7 +394,9 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [adminProducts, setAdminProducts] = useState<Product[]>([]);
   const [quotes, setQuotes] = useState<QuoteRequest[]>([]);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "add" | "manage" | "quotes" | "settings">("dashboard");
+  const [activeTab, setActiveTab] = useState<
+    "dashboard" | "add" | "manage" | "quotes" | "settings"
+  >("dashboard");
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [form, setForm] = useState<NewProductForm>(EMPTY_FORM);
   const [formError, setFormError] = useState("");
@@ -383,7 +416,9 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
   const navigate = useNavigate();
 
-  const isFormDirty = Boolean(form.name.trim() || form.wholesalePrice || form.shortDescription.trim());
+  const isFormDirty = Boolean(
+    form.name.trim() || form.wholesalePrice || form.shortDescription.trim(),
+  );
 
   // Protect tab closing/refreshing when form is dirty
   useEffect(() => {
@@ -404,9 +439,12 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     let timeoutId: any;
     const resetTimer = () => {
       clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        onLogout();
-      }, settings.idleTimeoutMinutes * 60 * 1000);
+      timeoutId = setTimeout(
+        () => {
+          onLogout();
+        },
+        settings.idleTimeoutMinutes * 60 * 1000,
+      );
     };
 
     const events = ["mousedown", "mousemove", "keydown", "scroll", "touchstart"];
@@ -441,10 +479,22 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
   const allProducts = useMemo(() => [...staticProducts, ...adminProducts], [adminProducts]);
   const totalProducts = allProducts.length;
-  const totalCategories = useMemo(() => new Set(allProducts.map((p) => p.category)).size, [allProducts]);
-  const readymadeCount = useMemo(() => allProducts.filter((p) => p.isReadymade !== false).length, [allProducts]);
-  const fabricCount = useMemo(() => allProducts.filter((p) => p.isReadymade === false).length, [allProducts]);
-  const pendingQuotesCount = useMemo(() => quotes.filter((q) => q.status === "Pending").length, [quotes]);
+  const totalCategories = useMemo(
+    () => new Set(allProducts.map((p) => p.category)).size,
+    [allProducts],
+  );
+  const readymadeCount = useMemo(
+    () => allProducts.filter((p) => p.isReadymade !== false).length,
+    [allProducts],
+  );
+  const fabricCount = useMemo(
+    () => allProducts.filter((p) => p.isReadymade === false).length,
+    [allProducts],
+  );
+  const pendingQuotesCount = useMemo(
+    () => quotes.filter((q) => q.status === "Pending").length,
+    [quotes],
+  );
 
   // Filtered Products for Manage tab
   const filteredProducts = useMemo(() => {
@@ -504,14 +554,30 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     setSuccessMsg("");
 
     if (!form.name.trim()) return setFormError("Product name is required.");
-    if (!form.wholesalePrice || isNaN(Number(form.wholesalePrice))) return setFormError("Valid wholesale price is required.");
+    if (!form.wholesalePrice || isNaN(Number(form.wholesalePrice)))
+      return setFormError("Valid wholesale price is required.");
     if (!form.moq || isNaN(Number(form.moq))) return setFormError("Valid MOQ is required.");
     if (!form.shortDescription.trim()) return setFormError("Short description is required.");
     if (!form.composition.trim()) return setFormError("Composition is required.");
 
-    const slug = editingSlug ?? form.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") + "-" + Date.now();
-    const colorsArr = form.colors.split(",").map((c) => c.trim()).filter(Boolean);
-    const sizesArr = form.sizes ? form.sizes.split(",").map((s) => s.trim()).filter(Boolean) : undefined;
+    const slug =
+      editingSlug ??
+      form.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "") +
+        "-" +
+        Date.now();
+    const colorsArr = form.colors
+      .split(",")
+      .map((c) => c.trim())
+      .filter(Boolean);
+    const sizesArr = form.sizes
+      ? form.sizes
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : undefined;
     const isReadymade = form.isReadymade === "readymade";
 
     const newProduct: Product = {
@@ -523,7 +589,9 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       isReadymade,
       shortDescription: form.shortDescription.trim(),
       description: form.description.trim() || form.shortDescription.trim(),
-      image: form.imageUrl.trim() || "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=800&q=80",
+      image:
+        form.imageUrl.trim() ||
+        "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=800&q=80",
       wholesalePrice: Number(form.wholesalePrice),
       unit: form.unit,
       moq: Number(form.moq),
@@ -612,7 +680,10 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       >
         {/* Logo Header */}
         <button
-          onClick={() => { triggerExit("store"); setMobileSidebarOpen(false); }}
+          onClick={() => {
+            triggerExit("store");
+            setMobileSidebarOpen(false);
+          }}
           className="flex items-center gap-3 border-b border-slate-800/80 px-5 py-4 hover:bg-slate-900/60 transition-colors group text-left cursor-pointer"
           title="Return to User / Store Page"
         >
@@ -636,8 +707,19 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
           {[
             { id: "dashboard" as const, label: "Dashboard", icon: LayoutDashboard },
             { id: "add" as const, label: editingSlug ? "Edit Product" : "Add Product", icon: Plus },
-            { id: "manage" as const, label: "Manage Products", icon: Package, badgeCount: adminProducts.length },
-            { id: "quotes" as const, label: "Quote Requests (RFQ)", icon: MessageSquare, badgeCount: pendingQuotesCount, highlightBadge: true },
+            {
+              id: "manage" as const,
+              label: "Manage Products",
+              icon: Package,
+              badgeCount: adminProducts.length,
+            },
+            {
+              id: "quotes" as const,
+              label: "Quote Requests (RFQ)",
+              icon: MessageSquare,
+              badgeCount: pendingQuotesCount,
+              highlightBadge: true,
+            },
             { id: "settings" as const, label: "Security & Access", icon: Shield },
           ].map((item) => {
             const isActive = activeTab === item.id;
@@ -658,11 +740,13 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                 <item.icon className={`h-4 w-4 ${isActive ? "text-white" : "text-slate-400"}`} />
                 <span>{item.label}</span>
                 {Boolean(item.badgeCount && item.badgeCount > 0) && (
-                  <span className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                    item.highlightBadge
-                      ? "bg-amber-400 text-slate-950"
-                      : "bg-slate-800 border border-slate-700 text-slate-300"
-                  }`}>
+                  <span
+                    className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                      item.highlightBadge
+                        ? "bg-amber-400 text-slate-950"
+                        : "bg-slate-800 border border-slate-700 text-slate-300"
+                    }`}
+                  >
                     {item.badgeCount}
                   </span>
                 )}
@@ -717,7 +801,9 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
               <h1 className="font-display text-sm sm:text-base font-bold text-slate-900 capitalize truncate">
                 {activeTab === "add"
-                  ? editingSlug ? "Edit Product" : "Add New Product"
+                  ? editingSlug
+                    ? "Edit Product"
+                    : "Add New Product"
                   : activeTab === "settings"
                     ? "Security & Rate Limit Controls"
                     : activeTab === "manage"
@@ -741,7 +827,8 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                 onClick={() => triggerExit("logout")}
                 className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-600 transition hover:bg-rose-100 cursor-pointer"
               >
-                <LogOut className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Sign Out</span>
+                <LogOut className="h-3.5 w-3.5" />{" "}
+                <span className="hidden sm:inline">Sign Out</span>
               </button>
             </div>
           </div>
@@ -771,7 +858,8 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                   Welcome to Catalog Operations
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-400 max-w-2xl leading-relaxed">
-                  Manage products, monitor bulk quote inquiries, configure security rate limiting, and update inventory details in real time.
+                  Manage products, monitor bulk quote inquiries, configure security rate limiting,
+                  and update inventory details in real time.
                 </p>
               </div>
 
@@ -807,14 +895,21 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               {/* Quick Actions Grid */}
               <div className="grid gap-4 sm:grid-cols-3">
                 <button
-                  onClick={() => { resetForm(); setActiveTab("add"); }}
+                  onClick={() => {
+                    resetForm();
+                    setActiveTab("add");
+                  }}
                   className="rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm hover:shadow-md hover:border-slate-400 transition-all group cursor-pointer"
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-800 group-hover:bg-slate-900 group-hover:text-white transition-colors mb-3">
                     <Plus className="h-5 w-5" />
                   </div>
-                  <div className="font-display text-sm font-bold text-slate-900">Add New Product</div>
-                  <p className="text-xs text-slate-500 mt-1">Publish new readymade garments or raw knitted fabrics to the catalog.</p>
+                  <div className="font-display text-sm font-bold text-slate-900">
+                    Add New Product
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Publish new readymade garments or raw knitted fabrics to the catalog.
+                  </p>
                 </button>
 
                 <button
@@ -824,8 +919,12 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-800 group-hover:bg-slate-900 group-hover:text-white transition-colors mb-3">
                     <MessageSquare className="h-5 w-5" />
                   </div>
-                  <div className="font-display text-sm font-bold text-slate-900">Bulk Quote Inquiries ({quotes.length})</div>
-                  <p className="text-xs text-slate-500 mt-1">View and respond to RFQs submitted by buyers on product pages.</p>
+                  <div className="font-display text-sm font-bold text-slate-900">
+                    Bulk Quote Inquiries ({quotes.length})
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">
+                    View and respond to RFQs submitted by buyers on product pages.
+                  </p>
                 </button>
 
                 <button
@@ -835,8 +934,12 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-800 group-hover:bg-slate-900 group-hover:text-white transition-colors mb-3">
                     <Shield className="h-5 w-5" />
                   </div>
-                  <div className="font-display text-sm font-bold text-slate-900">Security Controls</div>
-                  <p className="text-xs text-slate-500 mt-1">Set rate limit thresholds, lockout timers, and update SHA-256 password.</p>
+                  <div className="font-display text-sm font-bold text-slate-900">
+                    Security Controls
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Set rate limit thresholds, lockout timers, and update SHA-256 password.
+                  </p>
                 </button>
               </div>
 
@@ -844,10 +947,19 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
                 <div className="border-b border-slate-100 px-6 py-4 flex items-center justify-between">
                   <div>
-                    <h3 className="font-display text-sm font-bold text-slate-900">Admin Added Products</h3>
-                    <p className="text-xs text-slate-500">Products created by admin and live in catalog</p>
+                    <h3 className="font-display text-sm font-bold text-slate-900">
+                      Admin Added Products
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Products created by admin and live in catalog
+                    </p>
                   </div>
-                  <Button onClick={() => setActiveTab("manage")} variant="outline" size="sm" className="text-xs">
+                  <Button
+                    onClick={() => setActiveTab("manage")}
+                    variant="outline"
+                    size="sm"
+                    className="text-xs"
+                  >
                     View All
                   </Button>
                 </div>
@@ -855,27 +967,45 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                 {adminProducts.length === 0 ? (
                   <div className="p-12 text-center text-slate-400">
                     <Package className="mx-auto h-10 w-10 text-slate-300 mb-2" />
-                    <p className="text-xs font-medium text-slate-600">No admin-added products yet</p>
-                    <p className="text-xs text-slate-400 mt-1">Click "Add New Product" to publish your first item.</p>
+                    <p className="text-xs font-medium text-slate-600">
+                      No admin-added products yet
+                    </p>
+                    <p className="text-xs text-slate-400 mt-1">
+                      Click "Add New Product" to publish your first item.
+                    </p>
                   </div>
                 ) : (
                   <div className="divide-y divide-slate-100">
                     {adminProducts.slice(0, 5).map((p) => (
-                      <div key={p.slug} className="flex items-center justify-between px-6 py-3.5 hover:bg-slate-50/80 transition-colors">
+                      <div
+                        key={p.slug}
+                        className="flex items-center justify-between px-6 py-3.5 hover:bg-slate-50/80 transition-colors"
+                      >
                         <div className="flex items-center gap-3 min-w-0">
                           <img
-                            src={p.image.startsWith("http") ? p.image : "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=80&q=60"}
+                            src={
+                              p.image.startsWith("http")
+                                ? p.image
+                                : "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=80&q=60"
+                            }
                             alt=""
                             className="h-10 w-10 rounded-lg object-cover border border-slate-200 shrink-0"
-                            onError={(e) => (e.currentTarget.src = "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=80&q=60")}
+                            onError={(e) =>
+                              (e.currentTarget.src =
+                                "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=80&q=60")
+                            }
                           />
                           <div className="min-w-0">
-                            <div className="truncate font-semibold text-slate-900 text-xs sm:text-sm">{p.name}</div>
+                            <div className="truncate font-semibold text-slate-900 text-xs sm:text-sm">
+                              {p.name}
+                            </div>
                             <div className="text-[11px] text-slate-500">{p.categoryLabel}</div>
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-xs font-bold text-slate-900">{formatINR(p.wholesalePrice)}/{p.unit}</div>
+                          <div className="text-xs font-bold text-slate-900">
+                            {formatINR(p.wholesalePrice)}/{p.unit}
+                          </div>
                           <div className="text-[11px] text-slate-400">MOQ: {p.moq}</div>
                         </div>
                       </div>
@@ -937,11 +1067,15 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                     <select
                       id="prod-category"
                       value={form.category}
-                      onChange={(e) => updateForm("category", e.target.value as Product["category"])}
+                      onChange={(e) =>
+                        updateForm("category", e.target.value as Product["category"])
+                      }
                       className={inputCls}
                     >
                       {categoryOptions.map((c) => (
-                        <option key={c.value} value={c.value}>{c.label}</option>
+                        <option key={c.value} value={c.value}>
+                          {c.label}
+                        </option>
                       ))}
                     </select>
                   </FormField>
@@ -1147,7 +1281,11 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                   <Button onClick={resetForm} variant="outline" size="lg" className="text-xs">
                     Cancel
                   </Button>
-                  <Button onClick={handleSaveProduct} size="lg" className="gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs">
+                  <Button
+                    onClick={handleSaveProduct}
+                    size="lg"
+                    className="gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs"
+                  >
                     <Save className="h-4 w-4" />
                     {editingSlug ? "Save Product Changes" : "Publish Product to Catalog"}
                   </Button>
@@ -1184,11 +1322,20 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                   >
                     <option value="all">All Categories</option>
                     {categoryOptions.map((c) => (
-                      <option key={c.value} value={c.value}>{c.label}</option>
+                      <option key={c.value} value={c.value}>
+                        {c.label}
+                      </option>
                     ))}
                   </select>
 
-                  <Button onClick={() => { resetForm(); setActiveTab("add"); }} size="sm" className="gap-1 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shrink-0">
+                  <Button
+                    onClick={() => {
+                      resetForm();
+                      setActiveTab("add");
+                    }}
+                    size="sm"
+                    className="gap-1 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shrink-0"
+                  >
                     <Plus className="h-3.5 w-3.5" /> Add Product
                   </Button>
                 </div>
@@ -1220,30 +1367,53 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                         <div className="flex flex-col sm:grid sm:grid-cols-[1fr_auto_auto_auto] sm:items-center gap-4 px-4 sm:px-6 py-4 hover:bg-slate-50/60 transition-colors">
                           <div className="flex items-center gap-3 min-w-0">
                             <img
-                              src={p.image.startsWith("http") ? p.image : "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=80&q=60"}
+                              src={
+                                p.image.startsWith("http")
+                                  ? p.image
+                                  : "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=80&q=60"
+                              }
                               alt=""
                               className="h-11 w-11 shrink-0 rounded-xl object-cover border border-slate-200"
-                              onError={(e) => (e.currentTarget.src = "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=80&q=60")}
+                              onError={(e) =>
+                                (e.currentTarget.src =
+                                  "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=80&q=60")
+                              }
                             />
                             <div className="min-w-0">
-                              <div className="truncate font-semibold text-slate-900 text-xs sm:text-sm">{p.name}</div>
+                              <div className="truncate font-semibold text-slate-900 text-xs sm:text-sm">
+                                {p.name}
+                              </div>
                               <div className="text-[11px] text-slate-500 flex items-center gap-1.5 mt-0.5">
-                                <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-700">{p.categoryLabel}</span>
-                                {p.badge && <span className="text-slate-700 font-semibold">· {p.badge}</span>}
+                                <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-700">
+                                  {p.categoryLabel}
+                                </span>
+                                {p.badge && (
+                                  <span className="text-slate-700 font-semibold">· {p.badge}</span>
+                                )}
                               </div>
                             </div>
                           </div>
 
                           <div className="flex items-center justify-between sm:justify-end gap-4 text-xs sm:text-sm">
-                            <div className="font-bold text-slate-900 sm:whitespace-nowrap">{formatINR(p.wholesalePrice)}/{p.unit}</div>
-                            <div className="text-slate-500 sm:whitespace-nowrap">MOQ {p.moq} {p.unit}s</div>
+                            <div className="font-bold text-slate-900 sm:whitespace-nowrap">
+                              {formatINR(p.wholesalePrice)}/{p.unit}
+                            </div>
+                            <div className="text-slate-500 sm:whitespace-nowrap">
+                              MOQ {p.moq} {p.unit}s
+                            </div>
                             <div className="flex items-center gap-1">
                               <button
-                                onClick={() => setExpandedSlug(expandedSlug === p.slug ? null : p.slug)}
+                                onClick={() =>
+                                  setExpandedSlug(expandedSlug === p.slug ? null : p.slug)
+                                }
                                 className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors cursor-pointer"
                                 title="Details"
                               >
-                                {expandedSlug === p.slug ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                                {expandedSlug === p.slug ? (
+                                  <ChevronUp className="h-4 w-4" />
+                                ) : (
+                                  <ChevronDown className="h-4 w-4" />
+                                )}
                               </button>
                               <button
                                 onClick={() => handleEditProduct(p)}
@@ -1265,11 +1435,30 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
                         {expandedSlug === p.slug && (
                           <div className="border-t border-slate-100 bg-slate-50/80 px-4 sm:px-6 py-4 text-xs text-slate-600 space-y-1.5">
-                            <p><span className="font-semibold text-slate-900">Short Description:</span> {p.shortDescription}</p>
-                            <p><span className="font-semibold text-slate-900">Composition:</span> {p.composition}</p>
-                            <p><span className="font-semibold text-slate-900">Colors:</span> {p.colors.join(", ")}</p>
-                            {p.sizes && <p><span className="font-semibold text-slate-900">Sizes:</span> {p.sizes.join(", ")}</p>}
-                            <p><span className="font-semibold text-slate-900">Lead Time:</span> {p.leadTime}</p>
+                            <p>
+                              <span className="font-semibold text-slate-900">
+                                Short Description:
+                              </span>{" "}
+                              {p.shortDescription}
+                            </p>
+                            <p>
+                              <span className="font-semibold text-slate-900">Composition:</span>{" "}
+                              {p.composition}
+                            </p>
+                            <p>
+                              <span className="font-semibold text-slate-900">Colors:</span>{" "}
+                              {p.colors.join(", ")}
+                            </p>
+                            {p.sizes && (
+                              <p>
+                                <span className="font-semibold text-slate-900">Sizes:</span>{" "}
+                                {p.sizes.join(", ")}
+                              </p>
+                            )}
+                            <p>
+                              <span className="font-semibold text-slate-900">Lead Time:</span>{" "}
+                              {p.leadTime}
+                            </p>
                             <a
                               href={`/products/${p.slug}`}
                               target="_blank"
@@ -1315,9 +1504,15 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                     className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 outline-none focus:border-slate-500"
                   >
                     <option value="all">All Statuses</option>
-                    <option value="Pending">Pending ({quotes.filter((q) => q.status === "Pending").length})</option>
-                    <option value="Contacted">Contacted ({quotes.filter((q) => q.status === "Contacted").length})</option>
-                    <option value="Fulfilled">Fulfilled ({quotes.filter((q) => q.status === "Fulfilled").length})</option>
+                    <option value="Pending">
+                      Pending ({quotes.filter((q) => q.status === "Pending").length})
+                    </option>
+                    <option value="Contacted">
+                      Contacted ({quotes.filter((q) => q.status === "Contacted").length})
+                    </option>
+                    <option value="Fulfilled">
+                      Fulfilled ({quotes.filter((q) => q.status === "Fulfilled").length})
+                    </option>
                   </select>
                 </div>
               </div>
@@ -1336,31 +1531,51 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               ) : (
                 <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden divide-y divide-slate-100">
                   {filteredQuotes.map((q) => (
-                    <div key={q.id} className="p-4 sm:p-6 hover:bg-slate-50/60 transition-colors space-y-3">
+                    <div
+                      key={q.id}
+                      className="p-4 sm:p-6 hover:bg-slate-50/60 transition-colors space-y-3"
+                    >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div className="space-y-1">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="font-mono text-xs font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
                               #{q.refCode}
                             </span>
-                            <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${
-                              q.status === "Pending"
-                                ? "bg-amber-100 text-amber-800 border border-amber-200"
-                                : q.status === "Contacted"
-                                  ? "bg-blue-100 text-blue-800 border border-blue-200"
-                                  : "bg-emerald-100 text-emerald-800 border border-emerald-200"
-                            }`}>
+                            <span
+                              className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${
+                                q.status === "Pending"
+                                  ? "bg-amber-100 text-amber-800 border border-amber-200"
+                                  : q.status === "Contacted"
+                                    ? "bg-blue-100 text-blue-800 border border-blue-200"
+                                    : "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                              }`}
+                            >
                               {q.status}
                             </span>
                             <span className="text-xs text-slate-400">
-                              {new Date(q.createdAt).toLocaleDateString()} at {new Date(q.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              {new Date(q.createdAt).toLocaleDateString()} at{" "}
+                              {new Date(q.createdAt).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
                             </span>
                           </div>
 
                           <h4 className="font-bold text-slate-900 text-sm">{q.productName}</h4>
                           <p className="text-xs text-slate-600">
-                            Buyer Email: <a href={`mailto:${q.email}`} className="font-semibold text-slate-900 hover:underline">{q.email}</a>
-                            {q.phone && <span> · Phone: <strong className="text-slate-900">{q.phone}</strong></span>}
+                            Buyer Email:{" "}
+                            <a
+                              href={`mailto:${q.email}`}
+                              className="font-semibold text-slate-900 hover:underline"
+                            >
+                              {q.email}
+                            </a>
+                            {q.phone && (
+                              <span>
+                                {" "}
+                                · Phone: <strong className="text-slate-900">{q.phone}</strong>
+                              </span>
+                            )}
                           </p>
                         </div>
 
@@ -1372,7 +1587,9 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
                           <select
                             value={q.status}
-                            onChange={(e) => handleStatusChange(q.id, e.target.value as QuoteRequest["status"])}
+                            onChange={(e) =>
+                              handleStatusChange(q.id, e.target.value as QuoteRequest["status"])
+                            }
                             className="rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-900 outline-none focus:border-slate-500 cursor-pointer"
                           >
                             <option value="Pending">Pending</option>
@@ -1392,9 +1609,24 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
                       {(q.notes || q.deliveryDate || q.fileName) && (
                         <div className="mt-3 pt-3 border-t border-slate-100 text-xs text-slate-600 bg-slate-50 p-3 rounded-xl space-y-1">
-                          {q.deliveryDate && <p><strong className="text-slate-800">Target Delivery Date:</strong> {q.deliveryDate}</p>}
-                          {q.notes && <p><strong className="text-slate-800">Tech Pack / Custom Notes:</strong> {q.notes}</p>}
-                          {q.fileName && <p><strong className="text-slate-800">Attached File:</strong> {q.fileName}</p>}
+                          {q.deliveryDate && (
+                            <p>
+                              <strong className="text-slate-800">Target Delivery Date:</strong>{" "}
+                              {q.deliveryDate}
+                            </p>
+                          )}
+                          {q.notes && (
+                            <p>
+                              <strong className="text-slate-800">Tech Pack / Custom Notes:</strong>{" "}
+                              {q.notes}
+                            </p>
+                          )}
+                          {q.fileName && (
+                            <p>
+                              <strong className="text-slate-800">Attached File:</strong>{" "}
+                              {q.fileName}
+                            </p>
+                          )}
                         </div>
                       )}
                     </div>
@@ -1427,16 +1659,22 @@ function StatCard({
   highlight?: boolean;
 }) {
   return (
-    <div className={`rounded-2xl border p-5 shadow-sm hover:shadow-md transition-all ${
-      highlight ? "border-amber-300 bg-amber-50/50" : "border-slate-200 bg-white"
-    }`}>
+    <div
+      className={`rounded-2xl border p-5 shadow-sm hover:shadow-md transition-all ${
+        highlight ? "border-amber-300 bg-amber-50/50" : "border-slate-200 bg-white"
+      }`}
+    >
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{title}</span>
-        <div className={`flex h-9 w-9 items-center justify-center rounded-xl border ${
-          highlight
-            ? "border-amber-200 bg-amber-100 text-amber-900"
-            : "border-slate-200 bg-slate-50 text-slate-700"
-        }`}>
+        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          {title}
+        </span>
+        <div
+          className={`flex h-9 w-9 items-center justify-center rounded-xl border ${
+            highlight
+              ? "border-amber-200 bg-amber-100 text-amber-900"
+              : "border-slate-200 bg-slate-50 text-slate-700"
+          }`}
+        >
           <Icon className="h-4 w-4" />
         </div>
       </div>
@@ -1497,7 +1735,8 @@ function SecuritySettingsSection() {
     setPassSuccess("");
 
     if (!currentPassword) return setPassError("Current password is required.");
-    if (!newPassword || newPassword.length < 4) return setPassError("New password must be at least 4 characters.");
+    if (!newPassword || newPassword.length < 4)
+      return setPassError("New password must be at least 4 characters.");
     if (newPassword !== confirmPassword) return setPassError("New passwords do not match.");
 
     setPassLoading(true);
@@ -1527,13 +1766,17 @@ function SecuritySettingsSection() {
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
         <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
           <Shield className="h-5 w-5 text-slate-800" />
-          <h3 className="font-display font-bold text-slate-900 text-base">Login Rate Limiting Controls</h3>
+          <h3 className="font-display font-bold text-slate-900 text-base">
+            Login Rate Limiting Controls
+          </h3>
         </div>
 
         {rateSuccess && (
           <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-semibold text-emerald-800 flex items-center justify-between">
             <span>{rateSuccess}</span>
-            <button onClick={() => setRateSuccess("")}><X className="h-4 w-4" /></button>
+            <button onClick={() => setRateSuccess("")}>
+              <X className="h-4 w-4" />
+            </button>
           </div>
         )}
 
@@ -1548,11 +1791,15 @@ function SecuritySettingsSection() {
                 min="1"
                 max="20"
                 value={rateSettings.maxAttempts}
-                onChange={(e) => setRateSettings({ ...rateSettings, maxAttempts: Number(e.target.value) })}
+                onChange={(e) =>
+                  setRateSettings({ ...rateSettings, maxAttempts: Number(e.target.value) })
+                }
                 className={inputCls}
                 required
               />
-              <span className="text-[11px] text-slate-400 mt-1 block">Failed logins before lockout.</span>
+              <span className="text-[11px] text-slate-400 mt-1 block">
+                Failed logins before lockout.
+              </span>
             </div>
 
             <div>
@@ -1564,11 +1811,18 @@ function SecuritySettingsSection() {
                 min="1"
                 max="1440"
                 value={rateSettings.lockoutDurationMinutes}
-                onChange={(e) => setRateSettings({ ...rateSettings, lockoutDurationMinutes: Number(e.target.value) })}
+                onChange={(e) =>
+                  setRateSettings({
+                    ...rateSettings,
+                    lockoutDurationMinutes: Number(e.target.value),
+                  })
+                }
                 className={inputCls}
                 required
               />
-              <span className="text-[11px] text-slate-400 mt-1 block">Lockout period in minutes.</span>
+              <span className="text-[11px] text-slate-400 mt-1 block">
+                Lockout period in minutes.
+              </span>
             </div>
 
             <div>
@@ -1580,15 +1834,22 @@ function SecuritySettingsSection() {
                 min="0"
                 max="1440"
                 value={rateSettings.idleTimeoutMinutes ?? 30}
-                onChange={(e) => setRateSettings({ ...rateSettings, idleTimeoutMinutes: Number(e.target.value) })}
+                onChange={(e) =>
+                  setRateSettings({ ...rateSettings, idleTimeoutMinutes: Number(e.target.value) })
+                }
                 className={inputCls}
                 required
               />
-              <span className="text-[11px] text-slate-400 mt-1 block">Auto-logout inactivity (0=off).</span>
+              <span className="text-[11px] text-slate-400 mt-1 block">
+                Auto-logout inactivity (0=off).
+              </span>
             </div>
           </div>
 
-          <Button type="submit" className="gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold">
+          <Button
+            type="submit"
+            className="gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold"
+          >
             <Save className="h-4 w-4" /> Save Security Rules
           </Button>
         </form>
@@ -1598,19 +1859,25 @@ function SecuritySettingsSection() {
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
         <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
           <Lock className="h-5 w-5 text-slate-800" />
-          <h3 className="font-display font-bold text-slate-900 text-base">Change Admin Password (SHA-256 Digest)</h3>
+          <h3 className="font-display font-bold text-slate-900 text-base">
+            Change Admin Password (SHA-256 Digest)
+          </h3>
         </div>
 
         {passSuccess && (
           <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-semibold text-emerald-800 flex items-center justify-between">
             <span>{passSuccess}</span>
-            <button onClick={() => setPassSuccess("")}><X className="h-4 w-4" /></button>
+            <button onClick={() => setPassSuccess("")}>
+              <X className="h-4 w-4" />
+            </button>
           </div>
         )}
         {passError && (
           <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-semibold text-rose-800 flex items-center justify-between">
             <span>{passError}</span>
-            <button onClick={() => setPassError("")}><X className="h-4 w-4" /></button>
+            <button onClick={() => setPassError("")}>
+              <X className="h-4 w-4" />
+            </button>
           </div>
         )}
 
@@ -1659,8 +1926,13 @@ function SecuritySettingsSection() {
             </div>
           </div>
 
-          <Button type="submit" disabled={passLoading} className="gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold">
-            <Key className="h-4 w-4" /> {passLoading ? "Hashing & Saving…" : "Update Admin Password"}
+          <Button
+            type="submit"
+            disabled={passLoading}
+            className="gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold"
+          >
+            <Key className="h-4 w-4" />{" "}
+            {passLoading ? "Hashing & Saving…" : "Update Admin Password"}
           </Button>
         </form>
       </div>
@@ -1705,7 +1977,9 @@ function ConfirmExitModal({
           {isFormDirty && (
             <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-amber-900 font-medium flex items-start gap-2">
               <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600 mt-0.5" />
-              <span>Unsaved changes detected in Product Form. Exiting will discard your input.</span>
+              <span>
+                Unsaved changes detected in Product Form. Exiting will discard your input.
+              </span>
             </div>
           )}
           <p>
@@ -1721,13 +1995,22 @@ function ConfirmExitModal({
           </Button>
 
           {target === "store" && (
-            <Button onClick={onConfirmNavigateStore} variant="secondary" className="flex-1 text-xs cursor-pointer">
+            <Button
+              onClick={onConfirmNavigateStore}
+              variant="secondary"
+              className="flex-1 text-xs cursor-pointer"
+            >
               Go to Store (Stay Logged In)
             </Button>
           )}
 
-          <Button onClick={onConfirmLogout} variant="destructive" className="flex-1 gap-1 text-xs cursor-pointer">
-            <LogOut className="h-3.5 w-3.5" /> {target === "logout" ? "Yes, Sign Out" : "Sign Out & Leave"}
+          <Button
+            onClick={onConfirmLogout}
+            variant="destructive"
+            className="flex-1 gap-1 text-xs cursor-pointer"
+          >
+            <LogOut className="h-3.5 w-3.5" />{" "}
+            {target === "logout" ? "Yes, Sign Out" : "Sign Out & Leave"}
           </Button>
         </div>
       </div>
@@ -1736,7 +2019,8 @@ function ConfirmExitModal({
 }
 
 // ── UI HELPERS ─────────────────────────────────────────────────────────────
-const inputCls = "w-full rounded-xl border border-slate-200 bg-slate-50/80 px-3.5 py-2.5 text-xs text-slate-900 outline-none transition focus:border-slate-600 focus:bg-white focus:ring-2 focus:ring-slate-600/10";
+const inputCls =
+  "w-full rounded-xl border border-slate-200 bg-slate-50/80 px-3.5 py-2.5 text-xs text-slate-900 outline-none transition focus:border-slate-600 focus:bg-white focus:ring-2 focus:ring-slate-600/10";
 
 function FormField({ label, children }: { label: string; children: React.ReactNode }) {
   return (

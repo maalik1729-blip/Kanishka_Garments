@@ -21,7 +21,6 @@ export const Route = createFileRoute("/about")({
 function AboutPage() {
   return (
     <div className="bg-white font-favorit text-black py-12 md:py-20">
-      
       {/* ── 1. HERO SECTION ── */}
       <section className="mx-auto max-w-[1440px] px-4 md:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -33,7 +32,9 @@ function AboutPage() {
               A gallery-like fashion canvas where product photography is the visual language.
             </h1>
             <p className="text-[13px] text-neutral-600 font-normal leading-relaxed">
-              Founded in 2004 in Tirupur, India, Kanishka Garments operates as a vertically integrated textile manufacturer. We produce 100% combed cotton knitwear, activewear sets, biowashed fleece, and custom private label apparel for global retail brands.
+              Founded in 2004 in Tirupur, India, Kanishka Garments operates as a vertically
+              integrated textile manufacturer. We produce 100% combed cotton knitwear, activewear
+              sets, biowashed fleece, and custom private label apparel for global retail brands.
             </p>
             <div className="pt-2 flex flex-wrap gap-4">
               <Link to="/wholesale" className="btn-filled-add py-3 px-8 text-[12px] font-medium">
@@ -66,7 +67,9 @@ function AboutPage() {
           ].map((s) => (
             <div key={s.k} className="space-y-1">
               <div className="favorit-display text-[32px] font-normal text-black">{s.k}</div>
-              <div className="text-[11px] font-medium text-neutral-600 uppercase tracking-[0.025em]">{s.v}</div>
+              <div className="text-[11px] font-medium text-neutral-600 uppercase tracking-[0.025em]">
+                {s.v}
+              </div>
             </div>
           ))}
         </div>
@@ -76,7 +79,11 @@ function AboutPage() {
       <section className="mx-auto max-w-[1440px] px-4 md:px-8 my-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-6 order-2 lg:order-1 aspect-[4/3] bg-[#f0efe7] overflow-hidden">
-            <img src={loom} alt="Weaving & knitting process" className="w-full h-full object-cover rounded-none" />
+            <img
+              src={loom}
+              alt="Weaving & knitting process"
+              className="w-full h-full object-cover rounded-none"
+            />
           </div>
 
           <div className="lg:col-span-6 order-1 lg:order-2 space-y-4">
@@ -87,10 +94,12 @@ function AboutPage() {
               Unfiltered Quality & Monochrome Precision.
             </h2>
             <p className="text-[13px] text-neutral-600 font-normal leading-relaxed">
-              Knitting, dyeing (ZLD-certified eco plant), cutting, precision stitching, printing, and AQL quality inspections are executed strictly in-house at our Tirupur facility.
+              Knitting, dyeing (ZLD-certified eco plant), cutting, precision stitching, printing,
+              and AQL quality inspections are executed strictly in-house at our Tirupur facility.
             </p>
             <p className="text-[13px] text-neutral-600 font-normal leading-relaxed">
-              This vertical integration ensures direct factory pricing, strict color fastness, and reliable delivery windows for bulk orders.
+              This vertical integration ensures direct factory pricing, strict color fastness, and
+              reliable delivery windows for bulk orders.
             </p>
           </div>
         </div>
@@ -124,7 +133,11 @@ function AboutPage() {
           </div>
 
           <div className="lg:col-span-6 aspect-[4/3] bg-[#f0efe7] overflow-hidden">
-            <img src={yarn} alt="Certified textile yarn rolls" className="w-full h-full object-cover rounded-none" />
+            <img
+              src={yarn}
+              alt="Certified textile yarn rolls"
+              className="w-full h-full object-cover rounded-none"
+            />
           </div>
         </div>
       </section>
@@ -136,7 +149,8 @@ function AboutPage() {
             Ready to initiate a custom production batch?
           </h2>
           <p className="text-[13px] text-neutral-700 max-w-xl mx-auto">
-            Share your garment tech packs, fabric preferences, or order volumes for a 48-hour mill quote.
+            Share your garment tech packs, fabric preferences, or order volumes for a 48-hour mill
+            quote.
           </p>
           <div className="pt-4 flex justify-center gap-4">
             <Link to="/wholesale" className="btn-filled-add py-3 px-8 text-[12px]">
@@ -145,7 +159,6 @@ function AboutPage() {
           </div>
         </div>
       </section>
-
     </div>
   );
 }

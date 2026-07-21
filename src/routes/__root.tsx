@@ -20,15 +20,14 @@ function NotFoundComponent() {
     <div className="flex min-h-screen items-center justify-center bg-white px-4">
       <div className="max-w-md text-center font-favorit">
         <h1 className="text-6xl font-light tracking-tight text-black">404</h1>
-        <h2 className="mt-4 text-lg font-medium text-black uppercase tracking-wider">Page Not Found</h2>
+        <h2 className="mt-4 text-lg font-medium text-black uppercase tracking-wider">
+          Page Not Found
+        </h2>
         <p className="mt-2 text-xs text-neutral-600">
           The editorial spread you are searching for does not exist or has been relocated.
         </p>
         <div className="mt-6">
-          <Link
-            to="/"
-            className="btn-ghost-cta inline-block"
-          >
+          <Link to="/" className="btn-ghost-cta inline-block">
             RETURN TO CATALOG
           </Link>
         </div>
@@ -60,10 +59,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           >
             REFRESH VIEW
           </button>
-          <Link
-            to="/"
-            className="btn-filled-add py-2 px-6"
-          >
+          <Link to="/" className="btn-filled-add py-2 px-6">
             RETURN HOME
           </Link>
         </div>
@@ -78,10 +74,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "KANISHKA GARMENTS — Editorial Apparel & Textile Manufacturing" },
-      { name: "description", content: "Gallery-like activewear & fabric lookbook. Tirupur textile manufacturing, premium knitwear, and private label wholesale solutions." },
+      {
+        name: "description",
+        content:
+          "Gallery-like activewear & fabric lookbook. Tirupur textile manufacturing, premium knitwear, and private label wholesale solutions.",
+      },
       { name: "author", content: "KANISHKA GARMENTS" },
-      { property: "og:title", content: "KANISHKA GARMENTS — Editorial Apparel & Textile Manufacturing" },
-      { property: "og:description", content: "Clean monochrome apparel, knitwear, and custom wholesale manufacturing." },
+      {
+        property: "og:title",
+        content: "KANISHKA GARMENTS — Editorial Apparel & Textile Manufacturing",
+      },
+      {
+        property: "og:description",
+        content: "Clean monochrome apparel, knitwear, and custom wholesale manufacturing.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

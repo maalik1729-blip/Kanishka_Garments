@@ -4,25 +4,29 @@ import type { Product } from "@/lib/products";
 import { ShieldCheck, FileText } from "lucide-react";
 import { useState } from "react";
 
-const FALLBACK = "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&h=750&fit=crop&q=80";
+const FALLBACK =
+  "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&h=750&fit=crop&q=80";
 
 export function ProductCard({ product }: { product: Product }) {
   const [activeColorIndex, setActiveColorIndex] = useState(0);
 
-  const swatches = product.colorSwatches && product.colorSwatches.length > 0 
-    ? product.colorSwatches 
-    : [
-        { name: "Carbon Black", hex: "#000000" },
-        { name: "Paper White", hex: "#FFFFFF" },
-        { name: "Soft Mist", hex: "#E5E7EB" },
-        { name: "Slate Gray", hex: "#677284" },
-      ];
+  const swatches =
+    product.colorSwatches && product.colorSwatches.length > 0
+      ? product.colorSwatches
+      : [
+          { name: "Carbon Black", hex: "#000000" },
+          { name: "Paper White", hex: "#FFFFFF" },
+          { name: "Soft Mist", hex: "#E5E7EB" },
+          { name: "Slate Gray", hex: "#677284" },
+        ];
 
   return (
     <article className="group flex flex-col bg-white p-[14px] rounded-2xl border border-black/10 hover:border-black/30 hover:shadow-lg transition-all duration-300 font-favorit">
-      
       {/* Image container with B2B Badges & Wishlist */}
-      <div className="relative w-full overflow-hidden bg-[#f0efe7] rounded-xl" style={{ aspectRatio: "4/5" }}>
+      <div
+        className="relative w-full overflow-hidden bg-[#f0efe7] rounded-xl"
+        style={{ aspectRatio: "4/5" }}
+      >
         <Link to="/products/$slug" params={{ slug: product.slug }} className="block w-full h-full">
           <img
             src={product.image || FALLBACK}
@@ -34,7 +38,6 @@ export function ProductCard({ product }: { product: Product }) {
             }}
           />
         </Link>
-        
 
         {/* B2B Badges overlay */}
         <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">
@@ -61,7 +64,6 @@ export function ProductCard({ product }: { product: Product }) {
 
       {/* Product Information */}
       <div className="mt-3 flex flex-col flex-1">
-        
         {/* Category & Material Snippet */}
         <div className="flex items-center justify-between text-[10px] text-neutral-500 font-medium uppercase mb-1">
           <span className="truncate">{product.categoryLabel}</span>
@@ -125,7 +127,6 @@ export function ProductCard({ product }: { product: Product }) {
             <FileText className="w-3 h-3" /> SPECS & RFQ
           </Link>
         </div>
-
       </div>
     </article>
   );

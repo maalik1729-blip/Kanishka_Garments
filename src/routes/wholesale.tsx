@@ -8,7 +8,11 @@ export const Route = createFileRoute("/wholesale")({
   head: () => ({
     meta: [
       { title: "Wholesale & Private Label RFQ — KANISHKA GARMENTS" },
-      { name: "description", content: "Request wholesale pricing and sample kits. Direct-from-mill Tirupur activewear, knitwear, and organic fabric production." },
+      {
+        name: "description",
+        content:
+          "Request wholesale pricing and sample kits. Direct-from-mill Tirupur activewear, knitwear, and organic fabric production.",
+      },
     ],
   }),
   component: WholesalePage,
@@ -50,9 +54,7 @@ function WholesalePage() {
   return (
     <div className="bg-white font-favorit text-black py-12 md:py-20">
       <div className="mx-auto max-w-[1440px] px-4 md:px-8">
-        
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          
           {/* Left Column: Editorial Info */}
           <div className="lg:col-span-5 space-y-8">
             <div>
@@ -63,21 +65,35 @@ function WholesalePage() {
                 Direct Tirupur Mill Procurement.
               </h1>
               <p className="text-[13px] text-neutral-600 font-normal leading-relaxed mt-3">
-                Submit your garment specifications, lab-dip color codes, or sample kit requests. Our export team responds within 48 business hours.
+                Submit your garment specifications, lab-dip color codes, or sample kit requests. Our
+                export team responds within 48 business hours.
               </p>
             </div>
 
             {sent && (
               <div className="bg-[#f0efe7] border border-black p-4 text-[12px] text-black flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 stroke-[2]" /> Request submitted successfully. Our mill representative will reach out shortly.
+                <CheckCircle2 className="w-4 h-4 stroke-[2]" /> Request submitted successfully. Our
+                mill representative will reach out shortly.
               </div>
             )}
 
             <div className="space-y-4 border-t border-neutral-200 pt-6">
               {[
-                { title: "MOQ FROM 50–300 PCS", desc: "Pilot runs, capsule drops, and full-scale production batches.", icon: Package },
-                { title: "GLOBAL LOGISTICS & DDP", desc: "Direct air & sea freight from Tirupur and Chennai port.", icon: Truck },
-                { title: "OEKO-TEX CERTIFIED KNITS", desc: "AQL 2.5 quality control inspection on every single batch.", icon: ShieldCheck },
+                {
+                  title: "MOQ FROM 50–300 PCS",
+                  desc: "Pilot runs, capsule drops, and full-scale production batches.",
+                  icon: Package,
+                },
+                {
+                  title: "GLOBAL LOGISTICS & DDP",
+                  desc: "Direct air & sea freight from Tirupur and Chennai port.",
+                  icon: Truck,
+                },
+                {
+                  title: "OEKO-TEX CERTIFIED KNITS",
+                  desc: "AQL 2.5 quality control inspection on every single batch.",
+                  icon: ShieldCheck,
+                },
               ].map((item) => (
                 <div key={item.title} className="flex gap-3">
                   <item.icon className="w-4 h-4 text-black shrink-0 mt-0.5" />
@@ -90,10 +106,16 @@ function WholesalePage() {
             </div>
 
             <div className="bg-[#f0efe7] border border-black p-6 space-y-2 text-[12px]">
-              <span className="font-bold uppercase tracking-[0.025em] text-black block mb-2">DIRECT CONTACT INFO</span>
-              <p className="text-black font-normal flex items-center gap-2"><Phone className="w-3.5 h-3.5" /> +91 421 420 4200 (Call / WhatsApp)</p>
+              <span className="font-bold uppercase tracking-[0.025em] text-black block mb-2">
+                DIRECT CONTACT INFO
+              </span>
+              <p className="text-black font-normal flex items-center gap-2">
+                <Phone className="w-3.5 h-3.5" /> +91 421 420 4200 (Call / WhatsApp)
+              </p>
               <p className="text-black font-normal">Email: wholesale@kanishkagarments.com</p>
-              <p className="text-neutral-600">Location: 42 Kumaran Nagar, Tirupur, Tamil Nadu 641 604</p>
+              <p className="text-neutral-600">
+                Location: 42 Kumaran Nagar, Tirupur, Tamil Nadu 641 604
+              </p>
             </div>
           </div>
 
@@ -105,14 +127,38 @@ function WholesalePage() {
 
             <form onSubmit={onSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Field label="COMPANY NAME *" name="company" required placeholder="e.g. Kanishka Retailers Ltd" />
+                <Field
+                  label="COMPANY NAME *"
+                  name="company"
+                  required
+                  placeholder="e.g. Kanishka Retailers Ltd"
+                />
                 <Field label="CONTACT NAME *" name="name" required placeholder="e.g. Jane Doe" />
-                <Field label="EMAIL ADDRESS *" name="email" type="email" required placeholder="jane@company.com" />
-                <Field label="PHONE / WHATSAPP *" name="phone" required placeholder="+1 (555) 000-0000" />
-                <Field label="DESTINATION COUNTRY *" name="country" required placeholder="United Kingdom / USA" />
-                
+                <Field
+                  label="EMAIL ADDRESS *"
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="jane@company.com"
+                />
+                <Field
+                  label="PHONE / WHATSAPP *"
+                  name="phone"
+                  required
+                  placeholder="+1 (555) 000-0000"
+                />
+                <Field
+                  label="DESTINATION COUNTRY *"
+                  name="country"
+                  required
+                  placeholder="United Kingdom / USA"
+                />
+
                 <div>
-                  <label htmlFor="category" className="block text-[10px] font-bold uppercase text-black mb-1.5">
+                  <label
+                    htmlFor="category"
+                    className="block text-[10px] font-bold uppercase text-black mb-1.5"
+                  >
                     PRODUCT CATEGORY *
                   </label>
                   <select
@@ -123,17 +169,31 @@ function WholesalePage() {
                   >
                     <option value="">Select Category</option>
                     {mainCategories.map((cat) => (
-                      <option key={cat.slug} value={cat.slug}>{cat.label}</option>
+                      <option key={cat.slug} value={cat.slug}>
+                        {cat.label}
+                      </option>
                     ))}
                     <option value="mixed">Mixed Activewear & Sweats</option>
                   </select>
                 </div>
 
-                <Field label="TARGET QUANTITY *" name="quantity" required placeholder="e.g. 1,000 pcs" />
-                <Field label="TARGET PRICE (OPTIONAL)" name="target_price" placeholder="e.g. $4.50 / pc" />
+                <Field
+                  label="TARGET QUANTITY *"
+                  name="quantity"
+                  required
+                  placeholder="e.g. 1,000 pcs"
+                />
+                <Field
+                  label="TARGET PRICE (OPTIONAL)"
+                  name="target_price"
+                  placeholder="e.g. $4.50 / pc"
+                />
 
                 <div className="sm:col-span-2">
-                  <label htmlFor="timeline" className="block text-[10px] font-bold uppercase text-black mb-1.5">
+                  <label
+                    htmlFor="timeline"
+                    className="block text-[10px] font-bold uppercase text-black mb-1.5"
+                  >
                     PRODUCTION TIMELINE *
                   </label>
                   <select
@@ -150,7 +210,10 @@ function WholesalePage() {
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label htmlFor="message" className="block text-[10px] font-bold uppercase text-black mb-1.5">
+                  <label
+                    htmlFor="message"
+                    className="block text-[10px] font-bold uppercase text-black mb-1.5"
+                  >
                     CUSTOM SPECIFICATIONS & LAB-DIP DETAILS
                   </label>
                   <textarea
@@ -183,9 +246,7 @@ function WholesalePage() {
               </p>
             </form>
           </div>
-
         </div>
-
       </div>
     </div>
   );
