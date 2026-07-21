@@ -18,6 +18,9 @@ import { Route as ProductsRouteImport } from './routes/products'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as WholesaleRouteImport } from './routes/wholesale'
+import { Route as ApiProductsRouteImport } from './routes/api.products'
+import { Route as ApiQuotesRouteImport } from './routes/api.quotes'
+import { Route as ApiUploadRouteImport } from './routes/api.upload'
 import { Route as ProductsIndexRouteImport } from './routes/products.index'
 import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
 
@@ -66,6 +69,21 @@ const WholesaleRoute = WholesaleRouteImport.update({
   path: '/wholesale',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiProductsRoute = ApiProductsRouteImport.update({
+  id: '/api/products',
+  path: '/api/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiQuotesRoute = ApiQuotesRouteImport.update({
+  id: '/api/quotes',
+  path: '/api/quotes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiUploadRoute = ApiUploadRouteImport.update({
+  id: '/api/upload',
+  path: '/api/upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductsIndexRoute = ProductsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -87,6 +105,9 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/wholesale': typeof WholesaleRoute
+  '/api/products': typeof ApiProductsRoute
+  '/api/quotes': typeof ApiQuotesRoute
+  '/api/upload': typeof ApiUploadRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/products/': typeof ProductsIndexRoute
 }
@@ -99,6 +120,9 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/wholesale': typeof WholesaleRoute
+  '/api/products': typeof ApiProductsRoute
+  '/api/quotes': typeof ApiQuotesRoute
+  '/api/upload': typeof ApiUploadRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/products': typeof ProductsIndexRoute
 }
@@ -113,6 +137,9 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/wholesale': typeof WholesaleRoute
+  '/api/products': typeof ApiProductsRoute
+  '/api/quotes': typeof ApiQuotesRoute
+  '/api/upload': typeof ApiUploadRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/products/': typeof ProductsIndexRoute
 }
@@ -128,6 +155,9 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/wholesale'
+    | '/api/products'
+    | '/api/quotes'
+    | '/api/upload'
     | '/products/$slug'
     | '/products/'
   fileRoutesByTo: FileRoutesByTo
@@ -140,6 +170,9 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/wholesale'
+    | '/api/products'
+    | '/api/quotes'
+    | '/api/upload'
     | '/products/$slug'
     | '/products'
   id:
@@ -153,6 +186,9 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/wholesale'
+    | '/api/products'
+    | '/api/quotes'
+    | '/api/upload'
     | '/products/$slug'
     | '/products/'
   fileRoutesById: FileRoutesById
@@ -167,6 +203,9 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   WholesaleRoute: typeof WholesaleRoute
+  ApiProductsRoute: typeof ApiProductsRoute
+  ApiQuotesRoute: typeof ApiQuotesRoute
+  ApiUploadRoute: typeof ApiUploadRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -234,6 +273,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WholesaleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/products': {
+      id: '/api/products'
+      path: '/api/products'
+      fullPath: '/api/products'
+      preLoaderRoute: typeof ApiProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/quotes': {
+      id: '/api/quotes'
+      path: '/api/quotes'
+      fullPath: '/api/quotes'
+      preLoaderRoute: typeof ApiQuotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/upload': {
+      id: '/api/upload'
+      path: '/api/upload'
+      fullPath: '/api/upload'
+      preLoaderRoute: typeof ApiUploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/products/': {
       id: '/products/'
       path: '/'
@@ -275,6 +335,9 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   WholesaleRoute: WholesaleRoute,
+  ApiProductsRoute: ApiProductsRoute,
+  ApiQuotesRoute: ApiQuotesRoute,
+  ApiUploadRoute: ApiUploadRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

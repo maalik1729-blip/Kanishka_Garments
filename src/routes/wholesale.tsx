@@ -3,6 +3,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { Check, CheckCircle2, Loader2, Package, Phone, ShieldCheck, Truck } from "lucide-react";
 import { mainCategories } from "@/lib/products";
+import { createQuoteRequestApi } from "@/lib/quotes";
 
 export const Route = createFileRoute("/wholesale")({
   head: () => ({
@@ -45,7 +46,16 @@ function WholesalePage() {
       return;
     }
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 700));
+    await createQuoteRequestApi({
+      productSlug: String(raw.category || "wholesale"),
+      productName: `Wholesale RFQ: ${raw.company || "Brand"} (${raw.category || "General"})`,
+      quantity: String(raw.quantity || "100"),
+      destination: String(raw.country || ""),
+      deliveryDate: String(raw.timeline ? `${raw.timeline} Days` : ""),
+      email: String(raw.email || ""),
+      phone: String(raw.phone || ""),
+      notes: `Contact: ${raw.name} | Target Price: ${raw.target_price || "N/A"} | Notes: ${raw.message || ""}`,
+    });
     setSubmitting(false);
     setSent(true);
     form.reset();

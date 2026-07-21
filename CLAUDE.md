@@ -21,6 +21,10 @@ This file serves as the unified master reference for **TM KANISHKA GARMENTS** �
 | **Lint Codebase**            | `npm run lint`                                                   |
 | **Format Files**             | `npm run format`                                                 |
 
+### 🔐 Environment Variables (`.env`)
+- `MONGODB_URI`: Connection string for MongoDB Atlas cluster database.
+- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`: Credentials for Cloudinary media asset uploads & CDN delivery.
+
 ---
 
 ## 📂 Project Architecture & Directory Map
@@ -116,6 +120,8 @@ textile-trade-hub-main/
 - Detailed B2B Tech Pack specification table (GSM, Shrinkage rating, Dyeing specs, Mill origin).
 - Volume tier pricing calculator automatically adjusting bulk cost based on MOQ.
 - Custom Request For Quote (RFQ) modal form allowing buyers to request custom colors, GSM, or private label branding.
+- **MongoDB Atlas Global Bulk RFQ & Inquiry Integration**: All RFQ quote submissions and inquiries across **ALL product detail pages** (`/products/$slug`), **Wholesale page** (`/wholesale`), and **Contact page** (`/contact`) post directly to MongoDB Atlas via server handler `POST /api/quotes`. Submitted requests are immediately visible in the Admin Portal (`/admin`) Quote Requests dashboard, where status updates (*Pending → Contacted → Fulfilled*) and deletions sync live to MongoDB.
+- **Dynamic Stock Colorway Photo Switcher**: Selecting any swatch in `STOCK COLORWAY:` (e.g. Hoodies: Forest Green (`#1B4D3E` / `p4.png`), Heather Grey, Navy Blue | Joggers & Track Pants: Heather Grey (`#D3D3D3` / `p5.png`), Dark Charcoal, Navy | Baby Onesies / Rompers: Orange (`#F26522` / `p8.png`), Sky Blue (`e9a8c112-8585-41e0-8d6f-57507bfa5ce3.png`), Baby Pink (`538bd947-361b-45f6-94d1-fa08d8160d6a.png`) | Single Jersey Fabric: Lavender (`#E6E6FA` / `p10.png`), White (`7b623247-291d-4ff9-a70a-9d48aa0fdcd1.png`), Navy Blue (`d7399407-a6fe-4798-8de2-f698b4e7cb7d.png`) | Men's Vests / Undershirts: White (`b6fba935-c1ad-4181-bcfe-1e6676862140.png`), Black (`ccacd5cf-5609-4aca-8e56-8ec55cf30ca1.png`) | Basic Tee: Chocolate Brown, White, Navy Blue, Melange Grey | Polo Tee: Slate Grey, Royal Blue, White, Charcoal | Oversized Tee: Olive Green, Off White, Beige, Sage Green | Gym Tees: Stealth Black, Navy, Cool Grey | Women's Leggings: Jet Black, Navy Blue, Maroon) instantly updates the main featured product photo on the left-side viewer to match the exact selected colorway.
 - **Escape Key Keyboard Navigation**: Pressing `Escape` (`Esc`) key closes any active modal (RFQ modal, 3D preview, fabric zoom); if no modal is open, it returns to the previous page in history (or defaults back to `/products`).
 - **Interactive Mouse-Tracking Pan/Zoom Lens**: Moving the cursor across the product image dynamically updates `transformOrigin` (`${zoomPos.x}% ${zoomPos.y}%`) and scales the image up to 2.8x in real-time with an ultra-smooth slow motion transition (`0.75s cubic-bezier(0.16, 1, 0.3, 1)`), allowing buyers to smoothly inspect any exact spot on the T-shirt (neckline, collar, sleeves, chest, stitching, hem).
 - **Background Body Scroll Lock**: Automatically sets `document.body.style.overflow = "hidden"` while any modal (Fabric Zoom, RFQ Form, 3D Drape Viewer) is active, preventing background page scrolling. Restores normal scrolling when modals close.

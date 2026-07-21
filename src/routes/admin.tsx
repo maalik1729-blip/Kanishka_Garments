@@ -28,12 +28,29 @@ import {
   RotateCcw,
   X,
   MessageSquare,
+  Upload,
+  Loader2,
+  Image as ImageIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { staticProducts, getAdminProducts, saveAdminProducts } from "@/lib/products";
+import {
+  staticProducts,
+  getAdminProducts,
+  saveAdminProducts,
+  fetchAdminProductsApi,
+  saveAdminProductApi,
+  deleteAdminProductApi,
+} from "@/lib/products";
 import type { Product } from "@/lib/products";
 import { formatINR } from "@/lib/cart";
-import { getQuoteRequests, updateQuoteStatus, deleteQuoteRequest } from "@/lib/quotes";
+import {
+  getQuoteRequests,
+  updateQuoteStatus,
+  deleteQuoteRequest,
+  fetchQuoteRequestsApi,
+  updateQuoteStatusApi,
+  deleteQuoteRequestApi,
+} from "@/lib/quotes";
 import type { QuoteRequest } from "@/lib/quotes";
 
 const ADMIN_AUTH_KEY = "KANISHKA_admin_auth";
@@ -404,6 +421,46 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
   const [expandedSlug, setExpandedSlug] = useState<string | null>(null);
 
+  // Cloudinary image file upload state
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState("");
+
+  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    setUploadProgress("Uploading photo to Cloudinary...");
+    setFormError("");
+
+    try {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64Data = reader.result as string;
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image: base64Data }),
+        });
+        const data = await res.json();
+        if (res.ok && data.url) {
+          updateForm("imageUrl", data.url);
+          setUploadProgress("✅ Photo uploaded to Cloudinary!");
+        } else {
+          setFormError(data.error || "Image upload to Cloudinary failed");
+          setUploadProgress("");
+        }
+        setUploadingImage(false);
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      console.error("Cloudinary upload failed", err);
+      setFormError("Failed to upload image file to Cloudinary");
+      setUploadingImage(false);
+      setUploadProgress("");
+    }
+  };
+
   // Search & Filter state for Manage Products & Quotes
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState<string>("all");
@@ -459,7 +516,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
   useEffect(() => {
     setAdminProducts(getAdminProducts());
-    setQuotes(getQuoteRequests());
+    fetchQuoteRequestsApi().then((data) => setQuotes(data));
   }, []);
 
   const triggerExit = (target: "logout" | "store") => {
@@ -520,13 +577,13 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     });
   }, [quotes, quoteSearchTerm, quoteFilterStatus]);
 
-  const handleStatusChange = (id: string, status: QuoteRequest["status"]) => {
-    const updated = updateQuoteStatus(id, status);
+  const handleStatusChange = async (id: string, status: QuoteRequest["status"]) => {
+    const updated = await updateQuoteStatusApi(id, status);
     setQuotes(updated);
   };
 
-  const handleDeleteQuote = (id: string) => {
-    const updated = deleteQuoteRequest(id);
+  const handleDeleteQuote = async (id: string) => {
+    const updated = await deleteQuoteRequestApi(id);
     setQuotes(updated);
   };
 
@@ -549,7 +606,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     setSuccessMsg("");
   };
 
-  const handleSaveProduct = () => {
+  const handleSaveProduct = async () => {
     setFormError("");
     setSuccessMsg("");
 
@@ -609,20 +666,18 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       isAdminAdded: true,
     };
 
-    let updated: Product[];
+    const updated = await saveAdminProductApi(newProduct);
     if (editingSlug) {
-      updated = adminProducts.map((p) => (p.slug === editingSlug ? newProduct : p));
-      setSuccessMsg(`✅ Product "${newProduct.name}" updated successfully!`);
+      setSuccessMsg(`✅ Product "${newProduct.name}" updated successfully in MongoDB Atlas!`);
     } else {
-      updated = [...adminProducts, newProduct];
-      setSuccessMsg(`✅ Product "${newProduct.name}" added to live catalog!`);
+      setSuccessMsg(`✅ Product "${newProduct.name}" saved to MongoDB & published to live catalog!`);
     }
 
-    saveAdminProducts(updated);
     setAdminProducts(updated);
 
     setTimeout(() => {
       resetForm();
+      setUploadProgress("");
       setActiveTab("manage");
     }, 1200);
   };
@@ -656,9 +711,8 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     setActiveTab("add");
   };
 
-  const handleDeleteProduct = (slug: string) => {
-    const updated = adminProducts.filter((p) => p.slug !== slug);
-    saveAdminProducts(updated);
+  const handleDeleteProduct = async (slug: string) => {
+    const updated = await deleteAdminProductApi(slug);
     setAdminProducts(updated);
   };
 
@@ -1127,14 +1181,67 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                   />
                 </FormField>
 
-                <FormField label="Image URL (Unsplash or Image Link)">
-                  <input
-                    id="prod-image"
-                    value={form.imageUrl}
-                    onChange={(e) => updateForm("imageUrl", e.target.value)}
-                    placeholder="https://images.unsplash.com/photo-..."
-                    className={inputCls}
-                  />
+                <FormField label="Product Image (Upload Local Photo to Cloudinary CDN or Enter URL)">
+                  <div className="space-y-3">
+                    {/* Cloudinary Direct File Upload Button */}
+                    <div className="flex flex-wrap items-center gap-3">
+                      <label className="flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white hover:bg-slate-800 transition cursor-pointer border border-slate-700 shadow-sm">
+                        {uploadingImage ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin text-amber-400" />
+                            <span>Uploading to Cloudinary...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="h-4 w-4 text-emerald-400" />
+                            <span>Choose Photo from Device</span>
+                          </>
+                        )}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageFileChange}
+                          disabled={uploadingImage}
+                          className="hidden"
+                        />
+                      </label>
+                      <span className="text-[11px] text-slate-500 font-medium">
+                        Uploaded photos stored directly on Cloudinary CDN
+                      </span>
+                    </div>
+
+                    {uploadProgress && (
+                      <div className="text-xs font-semibold text-emerald-600 flex items-center gap-1.5">
+                        <span>{uploadProgress}</span>
+                      </div>
+                    )}
+
+                    {/* Live Upload Image Preview Thumbnail */}
+                    {form.imageUrl && (
+                      <div className="flex items-center gap-3 p-2 bg-slate-50 border border-slate-200 rounded-xl w-fit">
+                        <img
+                          src={form.imageUrl}
+                          alt="Uploaded Preview"
+                          className="h-16 w-16 rounded-lg object-cover border border-slate-300 shadow-sm"
+                        />
+                        <div className="text-xs">
+                          <span className="font-bold text-slate-900 block">Image Preview</span>
+                          <span className="text-[10px] text-slate-500 font-mono truncate max-w-[240px] block">
+                            {form.imageUrl}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Image URL text input */}
+                    <input
+                      id="prod-image"
+                      value={form.imageUrl}
+                      onChange={(e) => updateForm("imageUrl", e.target.value)}
+                      placeholder="Or enter image URL (https://res.cloudinary.com/...)"
+                      className={inputCls}
+                    />
+                  </div>
                 </FormField>
               </FormSection>
 

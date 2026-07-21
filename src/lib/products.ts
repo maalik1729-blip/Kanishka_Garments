@@ -9,6 +9,29 @@ import imgP8 from "@/assets/p8.png";
 import imgP9 from "@/assets/p9.png";
 import imgP9Spec from "@/assets/p9-spec.jpg";
 import imgP10 from "@/assets/p10.png";
+import imgSingleJerseyWhite from "@/assets/7b623247-291d-4ff9-a70a-9d48aa0fdcd1.png";
+import imgSingleJerseyNavy from "@/assets/d7399407-a6fe-4798-8de2-f698b4e7cb7d.png";
+import imgBabySkyBlue from "@/assets/e9a8c112-8585-41e0-8d6f-57507bfa5ce3.png";
+import imgBabyPink from "@/assets/538bd947-361b-45f6-94d1-fa08d8160d6a.png";
+import imgVestWhite from "@/assets/b6fba935-c1ad-4181-bcfe-1e6676862140.png";
+import imgVestBlack from "@/assets/ccacd5cf-5609-4aca-8e56-8ec55cf30ca1.png";
+import imgNavyBlue from "@/assets/15aa1a6b-3f60-415e-91de-6b67caca50b1.png";
+import imgWhite from "@/assets/bd8a002c-fcba-4b70-af34-cc1b424a95fa.png";
+import imgMelangeGrey from "@/assets/720a034f-1a4d-473e-80ba-1d0e2b93d490.png";
+import imgPoloRoyalBlue from "@/assets/65d1436c-f676-48ad-af75-e17aa63f251a.png";
+import imgPoloWhite from "@/assets/fb61db15-756a-49bf-87b7-d6d23c463670.png";
+import imgPoloCharcoal from "@/assets/c498bec3-7516-46c8-b6e5-b0d7a859eb6b.png";
+import imgOversizedOffWhite from "@/assets/c966e5c5-f34b-4ed4-8823-aa0dd47836b0.png";
+import imgOversizedBeige from "@/assets/89e4db30-a061-41d0-aeb8-b6a50d278b22.png";
+import imgOversizedSageGreen from "@/assets/92b8ee90-45f9-4fd6-83bd-7d7f7025a764.png";
+import imgHoodieHeatherGrey from "@/assets/c59162de-97c9-460b-b2dc-1e665e32a79e.png";
+import imgHoodieNavyBlue from "@/assets/26fb42d3-ed4f-4eb5-b871-d915be795e59.png";
+import imgJoggerNavy from "@/assets/21410269-6475-49ff-83ae-e0121c2639aa.png";
+import imgJoggerDarkCharcoal from "@/assets/69897a39-c3ed-4b55-8ef6-65c1a9479c66.png";
+import imgGymNavy from "@/assets/61607911-75fa-4a28-afa7-53c2695ad160.png";
+import imgGymDarkCharcoal from "@/assets/5668f50b-d53e-45c1-89c2-aea8aa4e7b35.png";
+import imgLeggingsNavyBlue from "@/assets/4bffaf6b-f15f-4aa8-9acd-52090c0968c9.png";
+import imgLeggingsMaroon from "@/assets/538d59f2-88b2-4407-9d94-30bb4cdf925c.png";
 
 export type ColorSwatch = { name: string; hex: string };
 
@@ -41,6 +64,7 @@ export type Product = {
   qualityParameters?: string;
   colors: string[];
   colorSwatches?: ColorSwatch[];
+  colorImages?: Record<string, string>;
   sizes?: string[];
   leadTime: string;
   samplePolicy?: string;
@@ -136,6 +160,65 @@ export function saveAdminProducts(products: Product[]) {
   } catch {}
 }
 
+export async function fetchAdminProductsApi(): Promise<Product[]> {
+  try {
+    const res = await fetch("/api/products");
+    if (!res.ok) throw new Error("Failed to fetch products API");
+    const data: Product[] = await res.json();
+    if (Array.isArray(data)) {
+      saveAdminProducts(data);
+      return data;
+    }
+  } catch (err) {
+    console.warn("API fetch products failed, falling back to LocalStorage:", err);
+  }
+  return getAdminProducts();
+}
+
+export async function saveAdminProductApi(product: Product): Promise<Product[]> {
+  try {
+    const res = await fetch("/api/products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(product),
+    });
+    if (res.ok) {
+      const existing = getAdminProducts();
+      const updated = [product, ...existing.filter((p) => p.slug !== product.slug)];
+      saveAdminProducts(updated);
+      return updated;
+    }
+  } catch (err) {
+    console.warn("API save product failed, falling back to LocalStorage:", err);
+  }
+  const existing = getAdminProducts();
+  const updated = [product, ...existing.filter((p) => p.slug !== product.slug)];
+  saveAdminProducts(updated);
+  return updated;
+}
+
+export async function deleteAdminProductApi(slug: string): Promise<Product[]> {
+  try {
+    const res = await fetch("/api/products", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug }),
+    });
+    if (res.ok) {
+      const existing = getAdminProducts();
+      const updated = existing.filter((p) => p.slug !== slug);
+      saveAdminProducts(updated);
+      return updated;
+    }
+  } catch (err) {
+    console.warn("API delete product failed, falling back to LocalStorage:", err);
+  }
+  const existing = getAdminProducts();
+  const updated = existing.filter((p) => p.slug !== slug);
+  saveAdminProducts(updated);
+  return updated;
+}
+
 // ── TOP 10 TIRUPPUR MANUFACTURED B2B PRODUCTS CATALOGUE ────────────────────
 export const staticProducts: Product[] = [
   {
@@ -149,7 +232,7 @@ export const staticProducts: Product[] = [
     description:
       "Premium 180 GSM 100% combed cotton basic round-neck t-shirts manufactured in Tirupur. Features bio-wash treatment for maximum softness, pre-shrunk fabric to eliminate post-wash shrinkage, and reinforced rib neck taping. Ideal for retail brands and private labeling.",
     image: imgP1,
-    galleryImages: [imgP1],
+    galleryImages: [imgP1, imgWhite, imgNavyBlue, imgMelangeGrey],
     fabricTextureImage: imgP1,
     wholesalePrice: 130,
     unit: "piece",
@@ -174,13 +257,19 @@ export const staticProducts: Product[] = [
       "BSCI Audit Passed",
       "AQL 2.5 QC Standard",
     ],
-    colors: ["Black", "White", "Navy Blue", "Melange Grey", "Olive Green", "Maroon"],
+    colors: ["Chocolate Brown", "White", "Navy Blue", "Melange Grey", "Olive Green", "Maroon"],
     colorSwatches: [
-      { name: "Black", hex: "#1A1A1A" },
+      { name: "Chocolate Brown", hex: "#5C3428" },
       { name: "White", hex: "#FFFFFF" },
       { name: "Navy Blue", hex: "#1B2A5A" },
       { name: "Melange Grey", hex: "#8A8D91" },
     ],
+    colorImages: {
+      "Chocolate Brown": imgP1,
+      White: imgWhite,
+      "Navy Blue": imgNavyBlue,
+      "Melange Grey": imgMelangeGrey,
+    },
     sizes: ["S", "M", "L", "XL", "2XL"],
     leadTime: "Sampling: 3–5 days | Bulk: 12–15 days",
     badge: "BESTSELLER",
@@ -202,7 +291,7 @@ export const staticProducts: Product[] = [
     description:
       "Classic corporate and retail polo t-shirts in 220–240 GSM pique knit fabric. Features flat-knit collars and cuffs with contrast tipping, 2-button placket, side slits, and high color fastness.",
     image: imgP2,
-    galleryImages: [imgP2],
+    galleryImages: [imgP2, imgPoloRoyalBlue, imgPoloWhite, imgPoloCharcoal],
     fabricTextureImage: imgP2,
     wholesalePrice: 240,
     unit: "piece",
@@ -221,13 +310,19 @@ export const staticProducts: Product[] = [
       "Individual Polybag Packaging",
     ],
     certifications: ["OEKO-TEX Standard 100", "WRAP Certified Facility", "AQL 2.5 QC Standard"],
-    colors: ["Navy Blue", "Royal Blue", "White", "Charcoal", "Burgundy"],
+    colors: ["Slate Grey", "Royal Blue", "White", "Charcoal", "Burgundy"],
     colorSwatches: [
-      { name: "Navy Blue", hex: "#1B2A5A" },
+      { name: "Slate Grey", hex: "#707A8A" },
       { name: "Royal Blue", hex: "#2B50AA" },
       { name: "White", hex: "#FFFFFF" },
       { name: "Charcoal", hex: "#363636" },
     ],
+    colorImages: {
+      "Slate Grey": imgP2,
+      "Royal Blue": imgPoloRoyalBlue,
+      White: imgPoloWhite,
+      Charcoal: imgPoloCharcoal,
+    },
     sizes: ["S", "M", "L", "XL", "2XL", "3XL"],
     leadTime: "Sampling: 4–6 days | Bulk: 14–18 days",
     badge: "CORPORATE FAV",
@@ -249,7 +344,7 @@ export const staticProducts: Product[] = [
     description:
       "Heavyweight drop-shoulder streetwear t-shirts constructed from 240–280 GSM high-density jersey or French terry. Features thick ribbed crew neck, boxy oversized fit, and smooth surface for screen printing or embroidery.",
     image: imgP3,
-    galleryImages: [imgP3],
+    galleryImages: [imgP3, imgOversizedOffWhite, imgOversizedBeige, imgOversizedSageGreen],
     fabricTextureImage: imgP3,
     wholesalePrice: 220,
     unit: "piece",
@@ -268,13 +363,19 @@ export const staticProducts: Product[] = [
       "Custom Printed Box & Polybag Options",
     ],
     certifications: ["OEKO-TEX Standard 100", "SEDEX Audited", "AQL 2.5 QC Standard"],
-    colors: ["Washed Black", "Off White", "Beige", "Sage Green", "Charcoal"],
+    colors: ["Olive Green", "Off White", "Beige", "Sage Green", "Charcoal"],
     colorSwatches: [
-      { name: "Washed Black", hex: "#222222" },
+      { name: "Olive Green", hex: "#4B5338" },
       { name: "Off White", hex: "#F5F3ED" },
       { name: "Beige", hex: "#D9CBB6" },
       { name: "Sage Green", hex: "#879883" },
     ],
+    colorImages: {
+      "Olive Green": imgP3,
+      "Off White": imgOversizedOffWhite,
+      Beige: imgOversizedBeige,
+      "Sage Green": imgOversizedSageGreen,
+    },
     sizes: ["S", "M", "L", "XL", "2XL"],
     leadTime: "Sampling: 5 days | Bulk: 14–20 days",
     badge: "TRENDING",
@@ -297,7 +398,7 @@ export const staticProducts: Product[] = [
     description:
       "Heavyweight 300–340 GSM cotton fleece hoodies engineered with plush brushed interior for superior warmth. Double-layered hood, flat drawstrings, heavy 2x2 rib cuffs, and roomy front kangaroo pocket.",
     image: imgP4,
-    galleryImages: [imgP4],
+    galleryImages: [imgP4, imgHoodieHeatherGrey, imgHoodieNavyBlue],
     fabricTextureImage: imgP4,
     wholesalePrice: 380,
     unit: "piece",
@@ -316,12 +417,17 @@ export const staticProducts: Product[] = [
       "Export Container Carton Packaging",
     ],
     certifications: ["OEKO-TEX Standard 100", "BSCI Audit Passed", "AQL 2.5 QC Standard"],
-    colors: ["Black", "Heather Grey", "Navy Blue", "Forest Green", "Dusty Pink"],
+    colors: ["Forest Green", "Heather Grey", "Navy Blue"],
     colorSwatches: [
-      { name: "Black", hex: "#111111" },
+      { name: "Forest Green", hex: "#1B4D3E" },
       { name: "Heather Grey", hex: "#9E9E9E" },
       { name: "Navy Blue", hex: "#1A2542" },
     ],
+    colorImages: {
+      "Forest Green": imgP4,
+      "Heather Grey": imgHoodieHeatherGrey,
+      "Navy Blue": imgHoodieNavyBlue,
+    },
     sizes: ["S", "M", "L", "XL", "2XL"],
     leadTime: "Sampling: 5–7 days | Bulk: 18–25 days",
     badge: "WINTER ESSENTIAL",
@@ -344,7 +450,7 @@ export const staticProducts: Product[] = [
     description:
       "Ergonomic activewear joggers crafted from 240–280 GSM French Terry. Includes high-grade elastic waistband with cord drawstrings, reinforced crotch gusset, deep side zip pockets, and snug ankle ribbing.",
     image: imgP5,
-    galleryImages: [imgP5],
+    galleryImages: [imgP5, imgJoggerNavy, imgJoggerDarkCharcoal],
     fabricTextureImage: imgP5,
     wholesalePrice: 250,
     unit: "piece",
@@ -363,12 +469,18 @@ export const staticProducts: Product[] = [
       "Individual Polybag with Barcode Sticker",
     ],
     certifications: ["OEKO-TEX Standard 100", "ISO 9001 Certified Mill", "AQL 2.5 QC Standard"],
-    colors: ["Black", "Dark Charcoal", "Navy", "Olive"],
+    colors: ["Heather Grey", "Dark Charcoal", "Navy"],
     colorSwatches: [
-      { name: "Black", hex: "#1A1A1A" },
+      { name: "Heather Grey", hex: "#D3D3D3" },
       { name: "Dark Charcoal", hex: "#2C2C2C" },
       { name: "Navy", hex: "#1B2A5A" },
     ],
+    colorImages: {
+      "Heather Grey": imgP5,
+      Grey: imgP5,
+      "Dark Charcoal": imgJoggerDarkCharcoal,
+      Navy: imgJoggerNavy,
+    },
     sizes: ["S", "M", "L", "XL", "2XL"],
     leadTime: "Sampling: 4–6 days | Bulk: 14–18 days",
     badge: "ACTIVE CHOICE",
@@ -391,7 +503,7 @@ export const staticProducts: Product[] = [
     description:
       "Performance activewear gym tops crafted from 140–160 GSM lightweight micro-polyester spandex blend. Quick-dry moisture-wicking technology, anti-microbial finish, raglan sleeves, and flatlock anti-chafing seams.",
     image: imgP6,
-    galleryImages: [imgP6],
+    galleryImages: [imgP6, imgGymNavy, imgGymDarkCharcoal],
     fabricTextureImage: imgP6,
     wholesalePrice: 100,
     unit: "piece",
@@ -414,12 +526,17 @@ export const staticProducts: Product[] = [
       "ISO 14001 Environmental Audit",
       "AQL 2.5 QC Standard",
     ],
-    colors: ["Stealth Black", "Electric Blue", "Cool Grey", "Neon Red"],
+    colors: ["Stealth Black", "Navy", "Cool Grey", "Electric Blue"],
     colorSwatches: [
       { name: "Stealth Black", hex: "#121212" },
-      { name: "Electric Blue", hex: "#0D5CBE" },
-      { name: "Cool Grey", hex: "#7A848F" },
+      { name: "Navy", hex: "#1B2A5A" },
+      { name: "Cool Grey", hex: "#9BA2A9" },
     ],
+    colorImages: {
+      "Stealth Black": imgP6,
+      Navy: imgGymNavy,
+      "Cool Grey": imgGymDarkCharcoal,
+    },
     sizes: ["S", "M", "L", "XL", "2XL"],
     leadTime: "Sampling: 3 days | Bulk: 10–14 days",
     badge: "HIGH DEMAND",
@@ -441,7 +558,7 @@ export const staticProducts: Product[] = [
     description:
       "Ultra-stretch 200–220 GSM Cotton-Lycra leggings for daily retail & activewear. Features 4-way stretch fabric, high-waist double elastic band, squat-proof opacity, and bio-polished anti-pilling finish.",
     image: imgP7,
-    galleryImages: [imgP7],
+    galleryImages: [imgP7, imgLeggingsNavyBlue, imgLeggingsMaroon],
     fabricTextureImage: imgP7,
     wholesalePrice: 140,
     unit: "piece",
@@ -466,6 +583,11 @@ export const staticProducts: Product[] = [
       { name: "Navy Blue", hex: "#1B2A5A" },
       { name: "Maroon", hex: "#5B1217" },
     ],
+    colorImages: {
+      "Jet Black": imgP7,
+      "Navy Blue": imgLeggingsNavyBlue,
+      Maroon: imgLeggingsMaroon,
+    },
     sizes: ["Free Size", "L", "XL", "2XL", "3XL"],
     leadTime: "Sampling: 3 days | Bulk: 10–14 days",
     badge: "EVERYDAY ESSENTIAL",
@@ -487,7 +609,7 @@ export const staticProducts: Product[] = [
     description:
       "Ultra-gentle 160–180 GSM GOTS certified organic cotton baby onesies. Designed with envelope neck shoulders for quick dressing, nickel-free crotch snap fasteners, and non-toxic AZO-free dyes.",
     image: imgP8,
-    galleryImages: [imgP8],
+    galleryImages: [imgP8, imgBabySkyBlue, imgBabyPink],
     fabricTextureImage: imgP8,
     wholesalePrice: 90,
     unit: "piece",
@@ -510,12 +632,18 @@ export const staticProducts: Product[] = [
       "OEKO-TEX Class 1 Baby Certified",
       "AQL 2.5 QC Standard",
     ],
-    colors: ["Pastel Yellow", "Sky Blue", "Baby Pink", "Natural Ecru", "Mint Green"],
+    colors: ["Orange", "Sky Blue", "Baby Pink"],
     colorSwatches: [
-      { name: "Pastel Yellow", hex: "#FFF2B2" },
+      { name: "Orange", hex: "#F26522" },
       { name: "Sky Blue", hex: "#BAE1FF" },
       { name: "Baby Pink", hex: "#FFB3BA" },
     ],
+    colorImages: {
+      Orange: imgP8,
+      "Pastel Yellow": imgP8,
+      "Sky Blue": imgBabySkyBlue,
+      "Baby Pink": imgBabyPink,
+    },
     sizes: ["0–3M", "3–6M", "6–12M", "12–18M"],
     leadTime: "Sampling: 4 days | Bulk: 12–16 days",
     badge: "ORGANIC COTTON",
@@ -536,8 +664,8 @@ export const staticProducts: Product[] = [
     shortDescription: "100% Fine Combed Rib Cotton, Breathable, Sweat-absorbent.",
     description:
       "Classic ribbed cotton men's vests manufactured from 100% fine combed 1x1 rib knit fabric. High moisture absorption, contoured athletic fit, tagless collar comfort, and reinforced armhole stitching.",
-    image: imgP9,
-    galleryImages: [imgP9, imgP9Spec],
+    image: imgVestWhite,
+    galleryImages: [imgVestWhite, imgVestBlack, imgP9Spec],
     fabricTextureImage: imgP9Spec,
     wholesalePrice: 55,
     unit: "piece",
@@ -555,12 +683,16 @@ export const staticProducts: Product[] = [
       "Custom Export Master Cartons",
     ],
     certifications: ["OEKO-TEX Standard 100", "ISO 9001 Certified Factory", "AQL 2.5 QC Standard"],
-    colors: ["Pure White", "Black", "Melange Grey"],
+    colors: ["White", "Black"],
     colorSwatches: [
-      { name: "Pure White", hex: "#FFFFFF" },
+      { name: "White", hex: "#FFFFFF" },
       { name: "Black", hex: "#111111" },
-      { name: "Melange Grey", hex: "#A5A8AC" },
     ],
+    colorImages: {
+      White: imgVestWhite,
+      "Pure White": imgVestWhite,
+      Black: imgVestBlack,
+    },
     sizes: ["75 cm (XS)", "80 cm (S)", "85 cm (M)", "90 cm (L)", "95 cm (XL)", "100 cm (2XL)"],
     leadTime: "Sampling: 2–3 days | Bulk: 8–12 days",
     badge: "HIGH VOLUME",
@@ -582,7 +714,7 @@ export const staticProducts: Product[] = [
     description:
       "Premium 100% combed cotton single jersey knitted fabric rolls produced on German circular knitting machines. Pre-shrunk, bio-polished finish with zero spirality and excellent dimensional stability for garment stitching.",
     image: imgP10,
-    galleryImages: [imgP10],
+    galleryImages: [imgP10, imgSingleJerseyWhite, imgSingleJerseyNavy],
     fabricTextureImage: imgP10,
     wholesalePrice: 320,
     unit: "kg",
@@ -602,12 +734,18 @@ export const staticProducts: Product[] = [
       "Heavy Duty Plastic Roll Wrapping with Mill Barcode Tags",
     ],
     certifications: ["GOTS Organic Option", "OEKO-TEX Standard 100", "ISO 9001 Quality Control"],
-    colors: ["Raw Ecru", "Reactive Black", "Navy Blue", "Melange"],
+    colors: ["Lavender", "White", "Navy Blue"],
     colorSwatches: [
-      { name: "Raw Ecru", hex: "#F5F0E6" },
-      { name: "Reactive Black", hex: "#0F0F0F" },
+      { name: "Lavender", hex: "#E6E6FA" },
+      { name: "White", hex: "#FFFFFF" },
       { name: "Navy Blue", hex: "#162244" },
     ],
+    colorImages: {
+      Lavender: imgP10,
+      "Raw Ecru": imgP10,
+      White: imgSingleJerseyWhite,
+      "Navy Blue": imgSingleJerseyNavy,
+    },
     leadTime: "Sampling: 3 days | Bulk: 10–14 days",
     badge: "MILL ROLL",
     vendors: "Valliammai Fabrics, AKR Industries",

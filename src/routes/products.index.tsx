@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 import { z } from "zod";
 import { X, Search } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
-import { mainCategories, staticProducts, getAdminProducts } from "@/lib/products";
+import { mainCategories, staticProducts, getAdminProducts, fetchAdminProductsApi } from "@/lib/products";
 import type { Product } from "@/lib/products";
 import { formatINR } from "@/lib/cart";
 
@@ -53,7 +53,13 @@ function ProductsPage() {
     const refreshProducts = () => {
       setAllProducts([...staticProducts, ...getAdminProducts()]);
     };
-    refreshProducts();
+    
+    const fetchProducts = async () => {
+      const data = await fetchAdminProductsApi();
+      setAllProducts([...staticProducts, ...data]);
+    };
+    
+    fetchProducts();
 
     window.addEventListener("kanishka_products_updated", refreshProducts);
     window.addEventListener("storage", refreshProducts);

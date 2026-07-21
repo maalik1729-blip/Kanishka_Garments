@@ -62,3 +62,78 @@ export function deleteQuoteRequest(id: string): QuoteRequest[] {
   saveQuoteRequests(updated);
   return updated;
 }
+
+// ── MONGO DB API ASYNC HELPERS ─────────────────────────────────────────────
+
+export async function fetchQuoteRequestsApi(): Promise<QuoteRequest[]> {
+  try {
+    const res = await fetch("/api/quotes");
+    if (!res.ok) throw new Error("Failed to fetch quotes from API");
+    const data: QuoteRequest[] = await res.json();
+    if (Array.isArray(data)) {
+      saveQuoteRequests(data);
+      return data;
+    }
+  } catch (err) {
+    console.warn("API fetch quotes failed, falling back to LocalStorage:", err);
+  }
+  return getQuoteRequests();
+}
+
+export async function createQuoteRequestApi(
+  quote: Omit<QuoteRequest, "id" | "refCode" | "status" | "createdAt">,
+): Promise<QuoteRequest> {
+  try {
+    const res = await fetch("/api/quotes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(quote),
+    });
+    if (res.ok) {
+      const created: QuoteRequest = await res.json();
+      const existing = getQuoteRequests();
+      saveQuoteRequests([created, ...existing.filter((q) => q.id !== created.id)]);
+      return created;
+    }
+  } catch (err) {
+    console.warn("API create quote failed, falling back to LocalStorage:", err);
+  }
+  return addQuoteRequest(quote);
+}
+
+export async function updateQuoteStatusApi(
+  id: string,
+  status: QuoteRequest["status"],
+): Promise<QuoteRequest[]> {
+  try {
+    const res = await fetch("/api/quotes", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, status }),
+    });
+    if (res.ok) {
+      const updatedLocal = updateQuoteStatus(id, status);
+      return updatedLocal;
+    }
+  } catch (err) {
+    console.warn("API update status failed, falling back to LocalStorage:", err);
+  }
+  return updateQuoteStatus(id, status);
+}
+
+export async function deleteQuoteRequestApi(id: string): Promise<QuoteRequest[]> {
+  try {
+    const res = await fetch("/api/quotes", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    if (res.ok) {
+      const updatedLocal = deleteQuoteRequest(id);
+      return updatedLocal;
+    }
+  } catch (err) {
+    console.warn("API delete quote failed, falling back to LocalStorage:", err);
+  }
+  return deleteQuoteRequest(id);
+}

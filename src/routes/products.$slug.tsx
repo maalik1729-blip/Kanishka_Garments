@@ -23,17 +23,41 @@ import {
   Printer,
   ChevronRight,
 } from "lucide-react";
-import { getAllProducts, getProduct } from "@/lib/products";
+import { getAllProducts, getProduct, fetchAdminProductsApi } from "@/lib/products";
 import { formatINR } from "@/lib/cart";
-import { addQuoteRequest } from "@/lib/quotes";
+import { addQuoteRequest, createQuoteRequestApi } from "@/lib/quotes";
 import { ProductCard } from "@/components/product-card";
 import { toast } from "sonner";
+import imgNavyBlue from "@/assets/15aa1a6b-3f60-415e-91de-6b67caca50b1.png";
+import imgWhite from "@/assets/bd8a002c-fcba-4b70-af34-cc1b424a95fa.png";
+import imgMelangeGrey from "@/assets/720a034f-1a4d-473e-80ba-1d0e2b93d490.png";
+import imgPoloRoyalBlue from "@/assets/65d1436c-f676-48ad-af75-e17aa63f251a.png";
+import imgPoloWhite from "@/assets/fb61db15-756a-49bf-87b7-d6d23c463670.png";
+import imgPoloCharcoal from "@/assets/c498bec3-7516-46c8-b6e5-b0d7a859eb6b.png";
+import imgOversizedOffWhite from "@/assets/c966e5c5-f34b-4ed4-8823-aa0dd47836b0.png";
+import imgOversizedBeige from "@/assets/89e4db30-a061-41d0-aeb8-b6a50d278b22.png";
+import imgOversizedSageGreen from "@/assets/92b8ee90-45f9-4fd6-83bd-7d7f7025a764.png";
+import imgHoodieHeatherGrey from "@/assets/c59162de-97c9-460b-b2dc-1e665e32a79e.png";
+import imgHoodieNavyBlue from "@/assets/26fb42d3-ed4f-4eb5-b871-d915be795e59.png";
+import imgJoggerNavy from "@/assets/21410269-6475-49ff-83ae-e0121c2639aa.png";
+import imgJoggerDarkCharcoal from "@/assets/69897a39-c3ed-4b55-8ef6-65c1a9479c66.png";
+import imgGymNavy from "@/assets/61607911-75fa-4a28-afa7-53c2695ad160.png";
+import imgGymDarkCharcoal from "@/assets/5668f50b-d53e-45c1-89c2-aea8aa4e7b35.png";
+import imgLeggingsNavyBlue from "@/assets/4bffaf6b-f15f-4aa8-9acd-52090c0968c9.png";
+import imgLeggingsMaroon from "@/assets/538d59f2-88b2-4407-9d94-30bb4cdf925c.png";
+import imgSingleJerseyWhite from "@/assets/7b623247-291d-4ff9-a70a-9d48aa0fdcd1.png";
+import imgSingleJerseyNavy from "@/assets/d7399407-a6fe-4798-8de2-f698b4e7cb7d.png";
+import imgBabySkyBlue from "@/assets/e9a8c112-8585-41e0-8d6f-57507bfa5ce3.png";
+import imgBabyPink from "@/assets/538bd947-361b-45f6-94d1-fa08d8160d6a.png";
+import imgVestWhite from "@/assets/b6fba935-c1ad-4181-bcfe-1e6676862140.png";
+import imgVestBlack from "@/assets/ccacd5cf-5609-4aca-8e56-8ec55cf30ca1.png";
 
 const FALLBACK_MAIN = "";
 const FALLBACK_FABRIC = "";
 
 export const Route = createFileRoute("/products/$slug")({
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
+    await fetchAdminProductsApi();
     const product = getProduct(params.slug);
     if (!product) throw notFound();
     return { product };
@@ -75,6 +99,15 @@ function ProductDetail() {
   // Modal States
   const [showRfqModal, setShowRfqModal] = useState(false);
   const [rfqSubmitted, setRfqSubmitted] = useState(false);
+  const [rfqForm, setRfqForm] = useState({
+    quantity: String(product.moq),
+    destination: "",
+    deliveryDate: "",
+    email: "",
+    phone: "",
+    notes: "",
+    fileName: "",
+  });
   const [showFabricZoomModal, setShowFabricZoomModal] = useState(false);
   const [show3dModal, setShow3dModal] = useState(false);
   const [is3dRotating, setIs3dRotating] = useState(false);
@@ -321,9 +354,9 @@ function ProductDetail() {
 
   const [rfqRefCode, setRfqRefCode] = useState("");
 
-  const handleRfqSubmit = (e: React.FormEvent) => {
+  const handleRfqSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const saved = addQuoteRequest({
+    const saved = await createQuoteRequestApi({
       productSlug: product.slug,
       productName: product.name,
       quantity: rfqForm.quantity,
@@ -551,7 +584,65 @@ function ProductDetail() {
                   {swatches.map((sw) => (
                     <button
                       key={sw.name}
-                      onClick={() => setSelectedColor(sw.name)}
+                      onClick={() => {
+                        setSelectedColor(sw.name);
+                        const img =
+                          product.colorImages?.[sw.name] ||
+                          (sw.name === "Heather Grey"
+                            ? imgHoodieHeatherGrey
+                            : sw.name === "Off White"
+                              ? imgOversizedOffWhite
+                              : sw.name === "Beige"
+                                ? imgOversizedBeige
+                                : sw.name === "Sage Green"
+                                  ? imgOversizedSageGreen
+                                  : sw.name === "Olive Green" || sw.name === "Washed Black"
+                                    ? product.image
+                                    : sw.name === "Royal Blue"
+                                      ? imgPoloRoyalBlue
+                                      : sw.name === "White"
+                                        ? product.slug === "polo-t-shirts"
+                                          ? imgPoloWhite
+                                          : imgWhite
+                                        : sw.name === "Cool Grey"
+                                          ? product.slug === "gym-workout-tees"
+                                            ? imgGymDarkCharcoal
+                                            : imgMelangeGrey
+                                          : sw.name === "Dark Charcoal" || sw.name === "Charcoal"
+                                            ? product.slug === "joggers-track-pants"
+                                              ? imgJoggerDarkCharcoal
+                                              : imgPoloCharcoal
+                                            : sw.name === "Navy Blue" || sw.name === "Navy"
+                                              ? product.slug === "womens-leggings-treggings"
+                                                ? imgLeggingsNavyBlue
+                                                : product.slug === "gym-workout-tees"
+                                                  ? imgGymNavy
+                                                  : product.slug === "joggers-track-pants"
+                                                    ? imgJoggerNavy
+                                                    : product.slug === "hoodies-zipup-pullover"
+                                                      ? imgHoodieNavyBlue
+                                                      : product.slug === "polo-t-shirts"
+                                                        ? product.image
+                                                        : imgNavyBlue
+                                              : sw.name === "Maroon"
+                                                ? product.slug === "womens-leggings-treggings"
+                                                  ? imgLeggingsMaroon
+                                                  : undefined
+                                                : sw.name === "Slate Grey" ||
+                                                    sw.name === "Melange Grey" ||
+                                                    sw.name === "Grey"
+                                                  ? product.slug === "polo-t-shirts"
+                                                    ? product.image
+                                                    : imgMelangeGrey
+                                                  : sw.name === "Chocolate Brown" ||
+                                                      sw.name === "Brown" ||
+                                                      sw.name === "Black"
+                                                    ? product.image
+                                                    : undefined);
+                        if (img) {
+                          setActiveImage(img);
+                        }
+                      }}
                       title={sw.name}
                       className={`w-7 h-7 rounded-none cursor-pointer transition-transform relative ${
                         selectedColor === sw.name
@@ -562,7 +653,7 @@ function ProductDetail() {
                     >
                       {selectedColor === sw.name && (
                         <span
-                          className={`absolute inset-0 flex items-center justify-center ${sw.hex === "#FFFFFF" || sw.hex === "#FFF2B2" ? "text-black" : "text-white"}`}
+                          className={`absolute inset-0 flex items-center justify-center ${sw.hex === "#FFFFFF" || sw.hex === "#FFF2B2" || sw.hex === "#F5F0E6" || sw.hex === "#E6E6FA" || sw.hex === "#D3D3D3" ? "text-black" : "text-white"}`}
                         >
                           <Check className="w-3 h-3 stroke-[3]" />
                         </span>
@@ -644,8 +735,8 @@ function ProductDetail() {
 
               {/* CTA 3: Instant WhatsApp / Live Chat */}
               <a
-                href={`https://wa.me/914214204200?text=${encodeURIComponent(
-                  `Hello Kanishka Garments, I would like to request a wholesale quote for ${product.name} (GSM: ${product.gsm || "Standard"}, MOQ: ${product.moq} ${product.unit}s).`,
+                href={`https://wa.me/918754011563?text=${encodeURIComponent(
+                  `Hello TM Kanishka Garments, I would like to request a wholesale quote for ${product.name} (GSM: ${product.gsm || "Standard"}, MOQ: ${product.moq} ${product.unit}s).`,
                 )}`}
                 target="_blank"
                 rel="noreferrer"

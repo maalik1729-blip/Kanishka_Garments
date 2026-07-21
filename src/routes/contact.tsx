@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Loader2, Mail, MapPin, Phone } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
+import { createQuoteRequestApi } from "@/lib/quotes";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -37,9 +38,16 @@ function ContactPage() {
       return;
     }
     setBusy(true);
-    await new Promise((r) => setTimeout(r, 500));
+    await createQuoteRequestApi({
+      productSlug: "contact-inquiry",
+      productName: `Direct Contact: ${parsed.data.subject}`,
+      quantity: "General Inquiry",
+      destination: "India / Direct",
+      email: parsed.data.email,
+      notes: `Name: ${parsed.data.name} | Subject: ${parsed.data.subject} | Message: ${parsed.data.message}`,
+    });
     setBusy(false);
-    toast.success("Message sent", {
+    toast.success("Message sent to Mill Manager", {
       description: "We will get back to you within 1 business day.",
     });
     form.reset();
