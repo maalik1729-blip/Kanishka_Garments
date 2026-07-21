@@ -122,7 +122,12 @@ textile-trade-hub-main/
 - **Thumbnail Image Click Zoom Trigger**: Clicking any small thumbnail square (`#1`, `#2`, `#3`, etc.) updates the active product photo and opens the high-resolution Fabric Weave Close-Up Modal with interactive mouse-tracking magnification lens.
 - **Streamlined Image Overlay**: Removed the 360° Drape & Movement button to focus clean visual attention on high-resolution Fabric Weave Close-Up (`FABRIC WEAVE CLOSE-UP (ZOOM)`).
 
-### 5. Catalog Search, Filtering & Lookbook (`src/routes/products.index.tsx`)
+### 5. Legal Compliance & Policy Pages (`src/routes/privacy.tsx` & `src/routes/terms.tsx`)
+
+- **Privacy Policy Page** ([`src/routes/privacy.tsx`](file:///c:/Users/Admin/OneDrive/Desktop/textile-trade-hub-main/src/routes/privacy.tsx)): Covers B2B client data protection, tech pack NDA confidentiality, GSTIN tax data security, and direct contact email (`tmkanishkagarments@gmail.com`).
+- **Terms of Service Page** ([`src/routes/terms.tsx`](file:///c:/Users/Admin/OneDrive/Desktop/textile-trade-hub-main/src/routes/terms.tsx)): Outlines official B2B wholesale MOQ conditions, SBI Bank remittance details (`A/C: 43605722884`, `IFSC: SBIN0000935`), GSM weight tolerance (±5%), and AQL 2.5 quality inspection standards.
+
+### 6. Catalog Search, Filtering & Lookbook (`src/routes/products.index.tsx`)
 
 - Real-time text search filter (`q` query param).
 - Category tabs (`c`), Subtype selector (`type`), and Price Range filter (`min` / `max`).

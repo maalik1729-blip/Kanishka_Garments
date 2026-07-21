@@ -13,8 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as WholesaleRouteImport } from './routes/wholesale'
 import { Route as ProductsIndexRouteImport } from './routes/products.index'
 import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
@@ -39,6 +41,11 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductsRoute = ProductsRouteImport.update({
   id: '/products',
   path: '/products',
@@ -47,6 +54,11 @@ const ProductsRoute = ProductsRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WholesaleRoute = WholesaleRouteImport.update({
@@ -70,8 +82,10 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/contact': typeof ContactRoute
+  '/privacy': typeof PrivacyRoute
   '/products': typeof ProductsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/wholesale': typeof WholesaleRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/products/': typeof ProductsIndexRoute
@@ -81,7 +95,9 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/contact': typeof ContactRoute
+  '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/wholesale': typeof WholesaleRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/products': typeof ProductsIndexRoute
@@ -92,8 +108,10 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/contact': typeof ContactRoute
+  '/privacy': typeof PrivacyRoute
   '/products': typeof ProductsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/wholesale': typeof WholesaleRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/products/': typeof ProductsIndexRoute
@@ -105,8 +123,10 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/contact'
+    | '/privacy'
     | '/products'
     | '/sitemap.xml'
+    | '/terms'
     | '/wholesale'
     | '/products/$slug'
     | '/products/'
@@ -116,7 +136,9 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/contact'
+    | '/privacy'
     | '/sitemap.xml'
+    | '/terms'
     | '/wholesale'
     | '/products/$slug'
     | '/products'
@@ -126,8 +148,10 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/contact'
+    | '/privacy'
     | '/products'
     | '/sitemap.xml'
+    | '/terms'
     | '/wholesale'
     | '/products/$slug'
     | '/products/'
@@ -138,8 +162,10 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   ContactRoute: typeof ContactRoute
+  PrivacyRoute: typeof PrivacyRoute
   ProductsRoute: typeof ProductsRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermsRoute: typeof TermsRoute
   WholesaleRoute: typeof WholesaleRoute
 }
 
@@ -173,6 +199,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/products': {
       id: '/products'
       path: '/products'
@@ -185,6 +218,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/wholesale': {
@@ -230,8 +270,10 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   ContactRoute: ContactRoute,
+  PrivacyRoute: PrivacyRoute,
   ProductsRoute: ProductsRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TermsRoute: TermsRoute,
   WholesaleRoute: WholesaleRoute,
 }
 export const routeTree = rootRouteImport

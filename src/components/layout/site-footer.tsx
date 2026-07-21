@@ -120,12 +120,12 @@ export function SiteFooter() {
 
         {/* Hairline Divider & Copyright */}
         <div className="mt-16 pt-8 border-t border-neutral-300 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-neutral-500 font-normal">
-          <p>© {new Date().getFullYear()} KANISHKA GARMENTS. ALL RIGHTS RESERVED.</p>
+          <p>© {new Date().getFullYear()} TM KANISHKA GARMENTS. ALL RIGHTS RESERVED.</p>
           <div className="flex gap-6">
-            <Link to="/about" className="hover:text-black">
+            <Link to="/privacy" className="hover:text-black">
               PRIVACY POLICY
             </Link>
-            <Link to="/about" className="hover:text-black">
+            <Link to="/terms" className="hover:text-black">
               TERMS OF SERVICE
             </Link>
             <Link to="/contact" className="hover:text-black">
