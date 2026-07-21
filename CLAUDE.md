@@ -155,6 +155,9 @@ textile-trade-hub-main/
 - `handleUpdateProduct(id, formData)`: Updates existing product specifications and dispatches live update event.
 - `handleDeleteProduct(id)`: Triggers product deletion with confirmation dialog.
 
-### 4. `src/components/product-card.tsx`
-
 - `ProductCard({ product }: { product: Product })`: Renders interactive product card with rounded corners, color swatches, B2B badges, and RFQ trigger button.
+
+### 5. `vite.config.ts` & `vercel.json` (Deployment & Build System)
+
+- **Standard Vite Plugins**: Configured with `@vitejs/plugin-react`, `@tailwindcss/vite`, and `@tanstack/react-start/plugin/vite` — 100% independent of external `@lovable.dev` wrappers.
+- **Vercel Build Target**: `outputDirectory: "dist/client"` configured in `vercel.json` for fast, native SPA/SSR deployments on Vercel.
