@@ -110,6 +110,10 @@ textile-trade-hub-main/
 - Volume tier pricing calculator automatically adjusting bulk cost based on MOQ.
 - Custom Request For Quote (RFQ) modal form allowing buyers to request custom colors, GSM, or private label branding.
 - **Escape Key Keyboard Navigation**: Pressing `Escape` (`Esc`) key closes any active modal (RFQ modal, 3D preview, fabric zoom); if no modal is open, it returns to the previous page in history (or defaults back to `/products`).
+- **Interactive Mouse-Tracking Pan/Zoom Lens**: Moving the cursor across the product image dynamically updates `transformOrigin` (`${zoomPos.x}% ${zoomPos.y}%`) and scales the image up to 2.8x in real-time with an ultra-smooth slow motion transition (`0.75s cubic-bezier(0.16, 1, 0.3, 1)`), allowing buyers to smoothly inspect any exact spot on the T-shirt (neckline, collar, sleeves, chest, stitching, hem).
+- **Background Body Scroll Lock**: Automatically sets `document.body.style.overflow = "hidden"` while any modal (Fabric Zoom, RFQ Form, 3D Drape Viewer) is active, preventing background page scrolling. Restores normal scrolling when modals close.
+- **Thumbnail Image Click Zoom Trigger**: Clicking any small thumbnail square (`#1`, `#2`, `#3`, etc.) updates the active product photo and opens the high-resolution Fabric Weave Close-Up Modal with interactive mouse-tracking magnification lens.
+- **Streamlined Image Overlay**: Removed the 360° Drape & Movement button to focus clean visual attention on high-resolution Fabric Weave Close-Up (`FABRIC WEAVE CLOSE-UP (ZOOM)`).
 
 ### 5. Catalog Search, Filtering & Lookbook (`src/routes/products.index.tsx`)
 

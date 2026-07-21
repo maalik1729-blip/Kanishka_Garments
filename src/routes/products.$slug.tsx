@@ -80,16 +80,31 @@ function ProductDetail() {
   const [is3dRotating, setIs3dRotating] = useState(false);
   const [currentAngle, setCurrentAngle] = useState(0);
 
-  // RFQ Form State
-  const [rfqForm, setRfqForm] = useState({
-    quantity: `500 ${product.unit}s`,
-    destination: "United States",
-    deliveryDate: "2026-08-30",
-    email: "",
-    phone: "",
-    notes: "",
-    fileName: "",
-  });
+  // Interactive Mouse-Tracking Zoom Lens State
+  const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+  const [isZoomingMain, setIsZoomingMain] = useState(false);
+  const [isZoomingModal, setIsZoomingModal] = useState(false);
+
+  const handleMouseMoveZoom = (e: React.MouseEvent<HTMLDivElement>) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = Math.max(0, Math.min(100, ((e.clientX - left) / width) * 100));
+    const y = Math.max(0, Math.min(100, ((e.clientY - top) / height) * 100));
+    setZoomPos({ x, y });
+  };
+
+  // Prevent background page scrolling when any modal is open
+  const isAnyModalOpen = showRfqModal || showFabricZoomModal || show3dModal;
+
+  useEffect(() => {
+    if (isAnyModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isAnyModalOpen]);
 
   // Handle ESC key to close open modals or navigate back to previous page
   useEffect(() => {
@@ -352,11 +367,21 @@ function ProductDetail() {
           {/* Left Column: High-Impact Visual Gallery (7 Columns) */}
           <div className="lg:col-span-7 space-y-4">
             {/* Main Featured Photo Display */}
-            <div className="relative aspect-[4/5] bg-[#f0efe7] overflow-hidden border border-black/10 group">
+            <div
+              onClick={() => setShowFabricZoomModal(true)}
+              onMouseEnter={() => setIsZoomingMain(true)}
+              onMouseLeave={() => setIsZoomingMain(false)}
+              className="relative aspect-[4/5] bg-[#f0efe7] overflow-hidden border border-black/10 group cursor-pointer rounded-xl"
+              title="Click to open high-resolution fabric weave viewer"
+            >
               <img
                 src={activeImage}
                 alt={product.name}
-                className="w-full h-full object-cover rounded-none transition-all duration-300"
+                className="w-full h-full object-cover transition-transform duration-500 ease-out"
+                style={{
+                  transform: isZoomingMain ? "scale(1.06)" : "scale(1)",
+                  transformOrigin: "center center",
+                }}
                 onError={(e) => {
                   e.currentTarget.src = product.image;
                 }}
@@ -376,22 +401,17 @@ function ProductDetail() {
                 )}
               </div>
 
-              {/* Interactive Media Overlay Badges (Requirement 1: Texture & 3D Drape Viewer) */}
-              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-2 z-10">
-                {/* 1. Zoom Fabric Texture Button */}
+              {/* Interactive Media Overlay Badges (Texture Close-up Viewer) */}
+              <div className="absolute bottom-4 left-4 z-10">
+                {/* Zoom Fabric Texture Button */}
                 <button
-                  onClick={() => setShowFabricZoomModal(true)}
-                  className="bg-black/90 backdrop-blur-sm hover:bg-black text-white px-3.5 py-2 text-[10px] font-bold tracking-[0.05em] uppercase flex items-center gap-2 cursor-pointer transition-all border border-white/20"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowFabricZoomModal(true);
+                  }}
+                  className="bg-black/90 backdrop-blur-sm hover:bg-black text-white px-3.5 py-2 text-[10px] font-bold tracking-[0.05em] uppercase flex items-center gap-2 cursor-pointer transition-all border border-white/20 rounded-lg shadow-md"
                 >
                   <ZoomIn className="w-3.5 h-3.5 text-white" /> FABRIC WEAVE CLOSE-UP (ZOOM)
-                </button>
-
-                {/* 2. 360° Drape Fit Video Preview Button */}
-                <button
-                  onClick={() => setShow3dModal(true)}
-                  className="bg-white/95 backdrop-blur-sm hover:bg-white text-black px-3.5 py-2 text-[10px] font-bold tracking-[0.05em] uppercase flex items-center gap-2 cursor-pointer transition-all border border-black/20 shadow-sm"
-                >
-                  <Play className="w-3.5 h-3.5 fill-black text-black" /> 360° DRAPE & MOVEMENT
                 </button>
               </div>
             </div>
@@ -406,12 +426,16 @@ function ProductDetail() {
                 {galleryList.map((imgUrl, idx) => (
                   <button
                     key={idx}
-                    onClick={() => setActiveImage(imgUrl)}
-                    className={`relative w-20 aspect-square shrink-0 overflow-hidden border-2 cursor-pointer transition-all ${
+                    onClick={() => {
+                      setActiveImage(imgUrl);
+                      setShowFabricZoomModal(true);
+                    }}
+                    className={`relative w-20 aspect-square shrink-0 overflow-hidden border-2 cursor-pointer transition-all rounded-lg ${
                       activeImage === imgUrl
                         ? "border-black scale-105"
                         : "border-neutral-200 hover:border-black opacity-80 hover:opacity-100"
                     }`}
+                    title={`Click angle #${idx + 1} to inspect high-resolution fabric weave zoom`}
                   >
                     <img
                       src={imgUrl}
@@ -1248,15 +1272,16 @@ function ProductDetail() {
       {/* ── REQUIREMENT 1: FABRIC TEXTURE WEAVE ZOOM MODAL ── */}
       {showFabricZoomModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="relative w-full max-w-2xl bg-white border border-black p-6 font-favorit text-black shadow-2xl">
+          <div className="relative w-full max-w-2xl bg-white border border-black p-6 font-favorit text-black shadow-2xl rounded-xl">
             <button
               onClick={() => setShowFabricZoomModal(false)}
-              className="absolute top-4 right-4 text-black hover:opacity-60 cursor-pointer p-1 z-10 bg-white"
+              className="absolute top-4 right-4 text-black hover:opacity-60 cursor-pointer p-1.5 z-20 bg-white rounded-full border border-black/10"
+              aria-label="Close viewer"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-1">
               <ZoomIn className="w-4 h-4 text-black" />
               <span className="text-[10px] font-bold uppercase tracking-[0.05em] font-mono text-neutral-500">
                 HIGH-RESOLUTION TEXTURE & FABRIC WEAVE CLOSE-UP
@@ -1272,23 +1297,36 @@ function ProductDetail() {
               <strong>{product.yarnCount || "30s Combed"}</strong>
             </p>
 
-            <div className="relative aspect-square w-full bg-neutral-900 border border-black overflow-hidden group">
+            <div
+              onMouseEnter={() => setIsZoomingModal(true)}
+              onMouseLeave={() => setIsZoomingModal(false)}
+              onMouseMove={handleMouseMoveZoom}
+              className="relative aspect-[4/5] max-h-[62vh] w-full bg-[#f0efe7] border border-black overflow-hidden group flex items-center justify-center rounded-lg cursor-crosshair"
+            >
               <img
-                src={product.fabricTextureImage || product.image}
-                alt="Fabric weave zoom"
-                className="w-full h-full object-cover scale-150 group-hover:scale-[2.2] transition-transform duration-500 cursor-zoom-in"
+                src={activeImage || product.fabricTextureImage || product.image}
+                alt={`${product.name} Fabric weave zoom`}
+                className="w-full h-full object-cover object-center"
+                style={{
+                  transform: isZoomingModal ? "scale(2.8)" : "scale(1)",
+                  transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
+                  transition:
+                    "transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform-origin 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
+                }}
               />
-              <div className="absolute bottom-4 left-4 bg-black/80 text-white px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider flex items-center gap-2">
-                <Sparkles className="w-3 h-3 text-amber-300" /> HOVER OVER FABRIC FOR MICRO-WEAVE
-                MAGNIFICATION
+              <div className="absolute bottom-4 left-4 bg-black/90 backdrop-blur-sm text-white px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider flex items-center gap-2 z-10 border border-white/20 rounded-md shadow-md pointer-events-none">
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" /> MOVE MOUSE ANYWHERE ON T-SHIRT
+                TO MAGNIFY ({Math.round(zoomPos.x)}%, {Math.round(zoomPos.y)}%)
               </div>
             </div>
 
             <div className="mt-4 flex items-center justify-between text-[11px] text-neutral-600">
-              <span>Finish: {product.dyeingFinishing || "Bio-washed Silicon Softener"}</span>
+              <span>
+                Finish: <strong>{product.dyeingFinishing || "Bio-washed Silicon Softener"}</strong>
+              </span>
               <button
                 onClick={() => setShowFabricZoomModal(false)}
-                className="btn-ghost-cta py-1.5 px-4 text-[11px]"
+                className="bg-white border border-black text-black hover:bg-neutral-100 font-bold uppercase py-2 px-5 text-[11px] rounded-lg cursor-pointer transition-colors shadow-sm"
               >
                 CLOSE VIEWER
               </button>
