@@ -2100,16 +2100,12 @@ function ConfirmExitModal({
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-2 pt-2">
-          <Button onClick={onCancel} variant="outline" className="flex-1 text-xs cursor-pointer">
-            Cancel
-          </Button>
-
+        <div className="flex flex-col gap-2.5 pt-2">
           {target === "store" && (
             <Button
               onClick={onConfirmNavigateStore}
               variant="secondary"
-              className="flex-1 text-xs cursor-pointer"
+              className="w-full text-xs cursor-pointer py-2.5"
             >
               Go to Store (Stay Logged In)
             </Button>
@@ -2118,10 +2114,14 @@ function ConfirmExitModal({
           <Button
             onClick={onConfirmLogout}
             variant="destructive"
-            className="flex-1 gap-1 text-xs cursor-pointer"
+            className="w-full gap-1.5 text-xs cursor-pointer py-2.5"
           >
             <LogOut className="h-3.5 w-3.5" />{" "}
             {target === "logout" ? "Yes, Sign Out" : "Sign Out & Leave"}
+          </Button>
+
+          <Button onClick={onCancel} variant="outline" className="w-full text-xs cursor-pointer py-2.5">
+            Cancel
           </Button>
         </div>
       </div>
