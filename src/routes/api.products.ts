@@ -80,6 +80,28 @@ export const Route = createFileRoute("/api/products")({
             });
           }
           const productsCol = await getProductsCollection();
+          const product = await productsCol.findOne({ slug });
+
+          // If the product has a Cloudinary image, delete it from Cloudinary
+          if (product && product.image && product.image.includes("res.cloudinary.com")) {
+            try {
+              const match = product.image.match(/\/image\/upload\/v\d+\/(kanishka_products\/[^.]+)/);
+              const publicId = match ? match[1] : null;
+              if (publicId) {
+                const { v2: cloudinary } = require("cloudinary");
+                cloudinary.config({
+                  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "espliwjf",
+                  api_key: process.env.CLOUDINARY_API_KEY || "335983481924183",
+                  api_secret: process.env.CLOUDINARY_API_SECRET || "4hHI620lkH2lAYU-TNfIO9-3Nt4",
+                });
+                await cloudinary.uploader.destroy(publicId);
+                console.log(`🧹 Deleted Cloudinary asset: ${publicId}`);
+              }
+            } catch (clError) {
+              console.warn("Cloudinary delete failed during product deletion:", clError);
+            }
+          }
+
           await productsCol.deleteOne({ slug });
           return new Response(JSON.stringify({ success: true, slug }), {
             status: 200,
