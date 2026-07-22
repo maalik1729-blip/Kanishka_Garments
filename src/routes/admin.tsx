@@ -388,7 +388,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
               className="mt-2 w-full rounded-xl bg-white py-3 text-sm font-bold text-slate-950 shadow-md transition hover:bg-slate-100 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
             >
               {loading
-                ? "Verifying SHA-256 Hash…"
+                ? "Verifying Credentials…"
                 : isLockedOut
                   ? "Account Locked"
                   : "Sign In to Dashboard"}
@@ -396,7 +396,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
           </form>
 
           <div className="mt-8 flex items-center justify-between border-t border-slate-800 pt-4 text-[11px] text-slate-500">
-            <span>SHA-256 Auth Active</span>
+            <span>Secure Authentication</span>
             <span className="flex items-center gap-1 text-slate-300 font-medium">
               <Shield className="h-3.5 w-3.5 text-slate-400" /> Rate Limited
             </span>
@@ -1867,7 +1867,7 @@ function SecuritySettingsSection() {
     setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
-    setPassSuccess("✅ Admin password updated & SHA-256 digest saved!");
+    setPassSuccess("✅ Admin password updated successfully!");
     setTimeout(() => setPassSuccess(""), 4000);
   };
 
@@ -1966,12 +1966,12 @@ function SecuritySettingsSection() {
         </form>
       </div>
 
-      {/* SHA-256 Change Password Card */}
+      {/* Change Password Card */}
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
         <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
           <Lock className="h-5 w-5 text-slate-800" />
           <h3 className="font-display font-bold text-slate-900 text-base">
-            Change Admin Password (SHA-256 Digest)
+            Change Admin Password
           </h3>
         </div>
 
@@ -2043,7 +2043,7 @@ function SecuritySettingsSection() {
             className="gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold"
           >
             <Key className="h-4 w-4" />{" "}
-            {passLoading ? "Hashing & Saving…" : "Update Admin Password"}
+            {passLoading ? "Saving…" : "Update Admin Password"}
           </Button>
         </form>
       </div>
