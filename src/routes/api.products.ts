@@ -1,6 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getProductsCollection } from "@/lib/db";
 import type { Product } from "@/lib/products";
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "espliwjf",
+  api_key: process.env.CLOUDINARY_API_KEY || "335983481924183",
+  api_secret: process.env.CLOUDINARY_API_SECRET || "4hHI620lkH2lAYU-TNfIO9-3Nt4",
+});
 
 export const Route = createFileRoute("/api/products")({
   server: {
@@ -104,12 +111,6 @@ export const Route = createFileRoute("/api/products")({
               }
 
               if (publicId) {
-                const { v2: cloudinary } = require("cloudinary");
-                cloudinary.config({
-                  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "espliwjf",
-                  api_key: process.env.CLOUDINARY_API_KEY || "335983481924183",
-                  api_secret: process.env.CLOUDINARY_API_SECRET || "4hHI620lkH2lAYU-TNfIO9-3Nt4",
-                });
                 await cloudinary.uploader.destroy(publicId);
                 console.log(`🧹 Deleted Cloudinary asset: ${publicId}`);
               }
