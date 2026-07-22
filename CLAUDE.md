@@ -114,6 +114,10 @@ textile-trade-hub-main/
   - Edit & Delete product modal drawers.
   - Integration with `localStorage` (`kanishka_custom_products`) and real-time custom event triggers (`kanishka_products_updated`).
   - Inquiry & RFQ order submission tracking dashboard.
+  - **Yes/No Delete Confirmation**: Native window confirmation alerts protect product and RFQ quote list deletion from accidental clicks.
+  - **Auto-Logout Session Protection**: Automatically signs out of the Admin panel if the user remains inactive. Idle threshold is custom-adjustable via the **Security & Access** tab settings.
+  - **ConfirmExitModal Layout Optimization**: Exit modal buttons stack vertically (`flex-col w-full`) to prevent right-side layout overflow.
+  - **Product Listing Deduplication**: Integrates unique slug mapping (`getAllProducts()`) to merge local static catalogue with dynamic MongoDB Atlas products, ensuring no duplicates.
 
 ### 4. Product Detail & RFQ Modal System (`src/routes/products.$slug.tsx`)
 
