@@ -583,8 +583,10 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   };
 
   const handleDeleteQuote = async (id: string) => {
-    const updated = await deleteQuoteRequestApi(id);
-    setQuotes(updated);
+    if (window.confirm("Are you sure you want to delete this bulk quote request?")) {
+      const updated = await deleteQuoteRequestApi(id);
+      setQuotes(updated);
+    }
   };
 
   // ── FORM HANDLERS ────────────────────────────────────────────────────────
@@ -712,8 +714,10 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   };
 
   const handleDeleteProduct = async (slug: string) => {
-    const updated = await deleteAdminProductApi(slug);
-    setAdminProducts(updated);
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      const updated = await deleteAdminProductApi(slug);
+      setAdminProducts(updated);
+    }
   };
 
   return (
