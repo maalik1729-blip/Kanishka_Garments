@@ -24,7 +24,6 @@ export const Route = createFileRoute("/api/upload")({
 
           const uploadResponse = await cloudinary.uploader.upload(image, {
             folder: "kanishka_products",
-            transformation: [{ quality: "auto", fetch_format: "auto" }],
           });
 
           return new Response(
