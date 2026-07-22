@@ -85,8 +85,24 @@ export const Route = createFileRoute("/api/products")({
           // If the product has a Cloudinary image, delete it from Cloudinary
           if (product && product.image && product.image.includes("res.cloudinary.com")) {
             try {
-              const match = product.image.match(/\/image\/upload\/v\d+\/(kanishka_products\/[^.]+)/);
-              const publicId = match ? match[1] : null;
+              let publicId: string | null = null;
+              const parts = product.image.split("/image/upload/");
+              if (parts.length >= 2) {
+                let pathSegment = parts[1];
+                if (pathSegment.startsWith("v")) {
+                  const slashIndex = pathSegment.indexOf("/");
+                  if (slashIndex !== -1) {
+                    pathSegment = pathSegment.substring(slashIndex + 1);
+                  }
+                }
+                pathSegment = pathSegment.split("?")[0];
+                const lastDotIdx = pathSegment.lastIndexOf(".");
+                if (lastDotIdx !== -1) {
+                  pathSegment = pathSegment.substring(0, lastDotIdx);
+                }
+                publicId = pathSegment;
+              }
+
               if (publicId) {
                 const { v2: cloudinary } = require("cloudinary");
                 cloudinary.config({
