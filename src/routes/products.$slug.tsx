@@ -28,29 +28,52 @@ import { formatINR } from "@/lib/cart";
 import { addQuoteRequest, createQuoteRequestApi } from "@/lib/quotes";
 import { ProductCard } from "@/components/product-card";
 import { toast } from "sonner";
-const imgNavyBlue = "https://res.cloudinary.com/espliwjf/image/upload/v1784695944/kanishka_products/vercel_15aa1a6b-3f60-415e-91de-6b67caca50b1.jpg";
-const imgWhite = "https://res.cloudinary.com/espliwjf/image/upload/v1784695941/kanishka_products/vercel_bd8a002c-fcba-4b70-af34-cc1b424a95fa.jpg";
-const imgMelangeGrey = "https://res.cloudinary.com/espliwjf/image/upload/v1784695948/kanishka_products/vercel_720a034f-1a4d-473e-80ba-1d0e2b93d490.jpg";
-const imgPoloRoyalBlue = "https://res.cloudinary.com/espliwjf/image/upload/v1784695955/kanishka_products/vercel_65d1436c-f676-48ad-af75-e17aa63f251a.jpg";
-const imgPoloWhite = "https://res.cloudinary.com/espliwjf/image/upload/v1784695958/kanishka_products/vercel_fb61db15-756a-49bf-87b7-d6d23c463670.jpg";
-const imgPoloCharcoal = "https://res.cloudinary.com/espliwjf/image/upload/v1784695962/kanishka_products/vercel_c498bec3-7516-46c8-b6e5-b0d7a859eb6b.jpg";
-const imgOversizedOffWhite = "https://res.cloudinary.com/espliwjf/image/upload/v1784695969/kanishka_products/vercel_c966e5c5-f34b-4ed4-8823-aa0dd47836b0.jpg";
-const imgOversizedBeige = "https://res.cloudinary.com/espliwjf/image/upload/v1784695973/kanishka_products/vercel_89e4db30-a061-41d0-aeb8-b6a50d278b22.jpg";
-const imgOversizedSageGreen = "https://res.cloudinary.com/espliwjf/image/upload/v1784695976/kanishka_products/vercel_92b8ee90-45f9-4fd6-83bd-7d7f7025a764.jpg";
-const imgHoodieHeatherGrey = "https://res.cloudinary.com/espliwjf/image/upload/v1784695984/kanishka_products/vercel_c59162de-97c9-460b-b2dc-1e665e32a79e.jpg";
-const imgHoodieNavyBlue = "https://res.cloudinary.com/espliwjf/image/upload/v1784695988/kanishka_products/vercel_26fb42d3-ed4f-4eb5-b871-d915be795e59.jpg";
-const imgJoggerNavy = "https://res.cloudinary.com/espliwjf/image/upload/v1784695995/kanishka_products/vercel_21410269-6475-49ff-83ae-e0121c2639aa.jpg";
-const imgJoggerDarkCharcoal = "https://res.cloudinary.com/espliwjf/image/upload/v1784695998/kanishka_products/vercel_69897a39-c3ed-4b55-8ef6-65c1a9479c66.jpg";
-const imgGymNavy = "https://res.cloudinary.com/espliwjf/image/upload/v1784696005/kanishka_products/vercel_61607911-75fa-4a28-afa7-53c2695ad160.jpg";
-const imgGymDarkCharcoal = "https://res.cloudinary.com/espliwjf/image/upload/v1784696009/kanishka_products/vercel_5668f50b-d53e-45c1-89c2-aea8aa4e7b35.jpg";
-const imgLeggingsNavyBlue = "https://res.cloudinary.com/espliwjf/image/upload/v1784696014/kanishka_products/vercel_4bffaf6b-f15f-4aa8-9acd-52090c0968c9.jpg";
-const imgLeggingsMaroon = "https://res.cloudinary.com/espliwjf/image/upload/v1784696017/kanishka_products/vercel_538d59f2-88b2-4407-9d94-30bb4cdf925c.jpg";
-const imgSingleJerseyWhite = "https://res.cloudinary.com/espliwjf/image/upload/v1784696043/kanishka_products/vercel_7b623247-291d-4ff9-a70a-9d48aa0fdcd1.jpg";
-const imgSingleJerseyNavy = "https://res.cloudinary.com/espliwjf/image/upload/v1784696048/kanishka_products/vercel_d7399407-a6fe-4798-8de2-f698b4e7cb7d.jpg";
-const imgBabySkyBlue = "https://res.cloudinary.com/espliwjf/image/upload/v1784696024/kanishka_products/vercel_e9a8c112-8585-41e0-8d6f-57507bfa5ce3.jpg";
-const imgBabyPink = "https://res.cloudinary.com/espliwjf/image/upload/v1784696027/kanishka_products/vercel_538bd947-361b-45f6-94d1-fa08d8160d6a.jpg";
-const imgVestWhite = "https://res.cloudinary.com/espliwjf/image/upload/v1784696030/kanishka_products/vercel_b6fba935-c1ad-4181-bcfe-1e6676862140.jpg";
-const imgVestBlack = "https://res.cloudinary.com/espliwjf/image/upload/v1784696033/kanishka_products/vercel_ccacd5cf-5609-4aca-8e56-8ec55cf30ca1.jpg";
+const imgNavyBlue =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784695944/kanishka_products/vercel_15aa1a6b-3f60-415e-91de-6b67caca50b1.jpg";
+const imgWhite =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784695941/kanishka_products/vercel_bd8a002c-fcba-4b70-af34-cc1b424a95fa.jpg";
+const imgMelangeGrey =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784695948/kanishka_products/vercel_720a034f-1a4d-473e-80ba-1d0e2b93d490.jpg";
+const imgPoloRoyalBlue =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784695955/kanishka_products/vercel_65d1436c-f676-48ad-af75-e17aa63f251a.jpg";
+const imgPoloWhite =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784695958/kanishka_products/vercel_fb61db15-756a-49bf-87b7-d6d23c463670.jpg";
+const imgPoloCharcoal =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784695962/kanishka_products/vercel_c498bec3-7516-46c8-b6e5-b0d7a859eb6b.jpg";
+const imgOversizedOffWhite =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784695969/kanishka_products/vercel_c966e5c5-f34b-4ed4-8823-aa0dd47836b0.jpg";
+const imgOversizedBeige =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784695973/kanishka_products/vercel_89e4db30-a061-41d0-aeb8-b6a50d278b22.jpg";
+const imgOversizedSageGreen =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784695976/kanishka_products/vercel_92b8ee90-45f9-4fd6-83bd-7d7f7025a764.jpg";
+const imgHoodieHeatherGrey =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784695984/kanishka_products/vercel_c59162de-97c9-460b-b2dc-1e665e32a79e.jpg";
+const imgHoodieNavyBlue =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784695988/kanishka_products/vercel_26fb42d3-ed4f-4eb5-b871-d915be795e59.jpg";
+const imgJoggerNavy =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784695995/kanishka_products/vercel_21410269-6475-49ff-83ae-e0121c2639aa.jpg";
+const imgJoggerDarkCharcoal =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784695998/kanishka_products/vercel_69897a39-c3ed-4b55-8ef6-65c1a9479c66.jpg";
+const imgGymNavy =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784696005/kanishka_products/vercel_61607911-75fa-4a28-afa7-53c2695ad160.jpg";
+const imgGymDarkCharcoal =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784696009/kanishka_products/vercel_5668f50b-d53e-45c1-89c2-aea8aa4e7b35.jpg";
+const imgLeggingsNavyBlue =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784696014/kanishka_products/vercel_4bffaf6b-f15f-4aa8-9acd-52090c0968c9.jpg";
+const imgLeggingsMaroon =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784696017/kanishka_products/vercel_538d59f2-88b2-4407-9d94-30bb4cdf925c.jpg";
+const imgSingleJerseyWhite =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784696043/kanishka_products/vercel_7b623247-291d-4ff9-a70a-9d48aa0fdcd1.jpg";
+const imgSingleJerseyNavy =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784696048/kanishka_products/vercel_d7399407-a6fe-4798-8de2-f698b4e7cb7d.jpg";
+const imgBabySkyBlue =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784696024/kanishka_products/vercel_e9a8c112-8585-41e0-8d6f-57507bfa5ce3.jpg";
+const imgBabyPink =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784696027/kanishka_products/vercel_538bd947-361b-45f6-94d1-fa08d8160d6a.jpg";
+const imgVestWhite =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784696030/kanishka_products/vercel_b6fba935-c1ad-4181-bcfe-1e6676862140.jpg";
+const imgVestBlack =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784696033/kanishka_products/vercel_ccacd5cf-5609-4aca-8e56-8ec55cf30ca1.jpg";
 
 const FALLBACK_MAIN = "";
 const FALLBACK_FABRIC = "";

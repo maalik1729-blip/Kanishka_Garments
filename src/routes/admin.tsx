@@ -672,7 +672,9 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     if (editingSlug) {
       setSuccessMsg(`✅ Product "${newProduct.name}" updated successfully in MongoDB Atlas!`);
     } else {
-      setSuccessMsg(`✅ Product "${newProduct.name}" saved to MongoDB & published to live catalog!`);
+      setSuccessMsg(
+        `✅ Product "${newProduct.name}" saved to MongoDB & published to live catalog!`,
+      );
     }
 
     setAdminProducts(updated);
@@ -1970,9 +1972,7 @@ function SecuritySettingsSection() {
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
         <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
           <Lock className="h-5 w-5 text-slate-800" />
-          <h3 className="font-display font-bold text-slate-900 text-base">
-            Change Admin Password
-          </h3>
+          <h3 className="font-display font-bold text-slate-900 text-base">Change Admin Password</h3>
         </div>
 
         {passSuccess && (
@@ -2042,8 +2042,7 @@ function SecuritySettingsSection() {
             disabled={passLoading}
             className="gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold"
           >
-            <Key className="h-4 w-4" />{" "}
-            {passLoading ? "Saving…" : "Update Admin Password"}
+            <Key className="h-4 w-4" /> {passLoading ? "Saving…" : "Update Admin Password"}
           </Button>
         </form>
       </div>
@@ -2120,7 +2119,11 @@ function ConfirmExitModal({
             {target === "logout" ? "Yes, Sign Out" : "Sign Out & Leave"}
           </Button>
 
-          <Button onClick={onCancel} variant="outline" className="w-full text-xs cursor-pointer py-2.5">
+          <Button
+            onClick={onCancel}
+            variant="outline"
+            className="w-full text-xs cursor-pointer py-2.5"
+          >
             Cancel
           </Button>
         </div>

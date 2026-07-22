@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import { ProductCard } from "@/components/product-card";
 import { staticProducts, getAdminProducts } from "@/lib/products";
 import type { Product } from "@/lib/products";
-const heroImg = "https://res.cloudinary.com/espliwjf/image/upload/v1784701902/kanishka_products/vercel_hero.png";
+const heroImg =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784701902/kanishka_products/vercel_hero.png";
 
 const EDITORIAL_LEFT =
   "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&h=1000&fit=crop&q=85&auto=format";

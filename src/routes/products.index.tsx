@@ -3,7 +3,13 @@ import { useState, useEffect, useMemo } from "react";
 import { z } from "zod";
 import { X, Search } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
-import { mainCategories, staticProducts, getAdminProducts, fetchAdminProductsApi, getAllProducts } from "@/lib/products";
+import {
+  mainCategories,
+  staticProducts,
+  getAdminProducts,
+  fetchAdminProductsApi,
+  getAllProducts,
+} from "@/lib/products";
 import type { Product } from "@/lib/products";
 import { formatINR } from "@/lib/cart";
 
@@ -50,12 +56,12 @@ function ProductsPage() {
     const refreshProducts = () => {
       setAllProducts(getAllProducts());
     };
-    
+
     const fetchProducts = async () => {
       await fetchAdminProductsApi();
       setAllProducts(getAllProducts());
     };
-    
+
     fetchProducts();
 
     window.addEventListener("kanishka_products_updated", refreshProducts);

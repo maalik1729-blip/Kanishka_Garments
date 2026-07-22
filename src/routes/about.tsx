@@ -1,8 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CheckCircle2 } from "lucide-react";
-const factory = "https://res.cloudinary.com/espliwjf/image/upload/v1784701899/kanishka_products/vercel_factory-hero.jpg";
-const loom = "https://res.cloudinary.com/espliwjf/image/upload/v1784701894/kanishka_products/vercel_carousel-2.jpg";
-const yarn = "https://res.cloudinary.com/espliwjf/image/upload/v1784701896/kanishka_products/vercel_carousel-4.jpg";
+const factory =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784701899/kanishka_products/vercel_factory-hero.jpg";
+const loom =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784701894/kanishka_products/vercel_carousel-2.jpg";
+const yarn =
+  "https://res.cloudinary.com/espliwjf/image/upload/v1784701896/kanishka_products/vercel_carousel-4.jpg";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
