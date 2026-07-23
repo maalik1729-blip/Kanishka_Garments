@@ -18,12 +18,12 @@ export const Route = createFileRoute("/privacy")({
 function PrivacyPolicyPage() {
   return (
     <div className="bg-white font-favorit text-black py-12 md:py-20 selection:bg-black selection:text-white">
-      <div className="mx-auto max-w-[1000px] px-4 md:px-8 space-y-12">
+      <div className="mx-auto max-w-250 px-4 md:px-8 space-y-12">
         {/* Page Header */}
         <div className="border-b border-black pb-8 space-y-3">
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-black" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.05em] text-neutral-500">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">
               TM KANISHKA GARMENTS · LEGAL & COMPLIANCE
             </span>
           </div>
@@ -37,8 +37,8 @@ function PrivacyPolicyPage() {
         </div>
 
         {/* Overview Banner */}
-        <div className="bg-[#f0efe7] border border-black p-6 md:p-8 rounded-xl space-y-3">
-          <h3 className="text-[14px] font-bold uppercase tracking-[0.025em] text-black">
+        <div className="bg-warm-fog border border-black p-6 md:p-8 rounded-xl space-y-3">
+          <h3 className="text-[14px] font-bold uppercase tracking-wide text-black">
             Our Commitment to B2B Confidentiality
           </h3>
           <p className="text-[13px] text-neutral-700 leading-relaxed font-normal">
@@ -53,7 +53,7 @@ function PrivacyPolicyPage() {
         <div className="space-y-10 text-[13px] leading-relaxed text-neutral-800 font-normal">
           {/* Section 1 */}
           <div className="space-y-3">
-            <h2 className="text-[16px] font-bold uppercase tracking-[0.025em] text-black flex items-center gap-2">
+            <h2 className="text-[16px] font-bold uppercase tracking-wide text-black flex items-center gap-2">
               <Lock className="w-4 h-4 text-black" /> 1. Information We Collect
             </h2>
             <p>
@@ -78,7 +78,7 @@ function PrivacyPolicyPage() {
 
           {/* Section 2 */}
           <div className="space-y-3">
-            <h2 className="text-[16px] font-bold uppercase tracking-[0.025em] text-black flex items-center gap-2">
+            <h2 className="text-[16px] font-bold uppercase tracking-wide text-black flex items-center gap-2">
               <Eye className="w-4 h-4 text-black" /> 2. Tech Pack & Proprietary Design Security
             </h2>
             <p>
@@ -90,7 +90,7 @@ function PrivacyPolicyPage() {
 
           {/* Section 3 */}
           <div className="space-y-3">
-            <h2 className="text-[16px] font-bold uppercase tracking-[0.025em] text-black flex items-center gap-2">
+            <h2 className="text-[16px] font-bold uppercase tracking-wide text-black flex items-center gap-2">
               <FileText className="w-4 h-4 text-black" /> 3. How We Use Your Data
             </h2>
             <p>Your commercial information is used exclusively for:</p>
@@ -112,14 +112,14 @@ function PrivacyPolicyPage() {
 
           {/* Section 4 */}
           <div className="space-y-3 border-t border-neutral-200 pt-8">
-            <h2 className="text-[16px] font-bold uppercase tracking-[0.025em] text-black">
+            <h2 className="text-[16px] font-bold uppercase tracking-wide text-black">
               4. Contact Us Regarding Privacy
             </h2>
             <p>
               For privacy requests, NDA executions, or data updates, reach our compliance team
               directly:
             </p>
-            <div className="bg-[#f0efe7] p-4 border border-black/20 text-[12px] space-y-1 font-mono">
+            <div className="bg-warm-fog p-4 border border-black/20 text-[12px] space-y-1 font-mono">
               <p>
                 <strong>TM KANISHKA GARMENTS</strong>
               </p>
