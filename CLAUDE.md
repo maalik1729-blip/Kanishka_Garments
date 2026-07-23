@@ -147,9 +147,10 @@ textile-trade-hub-main/
 - **Header** ([`src/components/layout/site-header.tsx`](file:///d:/ziya/Projects/TNVS/kanishka_garments/src/components/layout/site-header.tsx)): Sticky header with brand logo, nav links, and quick search.
 - **Footer** ([`src/components/layout/site-footer.tsx`](file:///d:/ziya/Projects/TNVS/kanishka_garments/src/components/layout/site-footer.tsx)): Full-width footer with Tirupur mill address, company links, newsletter input, and legal notices. Refactored arbitrary Tailwind classes to standard theme utility classes (`bg-warm-fog`, `max-w-360`, `tracking-wide`).
 
-### 7. Version Control & Git History
+### 8. Logo Integration & Tailwind V4 Standard Utility Refactoring
 
-- Staged, committed, and pushed to remote GitHub repository: `https://github.com/maalik1729-blip/Kanishka_Garments.git` on branch `main`.
+- **Logo Integration**: Replaced text wordmarks and old favicons across the site ([`__root.tsx`](file:///d:/ziya/Projects/TNVS/kanishka_garments/src/routes/__root.tsx), [`site-header.tsx`](file:///d:/ziya/Projects/TNVS/kanishka_garments/src/components/layout/site-header.tsx), [`index.tsx`](file:///d:/ziya/Projects/TNVS/kanishka_garments/src/routes/index.tsx), and [`admin.tsx`](file:///d:/ziya/Projects/TNVS/kanishka_garments/src/routes/admin.tsx)) with the new SVG logo `/logo.svg`. Adjusted display sizes to render cleanly and prominently.
+- **Tailwind V4 Cleanup**: Substituted custom arbitrary classes (e.g. `py-[6px]`, `max-w-[1440px]`, `bg-[#f0efe7]`, `tracking-[0.025em]`) with standard utility classes (e.g. `py-1.5`, `max-w-360`, `bg-warm-fog`, `tracking-wide`) in [`site-header.tsx`](file:///d:/ziya/Projects/TNVS/kanishka_garments/src/components/layout/site-header.tsx) and [`index.tsx`](file:///d:/ziya/Projects/TNVS/kanishka_garments/src/routes/index.tsx) as recommended by IDE diagnostics.
 
 ---
 

@@ -305,9 +305,9 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
           {/* Logo & Header */}
           <div className="mb-8 text-center space-y-3">
             <img
-              src="/favicon.svg"
+              src="/logo.svg"
               alt="KANISHKA GARMENTS Logo"
-              className="mx-auto h-14 w-14 rounded-2xl shadow-lg border border-slate-700 bg-black"
+              className="mx-auto h-20 w-auto object-contain rounded-2xl shadow-lg border border-slate-700 bg-white p-1"
             />
             <div>
               <h1 className="font-display text-xl font-bold tracking-wider text-white uppercase">
@@ -752,9 +752,9 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
           title="Return to User / Store Page"
         >
           <img
-            src="/favicon.svg"
+            src="/logo.svg"
             alt="KANISHKA Logo"
-            className="h-9 w-9 rounded-xl shadow-md shrink-0 border border-slate-700 bg-black"
+            className="h-14 w-auto object-contain rounded-xl shadow-md shrink-0 border border-slate-700 bg-white p-0.5"
           />
           <div>
             <div className="font-display text-sm font-bold tracking-wide text-white uppercase group-hover:text-slate-200 transition-colors">

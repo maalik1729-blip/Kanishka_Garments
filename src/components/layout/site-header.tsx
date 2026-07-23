@@ -18,8 +18,8 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 bg-white font-favorit">
       {/* Main Header Bar */}
-      <div className="border-b border-black bg-white px-4 md:px-8 py-[6px]">
-        <div className="mx-auto flex max-w-[1440px] items-center justify-between min-h-[52px]">
+      <div className="border-b border-black bg-white px-4 md:px-8 py-1.5">
+        <div className="mx-auto flex max-w-360 items-center justify-between min-h-13">
           {/* Left: Desktop Category Links */}
           <nav className="hidden lg:flex items-center gap-6">
             {categoryLinks.map((item) => {
@@ -29,8 +29,8 @@ export function SiteHeader() {
                   key={item.label}
                   to={item.to}
                   className={cn(
-                    "text-[12px] font-medium tracking-[0.025em] text-black hover:opacity-60 transition-opacity",
-                    active && "underline underline-offset-4 decoration-[1px]",
+                    "text-[12px] font-medium tracking-wide text-black hover:opacity-60 transition-opacity",
+                    active && "underline underline-offset-4 decoration-1",
                   )}
                 >
                   {item.label}
@@ -52,12 +52,19 @@ export function SiteHeader() {
             )}
           </button>
 
-          {/* Center: Brand Wordmark (Favorit 30px Weight 700) */}
+          {/* Center: Brand Logo & Wordmark */}
           <Link
             to="/"
-            className="text-[24px] sm:text-[28px] md:text-[30px] font-bold tracking-[0.025em] text-black uppercase hover:opacity-90 transition-opacity text-center"
+            className="flex items-center gap-2 md:gap-3 hover:opacity-90 transition-opacity text-center justify-center"
           >
-            TM KANISHKA
+            <img
+              src="/logo.svg"
+              alt="TM KANISHKA Logo"
+              className="h-12 md:h-16 w-auto object-contain shrink-0"
+            />
+            <span className="text-[20px] sm:text-[24px] md:text-[26px] font-bold tracking-wide text-black uppercase leading-none">
+              TM KANISHKA
+            </span>
           </Link>
 
           {/* Right: Icon Cluster */}
@@ -68,7 +75,7 @@ export function SiteHeader() {
               className="p-1 text-black hover:opacity-60 transition-opacity cursor-pointer"
               aria-label="Search"
             >
-              <Search className="w-[18px] h-[18px] stroke-[1.5]" />
+              <Search className="w-4.5 h-4.5 stroke-[1.5]" />
             </button>
 
             {/* Account Icon */}
@@ -77,7 +84,7 @@ export function SiteHeader() {
               className="hidden sm:block p-1 text-black hover:opacity-60 transition-opacity"
               aria-label="Account"
             >
-              <User className="w-[18px] h-[18px] stroke-[1.5]" />
+              <User className="w-4.5 h-4.5 stroke-[1.5]" />
             </Link>
           </div>
         </div>
@@ -85,8 +92,8 @@ export function SiteHeader() {
 
       {/* Expandable Search Input Bar */}
       {searchOpen && (
-        <div className="bg-[#f0efe7] border-b border-black px-4 py-3 transition-all">
-          <div className="mx-auto max-w-[600px] flex items-center gap-3">
+        <div className="bg-warm-fog border-b border-black px-4 py-3 transition-all">
+          <div className="mx-auto max-w-150 flex items-center gap-3">
             <Search className="w-4 h-4 text-black stroke-[1.5]" />
             <input
               type="text"
@@ -113,7 +120,7 @@ export function SiteHeader() {
                 key={item.label}
                 to={item.to}
                 onClick={() => setMobileOpen(false)}
-                className="text-[14px] font-medium tracking-[0.025em] text-black border-b border-neutral-200 pb-2 hover:opacity-60"
+                className="text-[14px] font-medium tracking-wide text-black border-b border-neutral-200 pb-2 hover:opacity-60"
               >
                 {item.label}
               </Link>

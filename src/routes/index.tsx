@@ -75,23 +75,30 @@ function Index() {
   return (
     <div className="bg-white font-favorit text-black selection:bg-black selection:text-white">
       {/* ── 1. HERO SECTION — Poster Style Layout with hero.png on Right ── */}
-      <section className="w-full bg-[#f0efe7] border-b border-black">
-        <div className="mx-auto max-w-[1440px] px-6 lg:px-12 py-10 lg:py-16">
+      <section className="w-full bg-warm-fog border-b border-black">
+        <div className="mx-auto max-w-360 px-6 lg:px-12 py-10 lg:py-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Left Content (Garment Manufacturing Poster Style) */}
             <div className="lg:col-span-6 flex flex-col justify-between space-y-6">
               {/* Top Logo / Brand Badge */}
-              <div className="flex flex-col items-start">
-                <div className="border border-black px-3 py-1 font-bold text-[14px] leading-none tracking-[0.05em] uppercase text-black rounded-md">
-                  TM KANISHKA
-                </div>
-                <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-600 mt-1">
-                  GARMENT MANUFACTURING & TEXTILE MILL
+              <div className="flex items-center gap-3">
+                <img
+                  src="/logo.svg"
+                  alt="TM KANISHKA Logo"
+                  className="h-16 w-auto object-contain shrink-0"
+                />
+                <div className="flex flex-col items-start">
+                  <div className="border border-black px-3 py-1 font-bold text-[14px] leading-none tracking-wider uppercase text-black rounded-md">
+                    TM KANISHKA
+                  </div>
+                  <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-600 mt-1">
+                    GARMENT MANUFACTURING & TEXTILE MILL
+                  </div>
                 </div>
               </div>
 
               {/* Decorative Line Rule */}
-              <div className="w-28 h-[3px] bg-black my-2" />
+              <div className="w-28 h-0.75 bg-black my-2" />
 
               {/* Main Extended Headline */}
               <h1 className="font-bold text-[32px] sm:text-[42px] lg:text-[48px] leading-[1.08] tracking-tight uppercase text-black font-favorit">
@@ -108,32 +115,32 @@ function Index() {
               <div className="pt-2 flex flex-wrap items-center gap-3">
                 <Link
                   to="/products"
-                  className="bg-black text-white px-7 py-3.5 text-[12px] font-bold tracking-[0.05em] uppercase rounded-lg hover:bg-neutral-800 transition-colors inline-block cursor-pointer shadow-sm"
+                  className="bg-black text-white px-7 py-3.5 text-[12px] font-bold tracking-wider uppercase rounded-lg hover:bg-neutral-800 transition-colors inline-block cursor-pointer shadow-sm"
                 >
                   VIEW CATALOG & SPECS
                 </Link>
 
                 <Link
                   to="/wholesale"
-                  className="bg-white border border-black text-black px-6 py-3.5 text-[12px] font-bold tracking-[0.05em] uppercase rounded-lg hover:bg-neutral-100 transition-colors inline-block cursor-pointer"
+                  className="bg-white border border-black text-black px-6 py-3.5 text-[12px] font-bold tracking-wider uppercase rounded-lg hover:bg-neutral-100 transition-colors inline-block cursor-pointer"
                 >
                   REQUEST BULK RFQ
                 </Link>
               </div>
 
               {/* Bottom Reference & Right Accent Line */}
-              <div className="pt-6 flex items-center justify-between border-t border-black/20 text-[11px] text-neutral-600 font-medium tracking-[0.025em]">
+              <div className="pt-6 flex items-center justify-between border-t border-black/20 text-[11px] text-neutral-600 font-medium tracking-wide">
                 <span>Cell: +91 87540 11563 · GSTIN: 33CNRPT6310G1ZS · Tirupur, India</span>
                 <div className="flex items-center gap-1">
-                  <div className="w-3 h-[4px] bg-black" />
-                  <div className="w-12 h-[4px] bg-black" />
+                  <div className="w-3 h-1 bg-black" />
+                  <div className="w-12 h-1 bg-black" />
                 </div>
               </div>
             </div>
 
             {/* Right Column: Hero Image (hero.png) */}
             <div className="lg:col-span-6 flex justify-center items-center h-full">
-              <div className="w-full h-full max-h-[580px] overflow-hidden bg-[#f0efe7] flex items-center justify-center">
+              <div className="w-full h-full max-h-145 overflow-hidden bg-warm-fog flex items-center justify-center">
                 <img
                   src={heroImg}
                   alt="Kanishka Garments Hero Urban Style Collection"
@@ -146,10 +153,10 @@ function Index() {
       </section>
 
       {/* ── 2. NEW & TRENDING PRODUCT GRID SECTION ── */}
-      <section className="mx-auto max-w-[1440px] px-4 md:px-8 py-12">
+      <section className="mx-auto max-w-360 px-4 md:px-8 py-12">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
           <div>
-            <h2 className="favorit-heading text-[20px] font-bold text-black uppercase tracking-[0.025em]">
+            <h2 className="favorit-heading text-[20px] font-bold text-black uppercase tracking-wide">
               New & Trending
             </h2>
             <p className="text-[12px] text-neutral-500 font-normal mt-1">
@@ -158,7 +165,7 @@ function Index() {
           </div>
 
           {/* Category Tab Filter */}
-          <div className="flex items-center gap-[6px] overflow-x-auto pb-2 md:pb-0 scrollbar-none">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
             {CATEGORY_TABS.map((tab) => (
               <button
                 key={tab.id}
@@ -195,15 +202,15 @@ function Index() {
 
       {/* ── 3. SPLIT EDITORIAL SECTION — Two equal-width 50%/50% photos ── */}
       <section className="w-full my-16">
-        <div className="mx-auto max-w-[1440px] grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-2 px-4 md:px-8">
-          <div className="relative aspect-[4/5] overflow-hidden bg-[#f0efe7]">
+        <div className="mx-auto max-w-360 grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-2 px-4 md:px-8">
+          <div className="relative aspect-4/5 overflow-hidden bg-warm-fog">
             <img
               src={EDITORIAL_LEFT}
               alt="Editorial split feature left"
               className="w-full h-full object-cover rounded-none transition-transform duration-500 hover:scale-[1.01]"
             />
             <div className="absolute bottom-6 left-6 bg-white/90 backdrop-blur-sm p-4 max-w-xs border border-black/10">
-              <span className="text-[10px] uppercase font-bold tracking-[0.025em] text-neutral-500">
+              <span className="text-[10px] uppercase font-bold tracking-wide text-neutral-500">
                 LOOKBOOK SPREAD 01
               </span>
               <h3 className="text-[16px] font-normal text-black mt-1">
@@ -218,14 +225,14 @@ function Index() {
             </div>
           </div>
 
-          <div className="relative aspect-[4/5] overflow-hidden bg-[#f0efe7]">
+          <div className="relative aspect-4/5 overflow-hidden bg-warm-fog">
             <img
               src={EDITORIAL_RIGHT}
               alt="Editorial split feature right"
               className="w-full h-full object-cover rounded-none transition-transform duration-500 hover:scale-[1.01]"
             />
             <div className="absolute bottom-6 left-6 bg-white/90 backdrop-blur-sm p-4 max-w-xs border border-black/10">
-              <span className="text-[10px] uppercase font-bold tracking-[0.025em] text-neutral-500">
+              <span className="text-[10px] uppercase font-bold tracking-wide text-neutral-500">
                 LOOKBOOK SPREAD 02
               </span>
               <h3 className="text-[16px] font-normal text-black mt-1">Direct Tirupur Mill Knits</h3>
@@ -241,10 +248,10 @@ function Index() {
       </section>
 
       {/* ── 4. BLUSH SAND EDITORIAL HIGHLIGHT SECTION ── */}
-      <section className="bg-[#f5ebd5] py-20 px-4 md:px-8 my-16 border-y border-black">
-        <div className="mx-auto max-w-[1440px] grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <section className="bg-blush-sand py-20 px-4 md:px-8 my-16 border-y border-black">
+        <div className="mx-auto max-w-360 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-4 max-w-xl">
-            <span className="text-[11px] font-bold uppercase tracking-[0.025em] text-neutral-600">
+            <span className="text-[11px] font-bold uppercase tracking-wide text-neutral-600">
               CRAFT & CAPACITY
             </span>
             <h2 className="favorit-display text-[30px] font-normal leading-tight text-black">
@@ -265,7 +272,7 @@ function Index() {
             </div>
           </div>
 
-          <div className="aspect-[16/10] overflow-hidden bg-neutral-200">
+          <div className="aspect-16/10 overflow-hidden bg-neutral-200">
             <img
               src={BLUSH_SECTION_IMG}
               alt="Tirupur mill production detail"
@@ -276,9 +283,9 @@ function Index() {
       </section>
 
       {/* ── 5. SECONDARY PRODUCT GRID — SWEATS & FABRICS ── */}
-      <section className="mx-auto max-w-[1440px] px-4 md:px-8 py-16">
+      <section className="mx-auto max-w-360 px-4 md:px-8 py-16">
         <div className="mb-8">
-          <h2 className="favorit-heading text-[20px] font-bold text-black uppercase tracking-[0.025em]">
+          <h2 className="favorit-heading text-[20px] font-bold text-black uppercase tracking-wide">
             Sweats, Hoodies & Raw Knits
           </h2>
           <p className="text-[12px] text-neutral-500 font-normal mt-1">
