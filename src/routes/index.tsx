@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { ProductCard } from "@/components/product-card";
-import { staticProducts, getAdminProducts, fetchAdminProductsApi } from "@/lib/products";
+import { getAllProducts, fetchAdminProductsApi } from "@/lib/products";
 import type { Product } from "@/lib/products";
 const heroImg =
   "https://res.cloudinary.com/espliwjf/image/upload/v1784701902/kanishka_products/vercel_hero.png";
@@ -37,15 +37,12 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const [allProducts, setAllProducts] = useState<Product[]>(() => [
-    ...staticProducts,
-    ...getAdminProducts(),
-  ]);
+  const [allProducts, setAllProducts] = useState<Product[]>(() => getAllProducts());
   const [activeTab, setActiveTab] = useState("ALL");
 
   useEffect(() => {
     const refreshProducts = () => {
-      setAllProducts([...staticProducts, ...getAdminProducts()]);
+      setAllProducts(getAllProducts());
     };
     
     const fetchProducts = async () => {
