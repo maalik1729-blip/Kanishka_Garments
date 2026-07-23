@@ -82,11 +82,13 @@ function Index() {
             <div className="lg:col-span-6 flex flex-col justify-between space-y-6">
               {/* Top Logo / Brand Badge */}
               <div className="flex items-center gap-3">
-                <img
-                  src="/logo.svg"
-                  alt="TM KANISHKA Logo"
-                  className="h-16 w-auto object-contain shrink-0"
-                />
+                <div className="p-1 bg-white border border-black/10 rounded-xl shadow-sm shrink-0 flex items-center justify-center">
+                  <img
+                    src="/logo.svg"
+                    alt="TM KANISHKA Logo"
+                    className="h-14 w-auto object-contain"
+                  />
+                </div>
                 <div className="flex flex-col items-start">
                   <div className="border border-black px-3 py-1 font-bold text-[14px] leading-none tracking-wider uppercase text-black rounded-md">
                     TM KANISHKA
