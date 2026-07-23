@@ -57,13 +57,11 @@ export function SiteHeader() {
             to="/"
             className="flex items-center gap-2 md:gap-3 hover:opacity-90 transition-opacity text-center justify-center"
           >
-            <div className="p-1 bg-white border border-black/10 rounded-xl shadow-sm shrink-0 flex items-center justify-center">
-              <img
-                src="/logo.svg"
-                alt="TM KANISHKA Logo"
-                className="h-10 md:h-14 w-auto object-contain"
-              />
-            </div>
+            <img
+              src="/logo.svg"
+              alt="TM KANISHKA Logo"
+              className="h-14 md:h-16 w-auto object-contain shrink-0"
+            />
             <span className="text-[20px] sm:text-[24px] md:text-[26px] font-bold tracking-wide text-black uppercase leading-none">
               TM KANISHKA
             </span>
