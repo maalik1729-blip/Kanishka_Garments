@@ -29,7 +29,9 @@ export function getQuoteRequests(): QuoteRequest[] {
 export function saveQuoteRequests(quotes: QuoteRequest[]): void {
   try {
     localStorage.setItem(QUOTES_STORAGE_KEY, JSON.stringify(quotes));
-  } catch {}
+  } catch (err) {
+    console.warn("Failed to save quote requests to LocalStorage:", err);
+  }
 }
 
 export function addQuoteRequest(

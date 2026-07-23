@@ -1,9 +1,12 @@
 import { MongoClient, Db } from "mongodb";
+import dns from "dns";
 
 try {
   // Fix Node.js DNS SRV lookup issues on Windows
-  require("dns").setServers(["8.8.8.8", "1.1.1.1"]);
-} catch {}
+  dns.setServers(["8.8.8.8", "1.1.1.1"]);
+} catch (err) {
+  console.warn("Could not set DNS servers for Windows SRV lookup:", err);
+}
 
 const MONGODB_URI =
   process.env.MONGODB_URI ||

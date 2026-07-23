@@ -3,12 +3,12 @@ import { ArrowRight } from "lucide-react";
 
 export function SiteFooter() {
   return (
-    <footer className="mt-16 bg-[#f0efe7] text-black font-favorit border-t border-black">
-      <div className="mx-auto max-w-[1440px] px-6 lg:px-12 py-16">
+    <footer className="mt-16 bg-warm-fog text-black font-favorit border-t border-black">
+      <div className="mx-auto max-w-360 px-6 lg:px-12 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
           {/* Column 1: Newsletter / Editorial voice */}
           <div className="flex flex-col">
-            <h4 className="text-[12px] font-medium uppercase tracking-[0.025em] text-black mb-3">
+            <h4 className="text-[12px] font-medium uppercase tracking-wide text-black mb-3">
               THE EDITORIAL LOOKBOOK
             </h4>
             <p className="text-[12px] text-neutral-600 font-normal leading-relaxed mb-4">
@@ -33,7 +33,7 @@ export function SiteFooter() {
 
           {/* Column 2: Navigation */}
           <div>
-            <h4 className="text-[12px] font-medium uppercase tracking-[0.025em] text-black mb-3">
+            <h4 className="text-[12px] font-medium uppercase tracking-wide text-black mb-3">
               SHOP COLLECTION
             </h4>
             <ul className="space-y-2 text-[12px] text-black font-normal">
@@ -67,7 +67,7 @@ export function SiteFooter() {
 
           {/* Column 3: Wholesale & Brand */}
           <div>
-            <h4 className="text-[12px] font-medium uppercase tracking-[0.025em] text-black mb-3">
+            <h4 className="text-[12px] font-medium uppercase tracking-wide text-black mb-3">
               MANUFACTURING
             </h4>
             <ul className="space-y-2 text-[12px] text-black font-normal">
@@ -96,7 +96,7 @@ export function SiteFooter() {
 
           {/* Column 4: Location & Direct Contact */}
           <div>
-            <h4 className="text-[12px] font-medium uppercase tracking-[0.025em] text-black mb-3">
+            <h4 className="text-[12px] font-medium uppercase tracking-wide text-black mb-3">
               HEADQUARTERS & MILL
             </h4>
             <p className="text-[12px] text-neutral-600 font-normal leading-relaxed">

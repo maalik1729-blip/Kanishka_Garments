@@ -36,15 +36,14 @@ export const Route = createFileRoute("/api/upload")({
               headers: { "Content-Type": "application/json" },
             },
           );
-        } catch (error: any) {
+        } catch (error) {
           console.error("Cloudinary Upload Error:", error);
-          return new Response(
-            JSON.stringify({ error: error?.message || "Failed to upload image to Cloudinary" }),
-            {
-              status: 500,
-              headers: { "Content-Type": "application/json" },
-            },
-          );
+          const message =
+            error instanceof Error ? error.message : "Failed to upload image to Cloudinary";
+          return new Response(JSON.stringify({ error: message }), {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+          });
         }
       },
     },

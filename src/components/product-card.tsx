@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { formatINR } from "@/lib/cart";
+import { formatINR } from "@/lib/utils";
 import type { Product } from "@/lib/products";
 import { ShieldCheck, FileText } from "lucide-react";
 import { useState } from "react";
@@ -21,10 +21,10 @@ export function ProductCard({ product }: { product: Product }) {
         ];
 
   return (
-    <article className="group flex flex-col bg-white p-[14px] rounded-2xl border border-black/10 hover:border-black/30 hover:shadow-lg transition-all duration-300 font-favorit">
+    <article className="group flex flex-col bg-white p-3.5 rounded-2xl border border-black/10 hover:border-black/30 hover:shadow-lg transition-all duration-300 font-favorit">
       {/* Image container with B2B Badges & Wishlist */}
       <div
-        className="relative w-full overflow-hidden bg-[#f0efe7] rounded-xl"
+        className="relative w-full overflow-hidden bg-warm-fog rounded-xl"
         style={{ aspectRatio: "4/5" }}
       >
         <Link to="/products/$slug" params={{ slug: product.slug }} className="block w-full h-full">
@@ -42,12 +42,12 @@ export function ProductCard({ product }: { product: Product }) {
         {/* B2B Badges overlay */}
         <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">
           {product.badge && (
-            <span className="bg-black text-white text-[8px] font-bold tracking-[0.05em] px-2 py-0.5 uppercase shadow-sm rounded-md">
+            <span className="bg-black text-white text-[8px] font-bold tracking-wider px-2 py-0.5 uppercase shadow-sm rounded-md">
               {product.badge}
             </span>
           )}
           {product.gsm && (
-            <span className="bg-white/95 backdrop-blur-sm text-black border border-black/20 text-[8px] font-bold px-2 py-0.5 uppercase tracking-[0.05em] rounded-md">
+            <span className="bg-white/95 backdrop-blur-sm text-black border border-black/20 text-[8px] font-bold px-2 py-0.5 uppercase tracking-wider rounded-md">
               {product.gsm}
             </span>
           )}
@@ -71,13 +71,13 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
 
         {/* Color Swatch Row */}
-        <div className="flex items-center gap-[6px] mb-2">
+        <div className="flex items-center gap-1.5 mb-2">
           {swatches.slice(0, 5).map((swatch, idx) => (
             <button
               key={swatch.name + idx}
               onClick={() => setActiveColorIndex(idx)}
               title={swatch.name}
-              className={`w-[14px] h-[14px] rounded-full cursor-pointer box-border transition-all ${
+              className={`w-3.5 h-3.5 rounded-full cursor-pointer box-border transition-all ${
                 activeColorIndex === idx
                   ? "ring-2 ring-black ring-offset-1 scale-110"
                   : "border border-neutral-300 hover:scale-105"

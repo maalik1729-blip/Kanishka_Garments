@@ -11,7 +11,7 @@ import {
   getAllProducts,
 } from "@/lib/products";
 import type { Product } from "@/lib/products";
-import { formatINR } from "@/lib/cart";
+import { formatINR } from "@/lib/utils";
 
 const searchSchema = z.object({
   c: z.string().optional(),
@@ -128,10 +128,10 @@ function ProductsPage() {
 
   return (
     <div className="bg-white font-favorit text-black py-10 md:py-16">
-      <div className="mx-auto max-w-[1440px] px-4 md:px-8">
+      <div className="mx-auto max-w-360 px-4 md:px-8">
         {/* Editorial Heading */}
         <div className="mb-8 border-b border-black pb-6">
-          <span className="text-[10px] font-bold uppercase tracking-[0.025em] text-neutral-500">
+          <span className="text-[10px] font-bold uppercase tracking-wide text-neutral-500">
             EDITORIAL CATALOGUE
           </span>
           <h1 className="favorit-display text-[30px] font-normal text-black mt-1">
@@ -159,7 +159,7 @@ function ProductsPage() {
           </div>
 
           {/* Category Tabs (Sharp rectangle 0px radius active tab) */}
-          <div className="flex items-center gap-[6px] overflow-x-auto pb-2 md:pb-0 scrollbar-none">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
             <button
               onClick={() => navigate({ search: {} })}
               className={`text-[12px] font-medium px-4 py-1.5 whitespace-nowrap cursor-pointer transition-colors ${
@@ -195,7 +195,7 @@ function ProductsPage() {
             <div className="space-y-6">
               {/* Type Filter */}
               <div>
-                <h4 className="text-[11px] font-bold uppercase tracking-[0.025em] text-black mb-3">
+                <h4 className="text-[11px] font-bold uppercase tracking-wide text-black mb-3">
                   GARMENT TYPE
                 </h4>
                 <div className="flex flex-col gap-1.5 text-[12px]">
@@ -222,7 +222,7 @@ function ProductsPage() {
               {/* Sub-types */}
               {subTypes.length > 0 && (
                 <div>
-                  <h4 className="text-[11px] font-bold uppercase tracking-[0.025em] text-black mb-3">
+                  <h4 className="text-[11px] font-bold uppercase tracking-wide text-black mb-3">
                     SUB-CATEGORY
                   </h4>
                   <div className="flex flex-col gap-1.5 max-h-48 overflow-y-auto text-[12px]">
@@ -255,7 +255,7 @@ function ProductsPage() {
 
               {/* Price Range */}
               <div>
-                <h4 className="text-[11px] font-bold uppercase tracking-[0.025em] text-black mb-3">
+                <h4 className="text-[11px] font-bold uppercase tracking-wide text-black mb-3">
                   WHOLESALE PRICE
                 </h4>
                 <div className="flex flex-col gap-1.5 text-[12px]">
@@ -335,9 +335,9 @@ function ProductsPage() {
         </div>
 
         {/* Bottom Editorial Quote Callout */}
-        <div className="mt-24 bg-[#f0efe7] p-8 md:p-12 border border-black flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="mt-24 bg-warm-fog p-8 md:p-12 border border-black flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
-            <span className="text-[10px] font-bold uppercase tracking-[0.025em] text-neutral-500">
+            <span className="text-[10px] font-bold uppercase tracking-wide text-neutral-500">
               CUSTOM LAB-DIPS & PRIVATE LABELING
             </span>
             <h3 className="text-[20px] font-normal text-black mt-1">

@@ -191,7 +191,9 @@ export function saveAdminProducts(products: Product[]) {
     if (typeof window !== "undefined") {
       window.dispatchEvent(new CustomEvent("kanishka_products_updated"));
     }
-  } catch {}
+  } catch (err) {
+    console.warn("Failed to save admin products to LocalStorage:", err);
+  }
 }
 
 export async function fetchAdminProductsApi(): Promise<Product[]> {

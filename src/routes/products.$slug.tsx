@@ -24,7 +24,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { getAllProducts, getProduct, fetchAdminProductsApi } from "@/lib/products";
-import { formatINR } from "@/lib/cart";
+import { formatINR } from "@/lib/utils";
 import { addQuoteRequest, createQuoteRequestApi } from "@/lib/quotes";
 import { ProductCard } from "@/components/product-card";
 import { toast } from "sonner";
@@ -97,7 +97,7 @@ export const Route = createFileRoute("/products/$slug")({
   }),
   component: ProductDetail,
   notFoundComponent: () => (
-    <div className="mx-auto max-w-[1440px] px-6 py-24 text-center font-favorit">
+    <div className="mx-auto max-w-360 px-6 py-24 text-center font-favorit">
       <h1 className="text-[30px] font-normal text-black">PRODUCT NOT FOUND</h1>
       <Link to="/products" className="btn-ghost-cta mt-6 inline-block">
         RETURN TO CATALOGUE
@@ -400,7 +400,7 @@ function ProductDetail() {
 
   return (
     <div className="bg-white font-favorit text-black py-8 md:py-14">
-      <div className="mx-auto max-w-[1440px] px-4 md:px-8">
+      <div className="mx-auto max-w-360 px-4 md:px-8">
         {/* ── BREADCRUMB & MILL SPEC REVISION HEADER ── */}
         <div className="flex items-center justify-between mb-8 pb-4 border-b border-neutral-200 text-[11px] text-neutral-500">
           <Link
@@ -409,8 +409,8 @@ function ProductDetail() {
           >
             <ArrowLeft className="h-3.5 w-3.5" /> BACK TO WHOLESALE CATALOGUE
           </Link>
-          <div className="flex items-center gap-4 hidden sm:flex">
-            <span className="bg-[#f0efe7] text-black px-2.5 py-0.5 font-bold uppercase tracking-wider text-[10px]">
+          <div className="hidden sm:flex items-center gap-4">
+            <span className="bg-warm-fog text-black px-2.5 py-0.5 font-bold uppercase tracking-wider text-[10px]">
               TIRUPPUR MILL SPEC B2B-2026
             </span>
             <span className="text-neutral-400">|</span>
@@ -427,7 +427,7 @@ function ProductDetail() {
               onClick={() => setShowFabricZoomModal(true)}
               onMouseEnter={() => setIsZoomingMain(true)}
               onMouseLeave={() => setIsZoomingMain(false)}
-              className="relative aspect-[4/5] bg-[#f0efe7] overflow-hidden border border-black/10 group cursor-pointer rounded-xl"
+              className="relative aspect-4/5 bg-warm-fog overflow-hidden border border-black/10 group cursor-pointer rounded-xl"
               title="Click to open high-resolution fabric weave viewer"
             >
               <img
@@ -446,12 +446,12 @@ function ProductDetail() {
               {/* Top Action Floating Badges */}
               <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
                 {product.badge && (
-                  <span className="bg-black text-white text-[9px] font-bold px-2.5 py-1 uppercase tracking-[0.05em] shadow-sm">
+                  <span className="bg-black text-white text-[9px] font-bold px-2.5 py-1 uppercase tracking-wider shadow-sm">
                     {product.badge}
                   </span>
                 )}
                 {product.gsm && (
-                  <span className="bg-white/90 backdrop-blur-sm text-black border border-black/20 text-[9px] font-bold px-2.5 py-1 uppercase tracking-[0.05em]">
+                  <span className="bg-white/90 backdrop-blur-sm text-black border border-black/20 text-[9px] font-bold px-2.5 py-1 uppercase tracking-wider">
                     {product.gsm}
                   </span>
                 )}
@@ -465,7 +465,7 @@ function ProductDetail() {
                     e.stopPropagation();
                     setShowFabricZoomModal(true);
                   }}
-                  className="bg-black/90 backdrop-blur-sm hover:bg-black text-white px-3.5 py-2 text-[10px] font-bold tracking-[0.05em] uppercase flex items-center gap-2 cursor-pointer transition-all border border-white/20 rounded-lg shadow-md"
+                  className="bg-black/90 backdrop-blur-sm hover:bg-black text-white px-3.5 py-2 text-[10px] font-bold tracking-wider uppercase flex items-center gap-2 cursor-pointer transition-all border border-white/20 rounded-lg shadow-md"
                 >
                   <ZoomIn className="w-3.5 h-3.5 text-white" /> FABRIC WEAVE CLOSE-UP (ZOOM)
                 </button>
@@ -507,7 +507,7 @@ function ProductDetail() {
                 {/* Direct Fabric Weave Thumbnail Trigger */}
                 <button
                   onClick={() => setShowFabricZoomModal(true)}
-                  className="relative w-20 aspect-square shrink-0 overflow-hidden border-2 border-dashed border-black bg-[#f0efe7] flex flex-col items-center justify-center p-1 text-center cursor-pointer hover:bg-neutral-200 transition-colors"
+                  className="relative w-20 aspect-square shrink-0 overflow-hidden border-2 border-dashed border-black bg-warm-fog flex flex-col items-center justify-center p-1 text-center cursor-pointer hover:bg-neutral-200 transition-colors"
                 >
                   <ZoomIn className="w-4 h-4 text-black mb-1" />
                   <span className="text-[8px] font-bold uppercase leading-none">WEAVE ZOOM</span>
@@ -516,7 +516,7 @@ function ProductDetail() {
             </div>
 
             {/* Quick Fabric Guarantee Alert */}
-            <div className="bg-[#f0efe7] border border-black/20 p-4 text-[12px] flex items-start gap-3">
+            <div className="bg-warm-fog border border-black/20 p-4 text-[12px] flex items-start gap-3">
               <Sparkles className="w-5 h-5 text-black shrink-0 mt-0.5" />
               <div>
                 <span className="font-bold text-black uppercase text-[11px] block">
@@ -535,7 +535,7 @@ function ProductDetail() {
             {/* Header info */}
             <div>
               <div className="flex items-center gap-2 mb-1.5">
-                <span className="text-[10px] font-bold uppercase tracking-[0.05em] text-neutral-500">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">
                   {product.categoryLabel}{" "}
                   {product.subType ? `· ${product.subType.toUpperCase()}` : ""}
                 </span>
@@ -565,9 +565,9 @@ function ProductDetail() {
 
             {/* REQUIREMENT 3: DYNAMIC VOLUME WHOLESALE PRICING TIERS TABLE */}
             {product.pricingTiers && product.pricingTiers.length > 0 && (
-              <div className="border border-black p-4 bg-[#f0efe7] space-y-3">
+              <div className="border border-black p-4 bg-warm-fog space-y-3">
                 <div className="flex items-center justify-between border-b border-black pb-2">
-                  <span className="font-bold text-[11px] uppercase tracking-[0.05em] text-black flex items-center gap-1.5">
+                  <span className="font-bold text-[11px] uppercase tracking-wider text-black flex items-center gap-1.5">
                     <Layers className="w-3.5 h-3.5 text-black" /> DYNAMIC VOLUME WHOLESALE PRICING
                   </span>
                   <span className="text-[10px] text-neutral-500 font-bold uppercase">
@@ -600,7 +600,7 @@ function ProductDetail() {
               {/* Stock Colors Swatch Selector */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-[12px]">
-                  <span className="font-bold uppercase tracking-[0.025em]">STOCK COLORWAY:</span>
+                  <span className="font-bold uppercase tracking-wide">STOCK COLORWAY:</span>
                   <span className="text-neutral-600 font-medium">{selectedColor}</span>
                 </div>
                 <div className="flex flex-wrap gap-2.5 pt-1">
@@ -678,7 +678,7 @@ function ProductDetail() {
                         <span
                           className={`absolute inset-0 flex items-center justify-center ${sw.hex === "#FFFFFF" || sw.hex === "#FFF2B2" || sw.hex === "#F5F0E6" || sw.hex === "#E6E6FA" || sw.hex === "#D3D3D3" ? "text-black" : "text-white"}`}
                         >
-                          <Check className="w-3 h-3 stroke-[3]" />
+                          <Check className="w-3 h-3 stroke-3" />
                         </span>
                       )}
                     </button>
@@ -690,9 +690,7 @@ function ProductDetail() {
               {product.sizes && product.sizes.length > 0 && (
                 <div className="space-y-2 pt-2">
                   <div className="flex items-center justify-between text-[12px]">
-                    <span className="font-bold uppercase tracking-[0.025em]">
-                      SIZE RATIO / SPECS:
-                    </span>
+                    <span className="font-bold uppercase tracking-wide">SIZE RATIO / SPECS:</span>
                     <span className="text-neutral-600 font-medium">{selectedSize}</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -718,7 +716,7 @@ function ProductDetail() {
             <div className="bg-white border border-black p-4 text-[12px] space-y-2.5">
               <div className="flex items-center justify-between border-b border-neutral-200 pb-2">
                 <span className="font-bold uppercase text-black">MINIMUM ORDER (MOQ):</span>
-                <span className="font-bold text-black bg-black text-white px-2 py-0.5 text-[11px]">
+                <span className="font-bold bg-black text-white px-2 py-0.5 text-[11px]">
                   {product.moq} {product.unit.toUpperCase()}S / COLOR
                 </span>
               </div>
@@ -743,7 +741,7 @@ function ProductDetail() {
               {/* CTA 1: Request Bulk Quote (RFQ) Form Modal Trigger */}
               <button
                 onClick={() => setShowRfqModal(true)}
-                className="btn-filled-add w-full py-4 text-[12px] font-bold uppercase tracking-[0.05em] flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+                className="btn-filled-add w-full py-4 text-[12px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm cursor-pointer"
               >
                 <FileText className="w-4 h-4" /> REQUEST BULK QUOTE (RFQ)
               </button>
@@ -751,7 +749,7 @@ function ProductDetail() {
               {/* CTA 2: Order Sample Kit Button */}
               <Link
                 to="/wholesale"
-                className="btn-ghost-cta w-full text-center py-3 text-[12px] font-bold uppercase tracking-[0.05em] flex items-center justify-center gap-2 cursor-pointer"
+                className="btn-ghost-cta w-full text-center py-3 text-[12px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Package className="w-4 h-4" /> ORDER SAMPLE KIT (3–5 DAYS DISPATCH)
               </Link>
@@ -763,7 +761,7 @@ function ProductDetail() {
                 )}`}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full py-3 border border-black text-center text-[12px] font-bold uppercase tracking-[0.05em] bg-[#f0efe7] text-black hover:bg-black hover:text-white transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3 border border-black text-center text-[12px] font-bold uppercase tracking-wider bg-warm-fog text-black hover:bg-black hover:text-white transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
                 <MessageCircle className="w-4 h-4 text-emerald-600 group-hover:text-white" />{" "}
                 INSTANT WHATSAPP / LIVE CHAT (+91 421 420 4200)
@@ -783,7 +781,7 @@ function ProductDetail() {
         {/* ── REQUIREMENT 2, 4, 5, 7: RECOMMENDED 4-TAB WIREFRAME STRUCTURE ── */}
         <div className="mt-20 border-t border-black pt-12">
           <div className="mb-4 flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-[0.05em] text-neutral-500">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">
               DETAILED MANUFACTURING DOCUMENTATION
             </span>
             <span className="text-[10px] text-neutral-400 hidden md:inline">
@@ -806,10 +804,10 @@ function ProductDetail() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-6 py-3.5 text-[12px] font-bold uppercase whitespace-nowrap tracking-[0.025em] flex items-center gap-2 cursor-pointer transition-colors ${
+                className={`px-6 py-3.5 text-[12px] font-bold uppercase whitespace-nowrap tracking-wide flex items-center gap-2 cursor-pointer transition-colors ${
                   activeTab === tab.id
                     ? "bg-black text-white rounded-none"
-                    : "bg-[#f0efe7] text-neutral-700 hover:text-black hover:bg-neutral-200"
+                    : "bg-warm-fog text-neutral-700 hover:text-black hover:bg-neutral-200"
                 }`}
               >
                 <tab.icon className="w-4 h-4" /> {tab.label}
@@ -818,13 +816,13 @@ function ProductDetail() {
           </div>
 
           {/* Tab Content Panes */}
-          <div className="py-8 bg-[#f0efe7] p-6 md:p-10 border border-t-0 border-black font-favorit">
+          <div className="py-8 bg-warm-fog p-6 md:p-10 border border-t-0 border-black font-favorit">
             {/* ── TAB 1: Detailed Specifications (Requirement 2 Table) ── */}
             {activeTab === "specs" && (
               <div className="space-y-8">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-black/20 pb-4">
                   <div>
-                    <h3 className="text-[18px] font-bold uppercase text-black tracking-[0.025em]">
+                    <h3 className="text-[18px] font-bold uppercase text-black tracking-wide">
                       CORE TEXTILE & FABRIC SPECIFICATIONS
                     </h3>
                     <p className="text-[12px] text-neutral-600 mt-0.5">
@@ -959,7 +957,7 @@ function ProductDetail() {
             {activeTab === "oem" && (
               <div className="space-y-8">
                 <div className="border-b border-black/20 pb-4">
-                  <h3 className="text-[18px] font-bold uppercase text-black tracking-[0.025em]">
+                  <h3 className="text-[18px] font-bold uppercase text-black tracking-wide">
                     WHITE-LABEL & OEM / ODM CUSTOMIZATION OPTIONS
                   </h3>
                   <p className="text-[12px] text-neutral-600 mt-0.5">
@@ -983,7 +981,7 @@ function ProductDetail() {
                         (t) => (
                           <span
                             key={t}
-                            className="bg-[#f0efe7] text-black text-[10px] font-bold px-2 py-0.5 border border-black/10"
+                            className="bg-warm-fog text-black text-[10px] font-bold px-2 py-0.5 border border-black/10"
                           >
                             {t}
                           </span>
@@ -1043,7 +1041,7 @@ function ProductDetail() {
             {activeTab === "commercial" && (
               <div className="space-y-8 text-[12px]">
                 <div className="border-b border-black/20 pb-4">
-                  <h3 className="text-[18px] font-bold uppercase text-black tracking-[0.025em]">
+                  <h3 className="text-[18px] font-bold uppercase text-black tracking-wide">
                     COMMERCIAL GUIDELINES, SAMPLES & LOGISTICS
                   </h3>
                   <p className="text-[12px] text-neutral-600 mt-0.5">
@@ -1113,7 +1111,7 @@ function ProductDetail() {
             {activeTab === "compliance" && (
               <div className="space-y-8 text-[12px]">
                 <div className="border-b border-black/20 pb-4">
-                  <h3 className="text-[18px] font-bold uppercase text-black tracking-[0.025em]">
+                  <h3 className="text-[18px] font-bold uppercase text-black tracking-wide">
                     INTERNATIONAL COMPLIANCE & QUALITY CONTROL (AQL 2.5)
                   </h3>
                   <p className="text-[12px] text-neutral-600 mt-0.5">
@@ -1170,7 +1168,7 @@ function ProductDetail() {
                       { step: "4. IN-LINE SEWING", desc: "Stitching & seam tension" },
                       { step: "5. FINAL PACK", desc: "AQL 2.5 final audit" },
                     ].map((s) => (
-                      <div key={s.step} className="bg-[#f0efe7] p-3 border border-black/10">
+                      <div key={s.step} className="bg-warm-fog p-3 border border-black/10">
                         <span className="font-bold text-black block">{s.step}</span>
                         <span className="text-neutral-600 text-[10px]">{s.desc}</span>
                       </div>
@@ -1183,11 +1181,11 @@ function ProductDetail() {
         </div>
 
         {/* ── SECTION: DOWNLOAD TECH PACK SHEET CTA (Requirement 7) ── */}
-        <div className="mt-16 bg-[#f0efe7] p-8 md:p-10 border border-black flex flex-col md:flex-row items-center justify-between gap-6 font-favorit">
+        <div className="mt-16 bg-warm-fog p-8 md:p-10 border border-black flex flex-col md:flex-row items-center justify-between gap-6 font-favorit">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <FileText className="w-4 h-4 text-black" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.05em] text-neutral-600">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-600">
                 OFFICIAL BUYER DOCUMENTATION
               </span>
             </div>
@@ -1201,7 +1199,7 @@ function ProductDetail() {
           </div>
           <button
             onClick={handleDownloadSpecSheet}
-            className="btn-filled-add py-3 px-8 text-[12px] font-bold uppercase tracking-[0.05em] flex items-center gap-2 whitespace-nowrap cursor-pointer shadow-sm"
+            className="btn-filled-add py-3 px-8 text-[12px] font-bold uppercase tracking-wider flex items-center gap-2 whitespace-nowrap cursor-pointer shadow-sm"
           >
             <Download className="w-4 h-4" /> EXPORT PDF SPEC SHEET
           </button>
@@ -1243,12 +1241,12 @@ function ProductDetail() {
 
             <div className="flex items-center gap-2 mb-1">
               <FileText className="w-4 h-4 text-black" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.05em] text-neutral-500">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">
                 TM KANISHKA GARMENTS MILL RFQ
               </span>
             </div>
 
-            <h3 className="text-[18px] font-bold uppercase tracking-[0.025em] text-black">
+            <h3 className="text-[18px] font-bold uppercase tracking-wide text-black">
               REQUEST BULK QUOTE (RFQ)
             </h3>
             <p className="text-[12px] text-neutral-600 mt-1 mb-6">
@@ -1257,8 +1255,8 @@ function ProductDetail() {
             </p>
 
             {rfqSubmitted ? (
-              <div className="py-10 text-center space-y-3 bg-[#f0efe7] border border-black p-6">
-                <CheckCircle2 className="w-12 h-12 text-black mx-auto stroke-[2]" />
+              <div className="py-10 text-center space-y-3 bg-warm-fog border border-black p-6">
+                <CheckCircle2 className="w-12 h-12 text-black mx-auto stroke-2" />
                 <h4 className="text-[16px] font-bold uppercase text-black">
                   RFQ SUBMITTED SUCCESSFULLY!
                 </h4>
@@ -1373,7 +1371,7 @@ function ProductDetail() {
 
                 <button
                   type="submit"
-                  className="btn-filled-add w-full py-3.5 text-[12px] font-bold uppercase tracking-[0.05em] flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                  className="btn-filled-add w-full py-3.5 text-[12px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-sm"
                 >
                   <Send className="w-4 h-4" /> SUBMIT RFQ TO MILL MANAGER
                 </button>
@@ -1397,7 +1395,7 @@ function ProductDetail() {
 
             <div className="flex items-center gap-2 mb-1">
               <ZoomIn className="w-4 h-4 text-black" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.05em] font-mono text-neutral-500">
+              <span className="text-[10px] font-bold uppercase tracking-wider font-mono text-neutral-500">
                 HIGH-RESOLUTION TEXTURE & FABRIC WEAVE CLOSE-UP
               </span>
             </div>
@@ -1415,7 +1413,7 @@ function ProductDetail() {
               onMouseEnter={() => setIsZoomingModal(true)}
               onMouseLeave={() => setIsZoomingModal(false)}
               onMouseMove={handleMouseMoveZoom}
-              className="relative aspect-[4/5] max-h-[62vh] w-full bg-[#f0efe7] border border-black overflow-hidden group flex items-center justify-center rounded-lg cursor-crosshair"
+              className="relative aspect-4/5 max-h-[62vh] w-full bg-warm-fog border border-black overflow-hidden group flex items-center justify-center rounded-lg cursor-crosshair"
             >
               <img
                 src={activeImage || product.fabricTextureImage || product.image}
@@ -1462,7 +1460,7 @@ function ProductDetail() {
 
             <div className="flex items-center gap-2 mb-2">
               <RotateCw className="w-4 h-4 text-black" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.05em] font-mono text-neutral-500">
+              <span className="text-[10px] font-bold uppercase tracking-wider font-mono text-neutral-500">
                 360-DEGREE INTERACTIVE DRAPE & MOVEMENT VIEWER
               </span>
             </div>
@@ -1474,7 +1472,7 @@ function ProductDetail() {
               Simulated interactive drape model showing movement, shoulder fall, and hem structure.
             </p>
 
-            <div className="relative aspect-[4/5] w-full bg-[#f0efe7] border border-black overflow-hidden flex items-center justify-center">
+            <div className="relative aspect-4/5 w-full bg-warm-fog border border-black overflow-hidden flex items-center justify-center">
               <img
                 src={galleryList[currentAngle % galleryList.length]}
                 alt="360 angle view"
@@ -1498,7 +1496,7 @@ function ProductDetail() {
                 className={`py-2 px-5 text-[11px] font-bold uppercase flex items-center gap-1.5 cursor-pointer ${
                   is3dRotating
                     ? "bg-black text-white"
-                    : "bg-[#f0efe7] border border-black text-black"
+                    : "bg-warm-fog border border-black text-black"
                 }`}
               >
                 {is3dRotating ? "PAUSE AUTO-ROTATE" : "AUTO-ROTATE 360°"}

@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   LogOut,
   Plus,
@@ -42,7 +42,7 @@ import {
   deleteAdminProductApi,
 } from "@/lib/products";
 import type { Product } from "@/lib/products";
-import { formatINR } from "@/lib/cart";
+import { formatINR } from "@/lib/utils";
 import {
   getQuoteRequests,
   updateQuoteStatus,
@@ -93,7 +93,9 @@ export function getRateLimitSettings(): RateLimitSettings {
 export function saveRateLimitSettings(settings: RateLimitSettings) {
   try {
     localStorage.setItem(RATE_LIMIT_SETTINGS_KEY, JSON.stringify(settings));
-  } catch {}
+  } catch (err) {
+    console.warn("Failed to save rate limit settings to LocalStorage:", err);
+  }
 }
 
 export function getStoredPasswordHash(): string {
@@ -104,7 +106,9 @@ export function getStoredPasswordHash(): string {
 export function saveStoredPasswordHash(hash: string) {
   try {
     localStorage.setItem(ADMIN_PASS_HASH_KEY, hash);
-  } catch {}
+  } catch (err) {
+    console.warn("Failed to save stored password hash to LocalStorage:", err);
+  }
 }
 
 export const Route = createFileRoute("/admin")({
@@ -493,7 +497,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     const settings = getRateLimitSettings();
     if (!settings.idleTimeoutMinutes || settings.idleTimeoutMinutes <= 0) return;
 
-    let timeoutId: any;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
     const resetTimer = () => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(
@@ -1232,7 +1236,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                         />
                         <div className="text-xs">
                           <span className="font-bold text-slate-900 block">Image Preview</span>
-                          <span className="text-[10px] text-slate-500 font-mono truncate max-w-[240px] block">
+                          <span className="text-[10px] text-slate-500 font-mono truncate max-w-60 block">
                             {form.imageUrl}
                           </span>
                         </div>
@@ -1768,7 +1772,7 @@ function StatCard({
   title: string;
   value: number;
   badge: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   highlight?: boolean;
 }) {
   return (

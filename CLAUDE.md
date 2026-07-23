@@ -49,15 +49,12 @@ textile-trade-hub-main/
 └── src/
     ├── assets/                        # High-resolution image assets (hero.png, product images)
     ├── components/
-    │   ├── cart/
-    │   │   └── cart-sheet.tsx         # Slide-over wholesale cart drawer
     │   ├── layout/
     │   │   ├── site-header.tsx        # Sticky navigation header & search bar
     │   │   └── site-footer.tsx        # Editorial footer with Tirupur mill contact info
-    │   ├── ui/                        # UI primitives (accordion, dialog, dropdown, etc.)
+    │   ├── ui/                        # UI primitives (button.tsx, chat-widget.tsx, sheet.tsx)
     │   └── product-card.tsx           # Rounded-corner product card component
     ├── lib/
-    │   ├── cart.ts                    # Cart state & INR currency formatting helpers
     │   └── products.ts                # Static catalog, product type definitions & LocalStorage state
     ├── routes/
     │   ├── __root.tsx                 # Root layout wrapper with SiteHeader and SiteFooter
@@ -145,11 +142,10 @@ textile-trade-hub-main/
 - Category tabs (`c`), Subtype selector (`type`), and Price Range filter (`min` / `max`).
 - Readymade apparel vs. Raw fabric roll toggle filter (`rm`).
 
-### 6. Navigation Header, Footer & Cart Drawer
+### 6. Navigation Header & Footer
 
-- **Header** ([`src/components/layout/site-header.tsx`](file:///c:/Users/Admin/OneDrive/Desktop/textile-trade-hub-main/src/components/layout/site-header.tsx)): Sticky header with brand logo, nav links, quick search, and active cart counter.
-- **Footer** ([`src/components/layout/site-footer.tsx`](file:///c:/Users/Admin/OneDrive/Desktop/textile-trade-hub-main/src/components/layout/site-footer.tsx)): Full-width footer with Tirupur mill address, company links, newsletter input, and legal notices.
-- **Cart Sheet** ([`src/components/cart/cart-sheet.tsx`](file:///c:/Users/Admin/OneDrive/Desktop/textile-trade-hub-main/src/components/cart/cart-sheet.tsx)): Slide-over drawer managing wholesale sample items, quantities, INR (`₹`) total, and checkout triggers.
+- **Header** ([`src/components/layout/site-header.tsx`](file:///d:/ziya/Projects/TNVS/kanishka_garments/src/components/layout/site-header.tsx)): Sticky header with brand logo, nav links, and quick search.
+- **Footer** ([`src/components/layout/site-footer.tsx`](file:///d:/ziya/Projects/TNVS/kanishka_garments/src/components/layout/site-footer.tsx)): Full-width footer with Tirupur mill address, company links, newsletter input, and legal notices. Refactored arbitrary Tailwind classes to standard theme utility classes (`bg-warm-fog`, `max-w-360`, `tracking-wide`).
 
 ### 7. Version Control & Git History
 
@@ -166,14 +162,7 @@ textile-trade-hub-main/
 - `deleteAdminProduct(id: string)`: Removes custom product by ID from `localStorage` and triggers sync update.
 - `getProductBySlug(slug: string)`: Searches combined static catalog (`staticProducts`) and admin products to return matching `Product`.
 
-### 2. `src/lib/cart.ts`
-
-- `formatINR(amount: number)`: Formats numeric currency into Indian Rupee string (`₹1,250`).
-- `getCart()`, `saveCart(cart: CartItem[])`: LocalStorage state management for wholesale sample cart items.
-- `addToCart(product: Product, quantity: number, color?: string)`: Appends item or updates existing quantity in cart.
-- `removeFromCart(id: string)`: Deletes specified cart line item.
-
-### 3. `src/routes/admin.tsx`
+### 2. `src/routes/admin.tsx`
 
 - `handleCreateProduct(formData)`: Validates and persists new product record into custom catalog.
 - `handleUpdateProduct(id, formData)`: Updates existing product specifications and dispatches live update event.
