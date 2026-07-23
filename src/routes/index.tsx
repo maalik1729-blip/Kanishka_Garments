@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { ProductCard } from "@/components/product-card";
-import { staticProducts, getAdminProducts } from "@/lib/products";
+import { staticProducts, getAdminProducts, fetchAdminProductsApi } from "@/lib/products";
 import type { Product } from "@/lib/products";
 const heroImg =
   "https://res.cloudinary.com/espliwjf/image/upload/v1784701902/kanishka_products/vercel_hero.png";
@@ -47,7 +47,13 @@ function Index() {
     const refreshProducts = () => {
       setAllProducts([...staticProducts, ...getAdminProducts()]);
     };
-    refreshProducts();
+    
+    const fetchProducts = async () => {
+      await fetchAdminProductsApi();
+      refreshProducts();
+    };
+
+    fetchProducts();
 
     window.addEventListener("kanishka_products_updated", refreshProducts);
     window.addEventListener("storage", refreshProducts);
