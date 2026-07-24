@@ -63,12 +63,12 @@ function WholesalePage() {
 
   return (
     <div className="bg-white font-favorit text-black py-12 md:py-20">
-      <div className="mx-auto max-w-[1440px] px-4 md:px-8">
+      <div className="mx-auto max-w-360 px-4 md:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* Left Column: Editorial Info */}
           <div className="lg:col-span-5 space-y-8">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.025em] text-neutral-500">
+              <span className="text-[10px] font-bold uppercase tracking-wide text-neutral-500">
                 WHOLESALE & PRIVATE LABEL
               </span>
               <h1 className="favorit-display text-[30px] font-normal leading-tight text-black mt-1">
@@ -81,8 +81,8 @@ function WholesalePage() {
             </div>
 
             {sent && (
-              <div className="bg-[#f0efe7] border border-black p-4 text-[12px] text-black flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 stroke-[2]" /> Request submitted successfully. Our
+              <div className="bg-warm-fog border border-black p-4 text-[12px] text-black flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 stroke-2" /> Request submitted successfully. Our
                 mill representative will reach out shortly.
               </div>
             )}
@@ -115,8 +115,8 @@ function WholesalePage() {
               ))}
             </div>
 
-            <div className="bg-[#f0efe7] border border-black p-6 space-y-2 text-[12px] rounded-xl">
-              <span className="font-bold uppercase tracking-[0.025em] text-black block mb-2">
+            <div className="bg-warm-fog border border-black p-6 space-y-2 text-[12px] rounded-xl">
+              <span className="font-bold uppercase tracking-wide text-black block mb-2">
                 DIRECT MILL CONTACT & PAYMENT INFO
               </span>
               <p className="text-black font-normal flex items-center gap-2">
@@ -137,8 +137,8 @@ function WholesalePage() {
           </div>
 
           {/* Right Column: Inquiry Form */}
-          <div className="lg:col-span-7 bg-[#f0efe7] p-8 border border-black font-favorit">
-            <h3 className="text-[16px] font-bold uppercase tracking-[0.025em] text-black mb-6">
+          <div className="lg:col-span-7 bg-warm-fog p-8 border border-black font-favorit">
+            <h3 className="text-[16px] font-bold uppercase tracking-wide text-black mb-6">
               REQUEST WHOLESALE PRICE LIST & SPECS
             </h3>
 
@@ -182,7 +182,7 @@ function WholesalePage() {
                     id="category"
                     name="category"
                     required
-                    className="w-full bg-white border border-[#333333] rounded-[4px] py-2 px-3 text-[12px] text-black focus:outline-none focus:border-black"
+                    className="w-full bg-white border border-smoke-charcoal rounded-[4px] py-2 px-3 text-[12px] text-black focus:outline-none focus:border-black"
                   >
                     <option value="">Select Category</option>
                     {mainCategories.map((cat) => (
@@ -217,7 +217,7 @@ function WholesalePage() {
                     id="timeline"
                     name="timeline"
                     required
-                    className="w-full bg-white border border-[#333333] rounded-[4px] py-2 px-3 text-[12px] text-black focus:outline-none focus:border-black"
+                    className="w-full bg-white border border-smoke-charcoal rounded-[4px] py-2 px-3 text-[12px] text-black focus:outline-none focus:border-black"
                   >
                     <option value="">Select Timeline</option>
                     <option value="30">Urgent (Within 30 Days)</option>
@@ -238,7 +238,7 @@ function WholesalePage() {
                     name="message"
                     rows={4}
                     placeholder="Specify GSM, pantone color codes, packaging preferences, or private label tags..."
-                    className="w-full bg-white border border-[#333333] rounded-[4px] p-3 text-[12px] text-black focus:outline-none focus:border-black resize-none"
+                    className="w-full bg-white border border-smoke-charcoal rounded-[4px] p-3 text-[12px] text-black focus:outline-none focus:border-black resize-none"
                     maxLength={1500}
                   />
                 </div>
@@ -247,7 +247,7 @@ function WholesalePage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="btn-filled-add w-full py-3 text-[12px] uppercase tracking-[0.025em] mt-4 flex items-center justify-center gap-2 cursor-pointer"
+                className="btn-filled-add w-full py-3 text-[12px] uppercase tracking-wide mt-4 flex items-center justify-center gap-2 cursor-pointer"
               >
                 {submitting ? (
                   <>
@@ -293,7 +293,7 @@ function Field({
         type={type}
         required={required}
         placeholder={placeholder}
-        className="w-full bg-white border border-[#333333] rounded-[4px] py-2 px-3 text-[12px] text-black placeholder:text-neutral-400 focus:outline-none focus:border-black"
+        className="w-full bg-white border border-smoke-charcoal rounded-[4px] py-2 px-3 text-[12px] text-black placeholder:text-neutral-400 focus:outline-none focus:border-black"
         maxLength={200}
       />
     </div>

@@ -18,12 +18,12 @@ export const Route = createFileRoute("/terms")({
 function TermsOfServicePage() {
   return (
     <div className="bg-white font-favorit text-black py-12 md:py-20 selection:bg-black selection:text-white">
-      <div className="mx-auto max-w-[1000px] px-4 md:px-8 space-y-12">
+      <div className="mx-auto max-w-250 px-4 md:px-8 space-y-12">
         {/* Page Header */}
         <div className="border-b border-black pb-8 space-y-3">
           <div className="flex items-center gap-2">
             <FileText className="w-5 h-5 text-black" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.05em] text-neutral-500">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">
               TM KANISHKA GARMENTS · COMMERCIAL TERMS & CONDITIONS
             </span>
           </div>
@@ -36,8 +36,8 @@ function TermsOfServicePage() {
         </div>
 
         {/* Banking & GST Highlight Box */}
-        <div className="bg-[#f0efe7] border border-black p-6 md:p-8 rounded-xl space-y-3">
-          <h3 className="text-[14px] font-bold uppercase tracking-[0.025em] text-black flex items-center gap-2">
+        <div className="bg-warm-fog border border-black p-6 md:p-8 rounded-xl space-y-3">
+          <h3 className="text-[14px] font-bold uppercase tracking-wide text-black flex items-center gap-2">
             <Building2 className="w-4 h-4 text-black" /> Official Business & Banking Registration
           </h3>
           <div className="text-[12px] text-neutral-800 leading-relaxed font-normal grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-black/10">
@@ -68,7 +68,7 @@ function TermsOfServicePage() {
         <div className="space-y-10 text-[13px] leading-relaxed text-neutral-800 font-normal">
           {/* 1. Wholesale Orders & MOQ */}
           <div className="space-y-3">
-            <h2 className="text-[16px] font-bold uppercase tracking-[0.025em] text-black flex items-center gap-2">
+            <h2 className="text-[16px] font-bold uppercase tracking-wide text-black flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-black" /> 1. Minimum Order Quantity (MOQ) &
               Volume Pricing
             </h2>
@@ -82,7 +82,7 @@ function TermsOfServicePage() {
 
           {/* 2. Fabric Specs & Tolerances */}
           <div className="space-y-3">
-            <h2 className="text-[16px] font-bold uppercase tracking-[0.025em] text-black flex items-center gap-2">
+            <h2 className="text-[16px] font-bold uppercase tracking-wide text-black flex items-center gap-2">
               <AlertCircle className="w-4 h-4 text-black" /> 2. Fabric GSM, Color Fastness &
               Shrinkage Rating
             </h2>
@@ -108,7 +108,7 @@ function TermsOfServicePage() {
 
           {/* 3. Payment Terms & Bank Remittance */}
           <div className="space-y-3">
-            <h2 className="text-[16px] font-bold uppercase tracking-[0.025em] text-black">
+            <h2 className="text-[16px] font-bold uppercase tracking-wide text-black">
               3. Payment Terms & Remittance
             </h2>
             <p>
@@ -123,7 +123,7 @@ function TermsOfServicePage() {
 
           {/* 4. Inspection & Quality Assurance */}
           <div className="space-y-3 border-t border-neutral-200 pt-8">
-            <h2 className="text-[16px] font-bold uppercase tracking-[0.025em] text-black">
+            <h2 className="text-[16px] font-bold uppercase tracking-wide text-black">
               4. AQL 2.5 Quality Control & Claims
             </h2>
             <p>

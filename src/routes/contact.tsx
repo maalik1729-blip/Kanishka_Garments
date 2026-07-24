@@ -55,9 +55,9 @@ function ContactPage() {
 
   return (
     <div className="bg-white font-favorit text-black py-12 md:py-20">
-      <div className="mx-auto max-w-[1440px] px-4 md:px-8">
+      <div className="mx-auto max-w-360 px-4 md:px-8">
         <div className="max-w-xl mb-12">
-          <span className="text-[10px] font-bold uppercase tracking-[0.025em] text-neutral-500">
+          <span className="text-[10px] font-bold uppercase tracking-wide text-neutral-500">
             GET IN TOUCH
           </span>
           <h1 className="favorit-display text-[30px] font-normal text-black mt-1">
@@ -72,7 +72,7 @@ function ContactPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* Left Column: Direct Contact Cards */}
           <div className="lg:col-span-5 space-y-4">
-            <div className="bg-[#f0efe7] p-6 border border-black space-y-2 rounded-xl">
+            <div className="bg-warm-fog p-6 border border-black space-y-2 rounded-xl">
               <MapPin className="w-5 h-5 text-black" />
               <h4 className="text-[12px] font-bold uppercase text-black pt-1">
                 HEAD OFFICE & FACTORY MILL
@@ -90,7 +90,7 @@ function ContactPage() {
               </p>
             </div>
 
-            <div className="bg-[#f0efe7] p-6 border border-black space-y-2 rounded-xl">
+            <div className="bg-warm-fog p-6 border border-black space-y-2 rounded-xl">
               <Phone className="w-5 h-5 text-black" />
               <h4 className="text-[12px] font-bold uppercase text-black pt-1">PHONE & WHATSAPP</h4>
               <p className="text-[12px] text-neutral-700 font-normal leading-relaxed">
@@ -103,7 +103,7 @@ function ContactPage() {
               </p>
             </div>
 
-            <div className="bg-[#f0efe7] p-6 border border-black space-y-2 rounded-xl">
+            <div className="bg-warm-fog p-6 border border-black space-y-2 rounded-xl">
               <Mail className="w-5 h-5 text-black" />
               <h4 className="text-[12px] font-bold uppercase text-black pt-1">EMAIL & DIRECT INQUIRIES</h4>
               <p className="text-[12px] text-neutral-700 font-normal leading-relaxed">
@@ -127,8 +127,8 @@ function ContactPage() {
           </div>
 
           {/* Right Column: Contact Form */}
-          <div className="lg:col-span-7 bg-[#f0efe7] p-8 border border-black font-favorit">
-            <h3 className="text-[16px] font-bold uppercase tracking-[0.025em] text-black mb-6">
+          <div className="lg:col-span-7 bg-warm-fog p-8 border border-black font-favorit">
+            <h3 className="text-[16px] font-bold uppercase tracking-wide text-black mb-6">
               SEND DIRECT MESSAGE
             </h3>
 
@@ -145,7 +145,7 @@ function ContactPage() {
                   name="name"
                   required
                   placeholder="e.g. Jane Doe"
-                  className="w-full bg-white border border-[#333333] rounded-[4px] py-2 px-3 text-[12px] text-black placeholder:text-neutral-400 focus:outline-none focus:border-black"
+                  className="w-full bg-white border border-smoke-charcoal rounded-[4px] py-2 px-3 text-[12px] text-black placeholder:text-neutral-400 focus:outline-none focus:border-black"
                   maxLength={80}
                 />
               </div>
@@ -163,7 +163,7 @@ function ContactPage() {
                   type="email"
                   required
                   placeholder="jane@company.com"
-                  className="w-full bg-white border border-[#333333] rounded-[4px] py-2 px-3 text-[12px] text-black placeholder:text-neutral-400 focus:outline-none focus:border-black"
+                  className="w-full bg-white border border-smoke-charcoal rounded-[4px] py-2 px-3 text-[12px] text-black placeholder:text-neutral-400 focus:outline-none focus:border-black"
                   maxLength={200}
                 />
               </div>
@@ -180,7 +180,7 @@ function ContactPage() {
                   name="subject"
                   required
                   placeholder="e.g. Sample Kit Request / Private Label Inquiries"
-                  className="w-full bg-white border border-[#333333] rounded-[4px] py-2 px-3 text-[12px] text-black placeholder:text-neutral-400 focus:outline-none focus:border-black"
+                  className="w-full bg-white border border-smoke-charcoal rounded-[4px] py-2 px-3 text-[12px] text-black placeholder:text-neutral-400 focus:outline-none focus:border-black"
                   maxLength={140}
                 />
               </div>
@@ -198,7 +198,7 @@ function ContactPage() {
                   rows={5}
                   required
                   placeholder="Type your message or inquiry here..."
-                  className="w-full bg-white border border-[#333333] rounded-[4px] p-3 text-[12px] text-black placeholder:text-neutral-400 focus:outline-none focus:border-black resize-none"
+                  className="w-full bg-white border border-smoke-charcoal rounded-[4px] p-3 text-[12px] text-black placeholder:text-neutral-400 focus:outline-none focus:border-black resize-none"
                   maxLength={1500}
                 />
               </div>
@@ -206,7 +206,7 @@ function ContactPage() {
               <button
                 type="submit"
                 disabled={busy}
-                className="btn-filled-add w-full py-3 text-[12px] uppercase tracking-[0.025em] mt-4 flex items-center justify-center gap-2 cursor-pointer"
+                className="btn-filled-add w-full py-3 text-[12px] uppercase tracking-wide mt-4 flex items-center justify-center gap-2 cursor-pointer"
               >
                 {busy ? (
                   <>
