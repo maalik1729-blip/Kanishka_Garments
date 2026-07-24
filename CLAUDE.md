@@ -7,7 +7,7 @@ This file serves as the unified master reference for **TM KANISHKA GARMENTS** �
 - **Direct Cell / WhatsApp**: +91 87540 11563
 - **GSTIN**: 33CNRPT6310G1ZS
 - **Email**: tmkanishkagarments@gmail.com
-- **Bank Details**: State Bank of India | A/C: 43605722884 | IFSC: SBIN0000935 | Branch: Tirupur Main Branch
+- **Bank Details**: Stored exclusively in Protected Admin Panel (`/admin` under Security & Access); removed from public storefront.
 
 ---
 
@@ -134,7 +134,7 @@ textile-trade-hub-main/
 ### 5. Legal Compliance & Policy Pages (`src/routes/privacy.tsx` & `src/routes/terms.tsx`)
 
 - **Privacy Policy Page** ([`src/routes/privacy.tsx`](file:///c:/Users/Admin/OneDrive/Desktop/textile-trade-hub-main/src/routes/privacy.tsx)): Covers B2B client data protection, tech pack NDA confidentiality, GSTIN tax data security, and direct contact email (`tmkanishkagarments@gmail.com`).
-- **Terms of Service Page** ([`src/routes/terms.tsx`](file:///c:/Users/Admin/OneDrive/Desktop/textile-trade-hub-main/src/routes/terms.tsx)): Outlines official B2B wholesale MOQ conditions, SBI Bank remittance details (`A/C: 43605722884`, `IFSC: SBIN0000935`), GSM weight tolerance (±5%), and AQL 2.5 quality inspection standards.
+- **Terms of Service Page** ([`src/routes/terms.tsx`](file:///c:/Users/Admin/OneDrive/Desktop/textile-trade-hub-main/src/routes/terms.tsx)): Outlines official B2B wholesale MOQ conditions, proforma invoice remittance terms (sensitive owner bank details restricted to Admin Panel), GSM weight tolerance (±5%), and AQL 2.5 quality inspection standards.
 
 ### 6. Catalog Search, Filtering & Lookbook (`src/routes/products.index.tsx`)
 

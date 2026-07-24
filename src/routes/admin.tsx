@@ -31,6 +31,10 @@ import {
   Upload,
   Loader2,
   Image as ImageIcon,
+  Building2,
+  CreditCard,
+  Copy,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -1838,6 +1842,18 @@ function SecuritySettingsSection() {
   const [passSuccess, setPassSuccess] = useState("");
   const [passLoading, setPassLoading] = useState(false);
 
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  const copyToClipboard = (text: string, fieldId: string) => {
+    try {
+      navigator.clipboard.writeText(text);
+      setCopiedField(fieldId);
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch (e) {
+      console.error("Failed to copy:", e);
+    }
+  };
+
   const handleSaveRateSettings = (e: React.FormEvent) => {
     e.preventDefault();
     setRateSuccess("");
@@ -1879,6 +1895,129 @@ function SecuritySettingsSection() {
 
   return (
     <div className="max-w-3xl space-y-6">
+      {/* Owner Sensitive Bank Details Card (Restricted Admin Access Only) */}
+      <div className="rounded-2xl border border-amber-200 bg-white p-6 shadow-sm space-y-5">
+        <div className="flex items-center justify-between border-b border-amber-100 pb-3">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-900 border border-amber-200">
+              <Building2 className="h-4 w-4" />
+            </div>
+            <div>
+              <h3 className="font-display font-bold text-slate-900 text-base">
+                Owner Sensitive Banking & Financial Details
+              </h3>
+              <p className="text-[11px] text-slate-500">
+                Restricted to Admin Dashboard. Removed from public storefront for security.
+              </p>
+            </div>
+          </div>
+          <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 border border-amber-300 px-2.5 py-0.5 text-[10px] font-bold text-amber-900">
+            <Shield className="h-3 w-3" /> Confidential
+          </span>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 text-xs">
+          <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 space-y-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+              Account Beneficiary Entity
+            </span>
+            <div className="font-semibold text-slate-900 text-sm">TM KANISHKA GARMENTS</div>
+            <div className="text-slate-500 text-[11px]">Type: Official Current Account</div>
+          </div>
+
+          <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 space-y-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+              Bank & Branch Name
+            </span>
+            <div className="font-semibold text-slate-900 text-sm">State Bank of India (SBI)</div>
+            <div className="text-slate-500 text-[11px]">Branch: Tirupur Main Branch</div>
+          </div>
+
+          <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 space-y-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+              Bank Account Number
+            </span>
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-sm font-bold text-slate-900 tracking-wider">
+                43605722884
+              </span>
+              <button
+                type="button"
+                onClick={() => copyToClipboard("43605722884", "acc")}
+                className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-600 hover:text-slate-900 cursor-pointer bg-white border border-slate-200 rounded-lg px-2 py-1 shadow-2xs"
+              >
+                {copiedField === "acc" ? (
+                  <>
+                    <Check className="h-3.5 w-3.5 text-emerald-600" />
+                    <span className="text-emerald-700 font-semibold">Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-3.5 w-3.5" />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 space-y-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+              IFSC Code
+            </span>
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-sm font-bold text-slate-900 tracking-wider">
+                SBIN0000935
+              </span>
+              <button
+                type="button"
+                onClick={() => copyToClipboard("SBIN0000935", "ifsc")}
+                className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-600 hover:text-slate-900 cursor-pointer bg-white border border-slate-200 rounded-lg px-2 py-1 shadow-2xs"
+              >
+                {copiedField === "ifsc" ? (
+                  <>
+                    <Check className="h-3.5 w-3.5 text-emerald-600" />
+                    <span className="text-emerald-700 font-semibold">Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-3.5 w-3.5" />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 space-y-1 sm:col-span-2">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+              GSTIN & Tax Registration
+            </span>
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-xs font-bold text-slate-900">
+                33CNRPT6310G1ZS
+              </span>
+              <button
+                type="button"
+                onClick={() => copyToClipboard("33CNRPT6310G1ZS", "gst")}
+                className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-600 hover:text-slate-900 cursor-pointer bg-white border border-slate-200 rounded-lg px-2 py-1 shadow-2xs"
+              >
+                {copiedField === "gst" ? (
+                  <>
+                    <Check className="h-3.5 w-3.5 text-emerald-600" />
+                    <span className="text-emerald-700 font-semibold">Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-3.5 w-3.5" />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
       {/* Rate Limit Rules Card */}
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
         <div className="flex items-center gap-2 border-b border-slate-100 pb-3">

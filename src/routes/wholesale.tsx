@@ -117,7 +117,7 @@ function WholesalePage() {
 
             <div className="bg-[#f0efe7] border border-black p-6 space-y-2 text-[12px] rounded-xl">
               <span className="font-bold uppercase tracking-[0.025em] text-black block mb-2">
-                DIRECT MILL CONTACT & BANK DETAILS
+                DIRECT MILL CONTACT & PAYMENT INFO
               </span>
               <p className="text-black font-normal flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-black" /> +91 87540 11563 (Call / WhatsApp)
@@ -130,10 +130,7 @@ function WholesalePage() {
               </p>
               <div className="pt-2 border-t border-black/10 text-[11px] text-neutral-700 space-y-0.5">
                 <p>
-                  <strong>Bank:</strong> State Bank of India | <strong>A/C:</strong> 43605722884
-                </p>
-                <p>
-                  <strong>IFSC:</strong> SBIN0000935 | <strong>Branch:</strong> Tirupur Main Branch
+                  <strong>Payment Remittance:</strong> Official bank details provided upon order confirmation & proforma invoice.
                 </p>
               </div>
             </div>

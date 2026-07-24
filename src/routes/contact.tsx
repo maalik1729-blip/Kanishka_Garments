@@ -105,7 +105,7 @@ function ContactPage() {
 
             <div className="bg-[#f0efe7] p-6 border border-black space-y-2 rounded-xl">
               <Mail className="w-5 h-5 text-black" />
-              <h4 className="text-[12px] font-bold uppercase text-black pt-1">EMAIL & BANKING</h4>
+              <h4 className="text-[12px] font-bold uppercase text-black pt-1">EMAIL & DIRECT INQUIRIES</h4>
               <p className="text-[12px] text-neutral-700 font-normal leading-relaxed">
                 Official Email:{" "}
                 <a
@@ -117,16 +117,10 @@ function ContactPage() {
               </p>
               <div className="pt-2 border-t border-black/10 text-[11px] text-neutral-600 space-y-0.5">
                 <p>
-                  <strong>Bank:</strong> State Bank of India
+                  <strong>Banking & Remittance:</strong> Provided upon official proforma invoice.
                 </p>
                 <p>
-                  <strong>A/C No:</strong> 43605722884
-                </p>
-                <p>
-                  <strong>IFSC Code:</strong> SBIN0000935
-                </p>
-                <p>
-                  <strong>Branch:</strong> Tirupur Main Branch
+                  <strong>Support Hours:</strong> Mon - Sat (9:00 AM - 7:00 PM IST)
                 </p>
               </div>
             </div>

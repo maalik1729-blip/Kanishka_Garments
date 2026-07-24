@@ -55,16 +55,10 @@ function TermsOfServicePage() {
             </div>
             <div>
               <p>
-                <strong>Bank:</strong> State Bank of India
+                <strong>Payment Remittance:</strong> Official Bank Details provided on Proforma Invoice
               </p>
               <p>
-                <strong>Account No:</strong> 43605722884
-              </p>
-              <p>
-                <strong>IFSC Code:</strong> SBIN0000935
-              </p>
-              <p>
-                <strong>Branch:</strong> Tirupur Main Branch
+                <strong>Registration:</strong> MSME Registered Apparel Unit
               </p>
             </div>
           </div>
@@ -118,15 +112,12 @@ function TermsOfServicePage() {
               3. Payment Terms & Remittance
             </h2>
             <p>
-              Official invoices are issued under GSTIN <strong>33CNRPT6310G1ZS</strong>. Payments
-              must be remitted directly to our official State Bank of India account:
+              Official invoices are issued under GSTIN <strong>33CNRPT6310G1ZS</strong>. Verified bank transfer details are provided directly to wholesale buyers upon order confirmation and Proforma Invoice issue.
             </p>
             <div className="bg-white p-4 border border-black text-[12px] font-mono space-y-1">
-              <p>Account Name: TM KANISHKA GARMENTS</p>
-              <p>Bank Name: State Bank of India (SBI)</p>
-              <p>Account Number: 43605722884</p>
-              <p>IFSC Code: SBIN0000935</p>
-              <p>Branch: Tirupur Main Branch</p>
+              <p>Entity: TM KANISHKA GARMENTS</p>
+              <p>GSTIN: 33CNRPT6310G1ZS</p>
+              <p>Remittance: RTGS / NEFT / IMPS (Details on Official Proforma Invoice)</p>
             </div>
           </div>
 
